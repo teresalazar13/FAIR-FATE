@@ -2,7 +2,7 @@
 
 by
 Teresa Salazar,
-Miguel Fernances,
+Miguel Fernandes,
 Helder Araujo,
 Pedro Henriques Abreu
 
