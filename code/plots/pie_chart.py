@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 def create_stats_sensitive_distribution_all(dataset, plot_filename):
     df = dataset.preprocess()
-    combs = create_combinations(df)
+    combs = create_combinations(dataset)
     labels = []
     sizes = []
 
@@ -30,7 +30,7 @@ def create_stats_sensitive_distribution(x_ys, dataset, plot_filename):
     for x, y, title in x_ys:
         df = pd.DataFrame(data=np.concatenate((x, np.stack(y, axis=0)), axis=1),
                           columns=dataset.all_columns + [dataset.target.name])
-        combs = create_combinations(df)
+        combs = create_combinations(dataset)
         labels = []
         sizes = []
 
@@ -78,7 +78,7 @@ def plot_pie_chart(title, sp, labels, sizes, plot_filename):
     plt.title("SP: {}".format(sp))
 
     plt.savefig('{}/plot_{}.png'.format(plot_filename, title))
-    plt.show()
+    #plt.show()
 
 
 # Returns something like: [{'income': 1.0, 'gender': 1.0}, {'income': 1.0, 'gender': 0.0}, {'income': 0.0,

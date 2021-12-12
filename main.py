@@ -13,5 +13,5 @@ if __name__ == '__main__':
         dataset, "/content/gdrive/MyDrive/Colab Notebooks/{}".format(dataset.name)
     )"""
 
-    run(dataset, 2, 3)
+    run(dataset, 50, 1)
     # plot_avg_results(dataset.name, 1, 50)

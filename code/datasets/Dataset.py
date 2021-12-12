@@ -1,4 +1,9 @@
 from abc import abstractmethod
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
+import numpy as np
+import itertools
 
 class Dataset():
     def __init__(self, name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
@@ -90,7 +95,7 @@ class Dataset():
             dfs.append(df_new)
 
         reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for i in range(self.number_of_clients)]
-        combs = create_combinations(df, dataset)
+        combs = create_combinations(self)
 
         for comb in combs:
             weight = self.get_weight(df, comb)
@@ -114,7 +119,7 @@ class Dataset():
         reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for i in range(self.number_of_clients)]
 
         for i in range(len(x_ys)):
-            combs = create_combinations(dfs[i], dataset)
+            combs = create_combinations(self)
 
             for comb in combs:
                 weight = self.get_weight(dfs[i], comb)
@@ -126,5 +131,31 @@ class Dataset():
         return reweighting_weights
 
     @abstractmethod
-    def custom_preprocess(self):
+    def custom_preprocess(self, df):
         raise NotImplementedError("Must override update")
+
+
+# Returns something like: [{'income': 1.0, 'gender': 1.0}, {'income': 1.0, 'gender': 0.0}, {'income': 0.0,
+# 'gender': 1.0}, {'income': 0.0, 'gender': 0.0}]
+def create_combinations(dataset):
+    classes = [[
+        {dataset.target.name: [1.0, dataset.target.positive, dataset.target.positive_label]},
+        {dataset.target.name: [0.0, dataset.target.negative, dataset.target.negative_label]}
+    ]]
+
+    for s in dataset.sensitive_attributes:
+        classes.append([
+            {s.name: [1.0, s.positive, s.positive_label]},
+            {s.name: [0.0, s.negative, s.negative_label]}
+        ])
+
+    combs_tuples = itertools.product(*classes)
+    combs = []
+    for comb_tuples in combs_tuples:
+        comb = {}
+        for d in comb_tuples:
+            comb.update(d)
+        combs.append(comb)
+
+    return combs
+

@@ -2,4 +2,5 @@ numpy
 pandas
 matplotlib
 tensorflow
-tensorflow-federated-nightly
+tensorflow-estimator
+tensorflow-federated

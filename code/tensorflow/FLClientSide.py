@@ -40,7 +40,7 @@ class FederatedLearningClientSide:
 
             for batch in dataset:
                 with tf.GradientTape() as tape:
-                    outputs = model._keras_model(batch['x'], training=True)
+                    outputs = model._model._keras_model(batch['x'], training=True)
                     loss = binary_cross_entropy(batch['y'], outputs)
 
                     if type_fairness == 2:

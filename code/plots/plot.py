@@ -24,7 +24,7 @@ def plot_results(dfs, fls, plot_filename):
 
     plt.subplot_tool()
     plt.savefig(plot_filename)
-    plt.show()
+    #plt.show()
 
 
 def get_last_round_plot(dfs, fls, plot_filename, type_):
@@ -47,7 +47,7 @@ def get_last_round_plot(dfs, fls, plot_filename, type_):
     plt.xticks([r + 0.25 for r in range(len(cols))], cols)
     plt.legend()
     plt.savefig(plot_filename)
-    plt.show()
+    #plt.show()
 
 
 def get_metrics_fd(name, dataset_name, num_runs):

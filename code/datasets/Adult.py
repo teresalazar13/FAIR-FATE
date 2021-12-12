@@ -22,3 +22,6 @@ class Adult(Dataset):
         metric = "EO"
         super().__init__(name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
                          num_clients_per_round, metric)
+
+    def custom_preprocess(self, df):
+        return df

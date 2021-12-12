@@ -40,7 +40,7 @@ class FederatedFairMomentum:
         model.set_weights(self.actual_state)
         y_pred = model.predict(x_val)
 
-        return get_fairness(self.aggregation_metric, self.dataset, x_val, y_pred, y_val) + 1
+        return get_fairness(self.dataset, x_val, y_pred, y_val) + 1
 
     def calculate_fairness_clients(self, clients_weights, model, x_val, y_val):
         weights_client = []
@@ -48,7 +48,7 @@ class FederatedFairMomentum:
         for client in clients_weights:
             model.set_weights(client)
             y_pred = model.predict(x_val)
-            eo = get_fairness(self.aggregation_metric, self.dataset, x_val, y_pred, y_val)
+            eo = get_fairness(self.dataset, x_val, y_pred, y_val)
             weights_client.append(eo + 1)
 
         return weights_client
