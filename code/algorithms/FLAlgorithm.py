@@ -22,7 +22,7 @@ class FederatedLearningAlgorithm:
         raise NotImplementedError("Must override update")
 
     def save_metrics_to_file(self, dataset_name, run_num):
-        filename_part = '/content/gdrive/MyDrive/Colab Notebooks/{}/run_{}'.format(dataset_name, run_num)
+        filename_part = './datasets/{}/run_{}'.format(dataset_name, run_num)
 
         if self.hyperparameter_specs_str == "":
             filename = '{}/{}.csv'.format(filename_part, self.name)

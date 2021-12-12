@@ -35,7 +35,7 @@ def run(dataset, num_rounds, num_runs):
 
         create_stats_sensitive_distribution(
             [[x_val, y_val, "VAL"], [x_test, y_test, "TEST"], *client_train_dataset_x_y_label], dataset,
-            "/content/gdrive/MyDrive/Colab Notebooks/{}/run_{}".format(dataset.name, run_num))
+            "./datasets/{}/run_{}".format(dataset.name, run_num))
         federated_train_data = make_federated_data(sensitive_columns_indexes, client_train_dataset,
                                                    client_train_dataset.client_ids[0:1], x_train, seed)
         reweighting_weights_local = dataset.get_reweigthing_weights_local(client_train_dataset_x_y_label)

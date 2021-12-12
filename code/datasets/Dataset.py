@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 class Dataset():
     def __init__(self, name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
                  num_clients_per_round, metric):
@@ -11,7 +13,7 @@ class Dataset():
         self.metric = metric
 
     def preprocess(self):
-        df = pd.read_csv('/content/gdrive/MyDrive/Colab Notebooks/{}.csv'.format(self.name))
+        df = pd.read_csv('./datasets/{}/{}.csv'.format(self.name, self.name))
         df = self.custom_preprocess(df)
 
         # Convert to categorical

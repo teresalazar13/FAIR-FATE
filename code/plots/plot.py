@@ -53,7 +53,7 @@ def get_last_round_plot(dfs, fls, plot_filename, type_):
 def get_metrics_fd(name, dataset_name, num_runs):
     dfs = []
     for run_num in range(num_runs):
-        filename = '/content/gdrive/MyDrive/Colab Notebooks/{}/run_{}/{}.csv'.format(dataset_name, run_num + 1, name)
+        filename = './datasets/{}/run_{}/{}.csv'.format(dataset_name, run_num + 1, name)
         df = pd.read_csv(filename)
         dfs.append(df)
 
@@ -83,10 +83,6 @@ def plot_avg_results(dataset_name, num_runs):
         df = get_metrics_fd(fl, dataset_name, num_runs)
         dfs.append(df)
 
-    plot_results(dfs, fls, '/content/gdrive/MyDrive/Colab Notebooks/{}/rounds_plot.png'.format(dataset_name))
-    get_last_round_plot(dfs, fls,
-                        '/content/gdrive/MyDrive/Colab Notebooks/{}/last_round_plot_diff.png'.format(dataset_name),
-                        "diff")
-    get_last_round_plot(dfs, fls,
-                        '/content/gdrive/MyDrive/Colab Notebooks/{}/last_round_plot_ratio.png'.format(dataset_name),
-                        "ratio")
+    plot_results(dfs, fls, './datasets/{}/rounds_plot.png'.format(dataset_name))
+    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_diff.png'.format(dataset_name), "diff")
+    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_ratio.png'.format(dataset_name), "ratio")
