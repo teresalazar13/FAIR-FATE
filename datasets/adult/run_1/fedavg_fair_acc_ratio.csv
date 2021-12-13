@@ -1,3 +1,0 @@
-ACC,SP_ratio,SP_diff,TPR_ratio,TPR_diff,TNR_ratio,TNR_diff,FPR_ratio,FPR_diff,FNR_ratio,FNR_diff,PPV_ratio,PPV_diff,NPV_ratio,NPV_diff,FDR_ratio,FDR_diff,FOR_ratio,FOR_diff
-0.77,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0,0.78,0.2,0.0,1.0,0.34,0.2
-0.78,0.03,0.04,0.03,0.09,0.98,0.02,0.05,0.02,0.91,0.09,0.38,0.41,0.8,0.18,0.45,0.41,0.36,0.18
