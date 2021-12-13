@@ -14,7 +14,7 @@ class FederatedLearningAlgorithm:
         self.state, weights = self.algorithm.next(self.state, federated_train_data)
         self.state, model = self.update(weights, x_train, x_val, y_val)
         y_pred = model.predict(x_test)
-        print("\n\n" + self.name + "\n")
+        print("\n\n{}-{}\n".format(self.name, self.hyperparameter_specs_str))
         calculate_metrics(dataset, self.metrics, x_test, y_pred, y_test)
 
     @abstractmethod

@@ -16,6 +16,7 @@ class Dataset():
         self.number_of_clients = number_of_clients
         self.num_clients_per_round = num_clients_per_round
         self.metric = metric
+        self.combs = self.create_combinations()
 
     def preprocess(self):
         df = pd.read_csv('./datasets/{}/{}.csv'.format(self.name, self.name))
@@ -95,9 +96,8 @@ class Dataset():
             dfs.append(df_new)
 
         reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for i in range(self.number_of_clients)]
-        combs = create_combinations(self)
 
-        for comb in combs:
+        for comb in self.combs:
             weight = self.get_weight(df, comb)
 
             for i in range(len(idx)):
@@ -119,9 +119,7 @@ class Dataset():
         reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for i in range(self.number_of_clients)]
 
         for i in range(len(x_ys)):
-            combs = create_combinations(self)
-
-            for comb in combs:
+            for comb in self.combs:
                 weight = self.get_weight(dfs[i], comb)
                 indexes_for_weight = self.get_indexes_for_weight(dfs[i], comb)
 
@@ -130,32 +128,30 @@ class Dataset():
 
         return reweighting_weights
 
+    # Returns something like: [{'income': 1.0, 'gender': 1.0}, {'income': 1.0, 'gender': 0.0}, {'income': 0.0,
+    # 'gender': 1.0}, {'income': 0.0, 'gender': 0.0}]
+    def create_combinations(self):
+        classes = [[
+            {self.target.name: [1.0, self.target.positive, self.target.positive_label]},
+            {self.target.name: [0.0, self.target.negative, self.target.negative_label]}
+        ]]
+
+        for s in self.sensitive_attributes:
+            classes.append([
+                {s.name: [1.0, s.positive, s.positive_label]},
+                {s.name: [0.0, s.negative, s.negative_label]}
+            ])
+
+        combs_tuples = itertools.product(*classes)
+        combs = []
+        for comb_tuples in combs_tuples:
+            comb = {}
+            for d in comb_tuples:
+                comb.update(d)
+            combs.append(comb)
+
+        return combs
+
     @abstractmethod
     def custom_preprocess(self, df):
         raise NotImplementedError("Must override update")
-
-
-# Returns something like: [{'income': 1.0, 'gender': 1.0}, {'income': 1.0, 'gender': 0.0}, {'income': 0.0,
-# 'gender': 1.0}, {'income': 0.0, 'gender': 0.0}]
-def create_combinations(dataset):
-    classes = [[
-        {dataset.target.name: [1.0, dataset.target.positive, dataset.target.positive_label]},
-        {dataset.target.name: [0.0, dataset.target.negative, dataset.target.negative_label]}
-    ]]
-
-    for s in dataset.sensitive_attributes:
-        classes.append([
-            {s.name: [1.0, s.positive, s.positive_label]},
-            {s.name: [0.0, s.negative, s.negative_label]}
-        ])
-
-    combs_tuples = itertools.product(*classes)
-    combs = []
-    for comb_tuples in combs_tuples:
-        comb = {}
-        for d in comb_tuples:
-            comb.update(d)
-        combs.append(comb)
-
-    return combs
-

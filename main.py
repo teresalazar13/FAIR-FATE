@@ -8,10 +8,13 @@ if __name__ == '__main__':
     dataset = Adult()
     # dataset = Compas()
 
-    """
     create_stats_sensitive_distribution_all(
-        dataset, "/content/gdrive/MyDrive/Colab Notebooks/{}".format(dataset.name)
-    )"""
+        dataset, "./datasets/{}".format(dataset.name)
+    )
 
     run(dataset, 50, 1)
-    # plot_avg_results(dataset.name, 1, 50)
+    # plot_avg_results(dataset.name, 5)
+
+    """
+    for alpha in [0.1, 0.2, 0.5, 5000]:
+        run(dataset, 50, 10, alpha)"""

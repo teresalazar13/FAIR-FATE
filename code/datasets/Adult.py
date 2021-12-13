@@ -2,10 +2,6 @@ from code.datasets.Dataset import Dataset
 from code.datasets.Feature import Feature
 
 
-def custom_preprocess(df):
-    return df
-
-
 class Adult(Dataset):
     def __init__(self):
         name = "adult"
@@ -19,7 +15,7 @@ class Adult(Dataset):
                        "native-country"]
         number_of_clients = 15
         num_clients_per_round = 5
-        metric = "EO"
+        metric = "SP"
         super().__init__(name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
                          num_clients_per_round, metric)
 

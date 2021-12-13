@@ -1,10 +1,10 @@
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
 
 def plot_results(dfs, fls, plot_filename):
-    fig = plt.figure(figsize=(30, 120))
+    plt.figure(figsize=(30, 120))
     x_plot = [i for i in range(0, len(dfs[0]))]
     cols = 1
     rows = len(dfs[0].columns)

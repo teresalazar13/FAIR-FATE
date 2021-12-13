@@ -9,11 +9,12 @@ from code.algorithms.FedAvgAccRatio import FedAvgAccRatio
 from code.algorithms.FedAvgLR import FedAvgLR
 from code.algorithms.FedAvgGR import FedAvgGR
 from code.algorithms.FedMom import FedMom
+from code.datasets.distributions import get_x_dirichlet
 from code.plots.pie_chart import create_stats_sensitive_distribution
 from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federated_data
 
 
-def run(dataset, num_rounds, num_runs):
+def run(dataset, num_rounds, num_runs, alpha=None):
     for run_num in range(1, num_runs + 1):
         print('RUN {:2d}'.format(run_num))
 
@@ -23,7 +24,8 @@ def run(dataset, num_rounds, num_runs):
         df = dataset.preprocess()
         sensitive_columns_indexes = [df.columns.get_loc(s.name) for s in dataset.sensitive_attributes]
         x_train, y_train, x_test, y_test, x_val, y_val = dataset.train_val_test_split(df, seed)
-
+        if alpha:
+            x_train, y_train = get_x_dirichlet(seed, alpha, dataset, x_train, y_train)
         reweighting_weights_global = [[0 for _ in range(len(x_train) // dataset.number_of_clients)] for _ in
                                       range(dataset.number_of_clients)]
         reweighting_weights_local = [[0 for _ in range(len(x_train) // dataset.number_of_clients)] for _ in
