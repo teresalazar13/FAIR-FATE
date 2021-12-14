@@ -6,7 +6,7 @@ from code.tensorflow.FLClientSide import FederatedLearningClientSide
 class FedAvgLR(FederatedLearningAlgorithm):  # Local Reweighting
     def __init__(self, federated_train_data, x_train):
         name = "fedavg_lr"
-        algorithm = FederatedLearningClientSide(3, federated_train_data, x_train[0])
+        algorithm = FederatedLearningClientSide("LR", federated_train_data, x_train[0])
         state = algorithm.initialize()
         super().__init__(name, algorithm, state)
 

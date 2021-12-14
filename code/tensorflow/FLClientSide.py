@@ -4,10 +4,6 @@ import tensorflow_federated as tff
 from code.tensorflow.models import model_fn
 
 
-# type_fairness 0 - no local fairness
-# type_fairness 1 - prejudice remover
-# type_fairness 2 - global reweighting
-# type_fairness 3 - local reweighting
 class FederatedLearningClientSide:
     def __init__(self, type_fairness, federated_train_data, input_layer_shape):
         type_fairness = type_fairness
@@ -41,14 +37,19 @@ class FederatedLearningClientSide:
             for batch in dataset:
                 with tf.GradientTape() as tape:
                     outputs = model._model._keras_model(batch['x'], training=True)
-                    loss = binary_cross_entropy(batch['y'], outputs)
 
-                    if type_fairness == 2:
-                        loss = binary_cross_entropy_local_reweighting(batch['y'], outputs,
-                                                                      batch['reweighting_weights_global'])
-                    elif type_fairness == 3:
-                        loss = binary_cross_entropy_local_reweighting(batch['y'], outputs,
-                                                                      batch['reweighting_weights_local'])
+                    if type_fairness == False:
+                        loss = binary_cross_entropy(batch['y'], outputs)
+                    elif type_fairness == "GR":
+                        loss = binary_cross_entropy_local_reweighting(
+                            batch['y'], outputs, batch['reweighting_weights_global']
+                        )
+                    elif type_fairness == "LR":
+                        loss = binary_cross_entropy_local_reweighting(
+                            batch['y'], outputs, batch['reweighting_weights_local']
+                        )
+                    else:
+                        exit(1)
 
                 grads = tape.gradient(loss, client_weights)
                 grads_and_vars = zip(grads, client_weights)
