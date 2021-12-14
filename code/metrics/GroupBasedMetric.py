@@ -11,7 +11,7 @@ class GroupBasedMetric(Metric):
         self.group_numerator = group_numerator
         self.group_denominator = group_denominator
 
-    def calculate(self, sensitive_attributes, df):
+    def calculate(self, sensitive_attributes, df, debug=True):
         sum_ratio = 0
         sum_difference = 0
 
@@ -33,8 +33,11 @@ class GroupBasedMetric(Metric):
         self.ratios.append(ratio)
         self.differences.append(difference)
 
-        print("{}_ratio - {}".format(self.name, ratio))
-        print("{}_diff - {}".format(self.name, difference))
+        if debug:
+            print("{}_ratio - {}".format(self.name, ratio))
+            print("{}_diff - {}".format(self.name, difference))
+
+        return ratio, difference
 
 
 class TP:

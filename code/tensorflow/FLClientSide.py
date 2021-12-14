@@ -46,7 +46,7 @@ class FederatedLearningClientSide:
                     if type_fairness == 2:
                         loss = binary_cross_entropy_local_reweighting(batch['y'], outputs,
                                                                       batch['reweighting_weights_global'])
-                    elif type_fairness == 2:
+                    elif type_fairness == 3:
                         loss = binary_cross_entropy_local_reweighting(batch['y'], outputs,
                                                                       batch['reweighting_weights_local'])
 

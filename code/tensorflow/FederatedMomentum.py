@@ -6,12 +6,11 @@ from code.tensorflow.models import get_model
 
 class FederatedMomentum:
 
-    def __init__(self, state, dataset, beta=0.9, aggregation_metric="EO"):
+    def __init__(self, state, dataset, beta=0.9):
         self.actual_state = deepcopy(state)  # weights
         self.dataset = dataset
         self.momentum = self._get_model_shape()  # copy shape of state with zeros
         self.beta = beta
-        self.aggregation_metric = aggregation_metric
         self.iteration = 1  # round_num
 
     def _get_model_shape(self):
@@ -52,7 +51,7 @@ class FederatedMomentum:
         for layer in range(len(clients_weights[0])):
             update_m = self.calculate_momentum_update_layer(layer, state_update_clients)
             self.momentum[layer] = deepcopy(update_m)
-            # bias_correction = update_m = update_m / (1.0 - math.pow(self.beta, self.iteration))
+            # bias_correction = update_m = update_m / (1.0 - math.pow(self.beta, self.iteration)) # TODO
             new_state_with_momentum.append(self.actual_state[layer] + update_m)
 
         self.actual_state = deepcopy(new_state_with_momentum)

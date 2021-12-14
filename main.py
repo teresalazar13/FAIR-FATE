@@ -12,7 +12,7 @@ if __name__ == '__main__':
         dataset, "./datasets/{}".format(dataset.name)
     )
 
-    run(dataset, 50, 1)
+    run(dataset, 50, 10)
     # plot_avg_results(dataset.name, 5)
 
     """

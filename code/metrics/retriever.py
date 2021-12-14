@@ -1,4 +1,5 @@
 from code.metrics.Accuracy import Accuracy
+from code.metrics.SuperGroupBasedMetric import SuperGroupBasedMetric
 from code.metrics.GroupBasedMetric import GroupBasedMetric, TN, TP, FN, FP, PosSens, Sens
 
 import numpy as np
@@ -18,18 +19,22 @@ def create_metrics():
     FDR = GroupBasedMetric("FDR", FP(), TP())
     FOR = GroupBasedMetric("FOR", FN(), TN())
 
+    EQO = SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
+
     return [
-        ACC, SP, TPR, TNR, FPR, FNR, PPV, NPV, FDR, FOR
+        ACC, SP, TPR, TNR, FPR, FNR, PPV, NPV, FDR, FOR, EQO
     ]
 
 
-def get_fairness(dataset, x_val, y_pred, y_val):  # Only works for SP now
-    metric = GroupBasedMetric("SP", PosSens(), Sens())
+def get_fairness(dataset, x_val, y_pred, y_val, metrics):
     df = create_dataframe_for_eval(dataset.all_columns, x_val, y_pred, y_val)
     sensitive_attributes = [s.name for s in dataset.sensitive_attributes]
-    metric.calculate(sensitive_attributes, df)
 
-    return metric.ratios[0]
+    metrics_values = []
+    for metric in metrics:
+        metrics_values.append(metric.calculate(sensitive_attributes, df)[0])
+
+    return metrics_values
 
 
 def get_accuracy(y_pred, y):

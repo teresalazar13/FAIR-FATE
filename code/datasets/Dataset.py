@@ -5,7 +5,34 @@ from sklearn import preprocessing
 import numpy as np
 import itertools
 
-class Dataset():
+
+def get_weight(df, comb):
+    df_temp = df.copy(deep=True)
+    ououou = 1
+
+    for k, [v, _, _] in comb.items():
+        df_temp = df_temp[df_temp[k] == v]
+        ououou = ououou * (len(df[df[k] == v]) / len(df))
+
+    eeee = len(df_temp) / len(df)
+    if eeee == 0:
+        weight = 1
+    else:
+        weight = ououou / eeee
+
+    return weight
+
+
+def get_indexes_for_weight(df_i, comb):
+    df_temp = df_i.copy(deep=True)
+
+    for k, [v, _, _] in comb.items():
+        df_temp = df_temp[df_temp[k] == v]
+
+    return df_temp.index.values.tolist()
+
+
+class Dataset:
     def __init__(self, name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
                  num_clients_per_round, metric):
         self.name = name
@@ -61,32 +88,8 @@ class Dataset():
 
         return x_train, y_train, x_test, y_test, x_val, y_val
 
-    def get_weight(self, df, comb):
-        df_temp = df.copy(deep=True)
-        ououou = 1
-
-        for k, [v, _, _] in comb.items():
-            df_temp = df_temp[df_temp[k] == v]
-            ououou = ououou * (len(df[df[k] == v]) / len(df))
-
-        eeee = len(df_temp) / len(df)
-        if eeee == 0:
-            weight = 1
-        else:
-            weight = ououou / eeee
-
-        return weight
-
-    def get_indexes_for_weight(self, df_i, comb):
-        df_temp = df_i.copy(deep=True)
-
-        for k, [v, _, _] in comb.items():
-            df_temp = df_temp[df_temp[k] == v]
-
-        return df_temp.index.values.tolist()
-
     # for global reweighting baseline
-    def get_reweigthing_weights_global(self, x_ys, idx):
+    def get_weights_global(self, x_ys, idx):
         df = pd.DataFrame(data=[], columns=self.all_columns + [self.target.name])
         dfs = []
         for x, y, title in x_ys:
@@ -95,13 +98,13 @@ class Dataset():
             df = pd.concat([df, df_new], ignore_index=True)
             dfs.append(df_new)
 
-        reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for i in range(self.number_of_clients)]
+        reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for _ in range(self.number_of_clients)]
 
         for comb in self.combs:
-            weight = self.get_weight(df, comb)
+            weight = get_weight(df, comb)
 
             for i in range(len(idx)):
-                indexes_for_weight = self.get_indexes_for_weight(dfs[i], comb)
+                indexes_for_weight = get_indexes_for_weight(dfs[i], comb)
 
                 for index in indexes_for_weight:
                     reweighting_weights[idx[i]][index] = weight
@@ -109,19 +112,19 @@ class Dataset():
         return reweighting_weights
 
     # for local reweighting baseline
-    def get_reweigthing_weights_local(self, x_ys):
+    def get_weights_local(self, x_ys):
         dfs = []
         for x, y, title in x_ys:
             df_new = pd.DataFrame(data=np.concatenate((x, np.stack(y, axis=0)), axis=1),
                                   columns=self.all_columns + [self.target.name])
             dfs.append(df_new)
 
-        reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for i in range(self.number_of_clients)]
+        reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for _ in range(self.number_of_clients)]
 
         for i in range(len(x_ys)):
             for comb in self.combs:
-                weight = self.get_weight(dfs[i], comb)
-                indexes_for_weight = self.get_indexes_for_weight(dfs[i], comb)
+                weight = get_weight(dfs[i], comb)
+                indexes_for_weight = get_indexes_for_weight(dfs[i], comb)
 
                 for index in indexes_for_weight:
                     reweighting_weights[i][index] = weight

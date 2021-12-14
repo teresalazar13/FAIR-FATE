@@ -21,13 +21,15 @@ class FederatedLearningAlgorithm:
     def update(self, weights, x_train, x_val, y_val):
         raise NotImplementedError("Must override update")
 
-    def save_metrics_to_file(self, dataset_name, run_num):
+    def save_metrics_to_file(self, dataset_name, run_num, alpha):
         filename_part = './datasets/{}/run_{}'.format(dataset_name, run_num)
+        filename_part_name = self.name
+        if self.hyperparameter_specs_str != "":
+            filename_part_name += "_" + self.hyperparameter_specs_str
+        if alpha:
+            filename_part_name += "_alpha-" + str(alpha)
 
-        if self.hyperparameter_specs_str == "":
-            filename = '{}/{}.csv'.format(filename_part, self.name)
-        else:
-            filename = '{}/{}_{}.csv'.format(filename_part, self.name, self.hyperparameter_specs_str)
+        filename = '{}/{}.csv'.format(filename_part, filename_part_name)
 
         df_metrics = get_metrics_as_df(self.metrics)
         df_metrics.to_csv(filename, index=False)

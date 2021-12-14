@@ -8,14 +8,15 @@ from code.tensorflow.models import get_model
 
 class FederatedFairMomentum:
 
-    def __init__(self, state, dataset, beta=0.9, aggregation_metric="EO"):
+    def __init__(self, state, dataset, aggregation_metrics, beta=0.9, lambda_=0.5):
         self.actual_state = deepcopy(state)  # weights
         self.dataset = dataset
         self.momentum = self._get_model_shape()  # copy shape of state with zeros
-        self.lambda_ = .5
+        self.lambda_ = lambda_
         self.beta = beta
-        self.aggregation_metric = aggregation_metric
+        self.aggregation_metrics = aggregation_metrics
         self.iteration = 1  # round_num
+        self.epsilon = 0.0001
 
     def _get_model_shape(self):
         momentum = []
@@ -40,18 +41,18 @@ class FederatedFairMomentum:
         model.set_weights(self.actual_state)
         y_pred = model.predict(x_val)
 
-        return get_fairness(self.dataset, x_val, y_pred, y_val) + 1
+        return get_fairness(self.dataset, x_val, y_pred, y_val, self.aggregation_metrics)
 
     def calculate_fairness_clients(self, clients_weights, model, x_val, y_val):
-        weights_client = []
+        fairness_clients = []
 
         for client in clients_weights:
             model.set_weights(client)
             y_pred = model.predict(x_val)
-            eo = get_fairness(self.dataset, x_val, y_pred, y_val)
-            weights_client.append(eo + 1)
+            fairness = get_fairness(self.dataset, x_val, y_pred, y_val, self.aggregation_metrics)
+            fairness_clients.append(fairness)
 
-        return weights_client
+        return fairness_clients
 
     # calculate the new model (new_state), aN = (a1*w1+a2*w2+...+an*wn) / N
     def calculate_momentum_update_layer(self, layer, state_update_clients):
@@ -69,12 +70,12 @@ class FederatedFairMomentum:
         return update_m
 
     # calculate the new model (new_state for momentum), aF
-    def calculate_momentum_fair_update_layer(self, layer, state_update_clients, fairness_clients, server_eo):
+    def calculate_momentum_fair_update_layer(self, layer, state_update_clients, fairness_clients, fairness_server):
         fairness_sum_fair_clients = 0
         new_state_layer = np.zeros_like(state_update_clients[0][layer])
 
         for c in range(self.dataset.num_clients_per_round):
-            if fairness_clients[c] > server_eo:
+            if fairness_clients[c] > fairness_server:
                 new_state_layer = np.add(
                     new_state_layer,
                     np.multiply(state_update_clients[c][layer], fairness_clients[c])
@@ -92,14 +93,15 @@ class FederatedFairMomentum:
         model = get_model(x_train)
         state_update_clients = self._calculate_local_update(clients_weights)  # alphas
 
-        fairness_clients = self.calculate_fairness_clients(clients_weights, model, x_val, y_val)
         fairness_server = self.calculate_fairness_server(model, x_val, y_val)
+        fairness_clients = self.calculate_fairness_clients(clients_weights, model, x_val, y_val)
+        fairness_clients, fairness_server = normalize_avg_fairness(fairness_clients, fairness_server)
 
         new_state_with_momentum = []
-        for layer in range(len(clients_weights[0])):  # for each layer
-
-            update_m_fair = self.calculate_momentum_fair_update_layer(layer, state_update_clients, fairness_clients,
-                                                                      fairness_server)
+        for layer in range(len(clients_weights[0])):
+            update_m_fair = self.calculate_momentum_fair_update_layer(
+                layer, state_update_clients, fairness_clients, fairness_server
+            )
             self.momentum[layer] = deepcopy(update_m_fair)
 
             update_m = self.calculate_momentum_update_layer(layer, state_update_clients)
@@ -107,8 +109,36 @@ class FederatedFairMomentum:
 
         self.actual_state = deepcopy(new_state_with_momentum)
         model.set_weights(self.actual_state)
+        self.iteration += 1
 
         return new_state_with_momentum, model
+
+
+def normalize_avg_fairness(fairness_clients, fairness_server):
+    fairness_clients_avg = [0 for _ in fairness_clients]
+    fairness_server_avg = 0
+
+    print(fairness_clients)
+    print(fairness_server)
+
+    for j in range(len(fairness_clients[0])):  # for each metric
+        f_server = fairness_server[j]
+        fs = [f_server]
+        for i in range(len(fairness_clients)):  # for each client
+            f_client = fairness_clients[i][j]
+            fs.append(f_client)
+        min_fs = min(fs)
+        max_fs = max(fs)
+
+        for i in range(len(fairness_clients)):  # for each client
+            fairness_clients_avg[i] += normalize(fairness_clients[i][j], min_fs, max_fs)
+        fairness_server_avg += normalize(f_server, min_fs, max_fs)
+
+    return fairness_clients_avg, fairness_server_avg
+
+
+def normalize(data, min_, max_):
+    return (data - min_) / (max_ - min_)
 
 
 def calculate_momentum(momentum_l, beta, new_state_layer):
