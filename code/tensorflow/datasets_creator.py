@@ -13,6 +13,7 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, we
         client_name = "client_" + str(i)
         start = n_instances_client * (i - 1)
         end = n_instances_client * i
+        print("Client {}: start: {}, end: {}".format(i, start, end))
 
         data = collections.OrderedDict((
             ('y', y_train[start:end]),
@@ -21,8 +22,10 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, we
             ('reweighting_weights_local', tf.cast(weights_local[i - 1], tf.float32))
         ))
         client_train_dataset_[client_name] = data
+
         client_train_dataset_x_y_label.append(
-            [x_train[start:end], y_train[start:end].reshape(len(y_train[start:end]), 1), client_name])
+            [x_train[start:end], y_train[start:end].reshape(len(y_train[start:end]), 1), client_name]
+        )
 
     return tff.simulation.datasets.TestClientData(client_train_dataset_), client_train_dataset_x_y_label
     # TODO - TestClientData? instead of ClientData

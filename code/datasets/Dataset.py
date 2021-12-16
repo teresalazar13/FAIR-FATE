@@ -6,32 +6,6 @@ import numpy as np
 import itertools
 
 
-def get_weight(df, comb):
-    df_temp = df.copy(deep=True)
-    ououou = 1
-
-    for k, [v, _, _] in comb.items():
-        df_temp = df_temp[df_temp[k] == v]
-        ououou = ououou * (len(df[df[k] == v]) / len(df))
-
-    eeee = len(df_temp) / len(df)
-    if eeee == 0:
-        weight = 1
-    else:
-        weight = ououou / eeee
-
-    return weight
-
-
-def get_indexes_for_weight(df_i, comb):
-    df_temp = df_i.copy(deep=True)
-
-    for k, [v, _, _] in comb.items():
-        df_temp = df_temp[df_temp[k] == v]
-
-    return df_temp.index.values.tolist()
-
-
 class Dataset:
     def __init__(self, name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
                  num_clients_per_round, metric):
@@ -43,7 +17,8 @@ class Dataset:
         self.number_of_clients = number_of_clients
         self.num_clients_per_round = num_clients_per_round
         self.metric = metric
-        self.combs = self.create_combinations()
+        self.combs = self.create_combinations(True)
+        self.combs_without_target = self.create_combinations(False)
 
     def preprocess(self):
         df = pd.read_csv('./datasets/{}/{}.csv'.format(self.name, self.name))
@@ -133,11 +108,14 @@ class Dataset:
 
     # Returns something like: [{'income': 1.0, 'gender': 1.0}, {'income': 1.0, 'gender': 0.0}, {'income': 0.0,
     # 'gender': 1.0}, {'income': 0.0, 'gender': 0.0}]
-    def create_combinations(self):
-        classes = [[
-            {self.target.name: [1.0, self.target.positive, self.target.positive_label]},
-            {self.target.name: [0.0, self.target.negative, self.target.negative_label]}
-        ]]
+    def create_combinations(self, with_target):
+        if with_target:
+            classes = [[
+                {self.target.name: [1.0, self.target.positive, self.target.positive_label]},
+                {self.target.name: [0.0, self.target.negative, self.target.negative_label]}
+            ]]
+        else:
+            classes = []
 
         for s in self.sensitive_attributes:
             classes.append([
@@ -158,3 +136,29 @@ class Dataset:
     @abstractmethod
     def custom_preprocess(self, df):
         raise NotImplementedError("Must override update")
+
+
+def get_weight(df, comb):
+    df_temp = df.copy(deep=True)
+    ououou = 1
+
+    for k, [v, _, _] in comb.items():
+        df_temp = df_temp[df_temp[k] == v]
+        ououou = ououou * (len(df[df[k] == v]) / len(df))
+
+    eeee = len(df_temp) / len(df)
+    if eeee == 0:
+        weight = 1
+    else:
+        weight = ououou / eeee
+
+    return weight
+
+
+def get_indexes_for_weight(df_i, comb):
+    df_temp = df_i.copy(deep=True)
+
+    for k, [v, _, _] in comb.items():
+        df_temp = df_temp[df_temp[k] == v]
+
+    return df_temp.index.values.tolist()
