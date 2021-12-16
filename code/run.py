@@ -18,7 +18,7 @@ from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federate
 def run(dataset, num_rounds, num_runs, alpha=None):
     n_clients = dataset.number_of_clients
 
-    for run in range(1, num_runs + 1):
+    for run in range(6, num_runs + 1):
         print('RUN {:2d}'.format(run))
         seed = run * 10
         set_random_seeds(seed)

@@ -118,9 +118,6 @@ def normalize_avg_fairness(fairness_clients, fairness_server):
     fairness_clients_avg = [0 for _ in fairness_clients]
     fairness_server_avg = 0
 
-    print(fairness_clients)
-    print(fairness_server)
-
     for j in range(len(fairness_clients[0])):  # for each metric
         f_server = fairness_server[j]
         fs = [f_server]
@@ -138,6 +135,8 @@ def normalize_avg_fairness(fairness_clients, fairness_server):
 
 
 def normalize(data, min_, max_):
+    if max_ - min_ == 0:
+        return 0
     return (data - min_) / (max_ - min_)
 
 

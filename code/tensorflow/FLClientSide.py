@@ -38,6 +38,7 @@ class FederatedLearningClientSide:
                 with tf.GradientTape() as tape:
                     outputs = model._model._keras_model(batch['x'], training=True)
 
+                    loss = 0
                     if type_fairness == False:
                         loss = binary_cross_entropy(batch['y'], outputs)
                     elif type_fairness == "GR":

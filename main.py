@@ -5,8 +5,8 @@ from code.plots.pie_chart import create_stats_sensitive_distribution_all
 from code.run import run
 
 if __name__ == '__main__':
-    dataset = Adult()
-    # dataset = Compas()
+    # dataset = Adult()
+    dataset = Compas()
 
     create_stats_sensitive_distribution_all(
         dataset, "./datasets/{}".format(dataset.name)
