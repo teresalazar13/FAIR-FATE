@@ -65,6 +65,8 @@ def calculate_sp(df, dataset):
     if S_0 == 0 or S_1 == 0:
         return 0
 
+    if (Y_1_S_1 / S_1) == 0:
+        return 0
     return round((Y_1_S_0 / S_0) / (Y_1_S_1 / S_1), 3)
 
 
