@@ -6,12 +6,13 @@ import numpy as np
 def plot_avg_results(dataset_name, num_runs):
     fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
     metrics = ["TPR_ratio"]
-    fedavg_acc = get_metrics_fd(fls[0], dataset_name, num_runs)["ACC"].iloc[-1]
+    metrics_results = ["ACC", "F1Score", "MCC", "TPR_ratio"]
+    fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results)["ACC"].iloc[-1]
     best = [0 for _ in metrics]
     dfs = []
 
     for fl in fls:
-        df = get_metrics_fd(fl, dataset_name, num_runs)
+        df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
         dfs.append(df)
         for i in range(len(metrics)):
             value = df[metrics[i]].iloc[-1]
@@ -25,9 +26,9 @@ def plot_avg_results(dataset_name, num_runs):
         for lambda_exponential in [0.04, 0.045, 0.05]:
             fl = "fair_fate_l_e{}_b_{}_TPR".format(str(lambda_exponential), str(beta))
             fls_fair_fate_exp.append(fl)
-            df = get_metrics_fd(fl, dataset_name, num_runs)
+            df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
             dfs_fair_fate_exp.append(df)
-    best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate_exp, dfs_fair_fate_exp, dataset_name, num_runs, metrics, best, fedavg_acc)
+    best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate_exp, dfs_fair_fate_exp, metrics, best, fedavg_acc)
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
@@ -38,9 +39,9 @@ def plot_avg_results(dataset_name, num_runs):
         for lambda_fixed in [0.5, 0.6, 0.7, 0.8, 0.9]:
             fl = "fair_fate_l_f{}_b_{}_TPR".format(str(lambda_fixed), str(beta))
             fls_fair_fate_fixed.append(fl)
-            df = get_metrics_fd(fl, dataset_name, num_runs)
+            df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
             dfs_fair_fate_fixed.append(df)
-    best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate_fixed, dfs_fair_fate_fixed, dataset_name, num_runs, metrics, best, fedavg_acc)
+    best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate_fixed, dfs_fair_fate_fixed, metrics, best, fedavg_acc)
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
@@ -50,16 +51,15 @@ def plot_avg_results(dataset_name, num_runs):
     for beta in [0.7, 0.8, 0.9, 0.99]:
         fl = "fedmom_b_{}".format(str(beta))
         fls_fedmom.append(fl)
-        df = get_metrics_fd(fl, dataset_name, num_runs)
+        df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
         dfs_fedmom.append(df)
-    best_df_fedmom, best_fl_fedmom = get_best_fl_group(fls_fedmom, dfs_fedmom, dataset_name, num_runs, metrics, best, fedavg_acc)
+    best_df_fedmom, best_fl_fedmom = get_best_fl_group(fls_fedmom, dfs_fedmom, metrics, best, fedavg_acc)
     dfs.append(best_df_fedmom)
     fls.append(best_fl_fedmom)
 
-    #metrics_results = ["ACC", "F1Score", "MCC", "TPR_ratio"]
-    #plot_results(dfs, fls, './datasets/{}/rounds_plot.png'.format(dataset_name), metrics_results)
-    #get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot.png'.format(dataset_name), metrics_results)
-    plot_pareto_front(dfs_fair_fate_fixed, fls_fair_fate_fixed, "ACC", "TPR_ratio")
+    plot_results(dfs, fls, './datasets/{}/rounds_plot.png'.format(dataset_name), metrics_results)
+    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot.png'.format(dataset_name), metrics_results)
+    #plot_pareto_front(dfs_fair_fate_fixed, fls_fair_fate_fixed, "ACC", "TPR_ratio")
 
 
 def plot_pareto_front(dfs, fls, metric_a, metric_b):
@@ -81,7 +81,7 @@ def plot_pareto_front(dfs, fls, metric_a, metric_b):
     plt.show()
 
 
-def get_metrics_fd(name, dataset_name, num_runs):
+def get_avg_df(name, dataset_name, num_runs, metric_results):
     dfs = []
     for run_num in range(1, num_runs + 1):
         filename = './datasets/{}/run_{}/{}.csv'.format(dataset_name, run_num, name)
@@ -90,9 +90,12 @@ def get_metrics_fd(name, dataset_name, num_runs):
 
     df_concat = pd.concat((dfs))
     df_concat = df_concat.groupby(df_concat.index)
-    df_concat = df_concat.mean()
+    df_concat_avg = df_concat.mean()
+    df_concat_std = df_concat.std()
+    for metric in metric_results:
+        print("{} - {}: {}+-{}".format(name, metric, round(df_concat_avg[metric].iloc[-1], 2), round(df_concat_std[metric].iloc[-1], 2)))
 
-    return df_concat
+    return df_concat_avg
 
 
 def plot_results(dfs, fls, plot_filename, metrics):
@@ -121,13 +124,11 @@ def get_last_round_plot(dfs, fls, plot_filename, metrics):
     ax = fig.add_axes([0, 0, 1, 1])
     space = 0.5 / len(dfs)
     br = np.arange(len(metrics))
-    count = 0
 
-    for df in dfs:
-        values = [df[metric].iloc[-1] for metric in metrics]
-        ax.bar(br, values, width=space, label=fls[count])
+    for i in range(len(dfs)):
+        values = [dfs[i][metric].iloc[-1] for metric in metrics]
+        ax.bar(br, values, width=space, label=fls[i])
         br = [x + space for x in br]
-        count += 1
 
     plt.xticks([r + space for r in range(len(metrics))], metrics)
     plt.legend()
@@ -135,13 +136,11 @@ def get_last_round_plot(dfs, fls, plot_filename, metrics):
     # plt.show()
 
 
-def get_best_fl_group(fls, dfs, dataset_name, num_runs, metrics, best, fedavg_acc):
-    dfs_fair_fate = []
+def get_best_fl_group(fls, dfs, metrics, best, fedavg_acc):
     improvs_fair_fate = []
 
-    for fl in fls:
-        df = get_metrics_fd(fl, dataset_name, num_runs)
-        dfs_fair_fate.append(df)
+    for i in range(len(dfs)):
+        df = dfs[i]
         values = [df[metric].iloc[-1] for metric in metrics]
         improv = 0
         acc = df["ACC"].iloc[-1]
@@ -150,9 +149,9 @@ def get_best_fl_group(fls, dfs, dataset_name, num_runs, metrics, best, fedavg_ac
             value = df[metrics[i]].iloc[-1]
             improv += value / best[i] - 1
         improvs_fair_fate.append(improv)
-        print(fl)
+        # print(fls[i])
         # print(values)
-        print(round(improv, 2))
+        # print(round(improv, 2))
     max_idx = np.argmax(improvs_fair_fate)
 
-    return dfs_fair_fate[max_idx], fls[max_idx]
+    return dfs[max_idx], fls[max_idx]
