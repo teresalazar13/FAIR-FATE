@@ -57,12 +57,12 @@ def plot_avg_results(dataset_name, num_runs):
     dfs.append(best_df_fedmom)
     fls.append(best_fl_fedmom)
 
-    plot_results(dfs, fls, './datasets/{}/rounds_plot.png'.format(dataset_name), metrics_results)
-    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot.png'.format(dataset_name), metrics_results)
-    #plot_pareto_front(dfs_fair_fate_fixed, fls_fair_fate_fixed, "ACC", "TPR_ratio")
+    plot_results(dfs, fls, './datasets/{}/rounds_plot_random.png'.format(dataset_name), metrics_results)
+    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_random.png'.format(dataset_name), metrics_results)
+    #plot_pareto_front(dfs_fair_fate_fixed, fls_fair_fate_fixed, './datasets/{}/pareto_front_random.png'.format(dataset_name), "ACC", "TPR_ratio")
 
 
-def plot_pareto_front(dfs, fls, metric_a, metric_b):
+def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
     x = []
     y = []
 
@@ -78,7 +78,8 @@ def plot_pareto_front(dfs, fls, metric_a, metric_b):
     for i in range(len(fls)):
         plt.annotate(fls[i], (x[i], y[i]))
 
-    plt.show()
+    plt.savefig(filename, bbox_inches='tight')
+    # plt.show()
 
 
 def get_avg_df(name, dataset_name, num_runs, metric_results):

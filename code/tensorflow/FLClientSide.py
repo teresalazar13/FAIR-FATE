@@ -25,7 +25,7 @@ class FederatedLearningClientSide:
             return loss(y_true, y_pred)
 
         @tf.function
-        def binary_cross_entropy_local_reweighting(y_true, y_pred, sample_weight):
+        def binary_cross_entropy_reweighting(y_true, y_pred, sample_weight):
             loss = tf.keras.losses.BinaryCrossentropy()
             return loss(y_true, y_pred, sample_weight)
 
@@ -42,11 +42,11 @@ class FederatedLearningClientSide:
                     if type_fairness == False:
                         loss = binary_cross_entropy(batch['y'], outputs)
                     elif type_fairness == "GR":
-                        loss = binary_cross_entropy_local_reweighting(
+                        loss = binary_cross_entropy_reweighting(
                             batch['y'], outputs, batch['reweighting_weights_global']
                         )
                     elif type_fairness == "LR":
-                        loss = binary_cross_entropy_local_reweighting(
+                        loss = binary_cross_entropy_reweighting(
                             batch['y'], outputs, batch['reweighting_weights_local']
                         )
                     else:

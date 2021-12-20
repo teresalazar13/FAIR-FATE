@@ -10,7 +10,7 @@ from code.algorithms.FedAvgGR import FedAvgGR
 from code.algorithms.FedMom import FedMom
 from code.datasets.distributions import get_x_dirichlet
 from code.plots.pie_chart import create_stats_sensitive_distribution
-from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federated_data
+from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federated_data, get_tf_train_dataset_distributions
 
 
 def run(dataset, num_rounds, num_runs, aggregation_metrics, alpha=None):
@@ -26,7 +26,7 @@ def run(dataset, num_rounds, num_runs, aggregation_metrics, alpha=None):
         if alpha:
             x_train_array, y_train_array = get_x_dirichlet(seed, alpha, dataset, x_train, y_train)
             _weights = [[0 for _ in range(len(x_train_array[i]))] for i in range(len(x_train_array))]
-            clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset(x_train_array, y_train_array, n_clients, _weights, _weights)
+            clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset_distributions(x_train_array, y_train_array, n_clients, _weights, _weights)
         else:
             _weights = [[0 for _ in range(len(x_train) // n_clients)] for _ in range(n_clients)]
             clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset(x_train, y_train, n_clients, _weights, _weights)
@@ -46,7 +46,7 @@ def run(dataset, num_rounds, num_runs, aggregation_metrics, alpha=None):
             clients = [clients_dataset.client_ids[i] for i in clients_idx]
             weights_global = dataset.get_weights_global([clients_dataset_x_y_label[i] for i in clients_idx], clients_idx)
             if alpha:
-                clients_dataset, _ = get_tf_train_dataset(x_train_array, y_train_array, n_clients, weights_global, weights_local)
+                clients_dataset, _ = get_tf_train_dataset_distributions(x_train_array, y_train_array, n_clients, weights_global, weights_local)
             else:
                 clients_dataset, _ = get_tf_train_dataset(x_train, y_train, n_clients, weights_global, weights_local)
             federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients, n_features, seed)

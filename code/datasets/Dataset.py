@@ -73,7 +73,9 @@ class Dataset:
             df = pd.concat([df, df_new], ignore_index=True)
             dfs.append(df_new)
 
-        reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for _ in range(self.number_of_clients)]
+        reweighting_weights = [[] for _ in range(self.number_of_clients)]
+        for i in range(len(idx)):
+            reweighting_weights[idx[i]] = [0 for _ in range(len(x_ys[i][0]))]
 
         for comb in self.combs:
             weight = get_weight(df, comb)
@@ -94,7 +96,7 @@ class Dataset:
                                   columns=self.all_columns + [self.target.name])
             dfs.append(df_new)
 
-        reweighting_weights = [[0 for _ in range(len(x_ys[0][0]))] for _ in range(self.number_of_clients)]
+        reweighting_weights = [[0 for _ in range(len(x_ys[i][0]))] for i in range(self.number_of_clients)]
 
         for i in range(len(x_ys)):
             for comb in self.combs:

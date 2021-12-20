@@ -37,8 +37,12 @@ def get_tf_train_dataset_distributions(x_train, y_train, number_of_clients, weig
 
     for i in range(1, number_of_clients + 1):
         client_name = "client_" + str(i)
-        x_train_client = x_train[i - 1]
-        y_train_client = y_train[i - 1].reshape(1, -1).T
+        x_train_client = np.array(x_train[i - 1])
+        y_train_client = np.array(y_train[i - 1]).reshape(1, -1).T
+
+        if len(weights_global[i - 1]) == 0:  # in case it wont be used just add 0s
+            weights_global[i - 1] = [0 for _ in range(len(x_train_client))]
+
         data = collections.OrderedDict((
             ('y', y_train_client),
             ('x', x_train_client),
