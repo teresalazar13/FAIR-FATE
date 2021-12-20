@@ -31,7 +31,31 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, we
     # TODO - TestClientData? instead of ClientData
 
 
-def get_client_tf_dataset(sensitive_idx, dataset_for_client, x_train, seed):
+def get_tf_train_dataset_distributions(x_train, y_train, number_of_clients, weights_global, weights_local):
+    client_train_dataset_ = collections.OrderedDict()
+    client_train_dataset_x_y_label = []
+
+    for i in range(1, number_of_clients + 1):
+        client_name = "client_" + str(i)
+        x_train_client = x_train[i - 1]
+        y_train_client = y_train[i - 1].reshape(1, -1).T
+        data = collections.OrderedDict((
+            ('y', y_train_client),
+            ('x', x_train_client),
+            ('reweighting_weights_global', tf.cast(weights_global[i - 1], tf.float32)),
+            ('reweighting_weights_local', tf.cast(weights_local[i - 1], tf.float32))
+        ))
+        client_train_dataset_[client_name] = data
+
+        client_train_dataset_x_y_label.append(
+            [x_train_client, y_train_client.reshape(len(y_train_client), 1), client_name]
+        )
+
+    return tff.simulation.datasets.TestClientData(client_train_dataset_), client_train_dataset_x_y_label
+    # TODO - TestClientData? instead of ClientData
+
+
+def get_client_tf_dataset(sensitive_idx, dataset_for_client, n_features, seed):
     num_epochs = 10  # local epochs
     batch_size = 10
     shuffle_buffer = 100
@@ -42,7 +66,7 @@ def get_client_tf_dataset(sensitive_idx, dataset_for_client, x_train, seed):
         """Flatten a batch `pixels` and return the features as an `OrderedDict`."""
 
         return collections.OrderedDict(
-            x=tf.reshape(element['x'], [-1, len(x_train[0])]),
+            x=tf.reshape(element['x'], [-1, n_features]),
             y=tf.reshape(element['y'], [-1, 1]),
             reweighting_weights_global=tf.reshape(element['reweighting_weights_global'], [-1, 1]),
             reweighting_weights_local=tf.reshape(element['reweighting_weights_local'], [-1, 1]),
@@ -52,11 +76,11 @@ def get_client_tf_dataset(sensitive_idx, dataset_for_client, x_train, seed):
     return dataset_for_client.repeat(num_epochs).shuffle(shuffle_buffer, seed=seed).batch(batch_size).map(batch_format_fn).prefetch(prefetch_buffer)
 
 
-def make_federated_data(sensitive_idx, client_data, clients, x_train, seed):
+def make_federated_data(sensitive_idx, client_data, clients, n_features, seed):
     federated_data = []
 
     for i in range(len(clients)):
         federated_data.append(
-            get_client_tf_dataset(sensitive_idx, client_data.create_tf_dataset_for_client(clients[i]), x_train, seed))
+            get_client_tf_dataset(sensitive_idx, client_data.create_tf_dataset_for_client(clients[i]), n_features, seed))
 
     return federated_data

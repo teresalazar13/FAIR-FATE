@@ -23,7 +23,8 @@ class FederatedFairMomentum:
     def get_lambda(self):
         if self.lambda_fixed:
             return self.lambda_fixed
-        return 0.1 * ((1 + self.lambda_exponential) ** self.iteration)
+        else:
+            return 0.1 * ((1 + self.lambda_exponential) ** self.iteration)
 
     def _get_model_shape(self):
         momentum = []
@@ -96,8 +97,8 @@ class FederatedFairMomentum:
 
         return calculate_momentum(self.momentum[layer], self.beta, new_state_layer)
 
-    def update_model(self, clients_weights, x_train, x_val, y_val):
-        model = get_model(x_train)
+    def update_model(self, clients_weights, n_features, x_val, y_val):
+        model = get_model(n_features)
         state_update_clients = self._calculate_local_update(clients_weights)  # alphas
 
         fairness_server = self.calculate_fairness_server(model, x_val, y_val)
@@ -119,16 +120,6 @@ class FederatedFairMomentum:
         self.iteration += 1
         self.lambda_ = self.get_lambda()
 
-        """
-        if self.iteration <= 40:
-        #if self.iteration <= 60:
-            self.lambda_ = 0.05 * ((1 + 0.1) ** self.iteration)
-            #self.lambda_ = 0.02 * ((1 + 0.1025) ** self.iteration)  # 50 rounds
-        #self.lambda_ = 0.02 * ((1 + 0.0575) ** self.iteration)  # 70 rounds
-
-        #if self.iteration <= 60:
-            #self.lambda_ = 0.1 * ((1 + 0.04) ** self.iteration)"""
-
         return new_state_with_momentum, model
 
 
@@ -146,10 +137,10 @@ def normalize_avg_fairness(fairness_clients, fairness_server):
         max_fs = max(fs)
 
         for i in range(len(fairness_clients)):  # for each client
-            #fairness_clients_avg[i] += normalize(fairness_clients[i][j], min_fs, max_fs)
-            fairness_clients_avg[i] += fairness_clients[i][j]
-        #fairness_server_avg += normalize(f_server, min_fs, max_fs)
-        fairness_server_avg += f_server
+            fairness_clients_avg[i] += normalize(fairness_clients[i][j], min_fs, max_fs)
+            #fairness_clients_avg[i] += fairness_clients[i][j]
+        fairness_server_avg += normalize(f_server, min_fs, max_fs)
+        #fairness_server_avg += f_server
 
     return fairness_clients_avg, fairness_server_avg
 

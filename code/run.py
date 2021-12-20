@@ -22,30 +22,36 @@ def run(dataset, num_rounds, num_runs, aggregation_metrics, alpha=None):
         set_random_seeds(seed)
         df = dataset.preprocess()
         x_train, y_train, x_test, y_test, x_val, y_val = dataset.train_val_test_split(df, seed)
+        n_features = len(x_train[0])
         if alpha:
-            x_train, y_train = get_x_dirichlet(seed, alpha, dataset, x_train, y_train)
-
-        _weights = [[0 for _ in range(len(x_train) // n_clients)] for _ in range(n_clients)]
-        clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset(x_train, y_train, n_clients, _weights, _weights)
+            x_train_array, y_train_array = get_x_dirichlet(seed, alpha, dataset, x_train, y_train)
+            _weights = [[0 for _ in range(len(x_train_array[i]))] for i in range(len(x_train_array))]
+            clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset(x_train_array, y_train_array, n_clients, _weights, _weights)
+        else:
+            _weights = [[0 for _ in range(len(x_train) // n_clients)] for _ in range(n_clients)]
+            clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset(x_train, y_train, n_clients, _weights, _weights)
 
         if alpha:
             x_ys = [[x_val, y_val, "VAL"], [x_test, y_test, "TEST"], *clients_dataset_x_y_label]
             create_stats_sensitive_distribution(x_ys, dataset, alpha, "./datasets/{}/run_{}".format(dataset.name, run))
 
         sensitive_idx = [df.columns.get_loc(s.name) for s in dataset.sensitive_attributes]
-        federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients_dataset.client_ids[0:1], x_train, seed)
+        federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients_dataset.client_ids[0:1], n_features, seed)
         weights_local = dataset.get_weights_local(clients_dataset_x_y_label)
-        fls = create_fls(federated_train_data, x_train, dataset, aggregation_metrics)
+        fls = create_fls(federated_train_data, n_features, dataset, aggregation_metrics)
 
         for round_ in range(num_rounds):
             print('round {:2d}'.format(round_))
             clients_idx = generate_sample_clients_idx(dataset.num_clients_per_round, n_clients)
             clients = [clients_dataset.client_ids[i] for i in clients_idx]
             weights_global = dataset.get_weights_global([clients_dataset_x_y_label[i] for i in clients_idx], clients_idx)
-            clients_dataset, _ = get_tf_train_dataset(x_train, y_train, n_clients, weights_global, weights_local)
-            federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients, x_train, seed)
+            if alpha:
+                clients_dataset, _ = get_tf_train_dataset(x_train_array, y_train_array, n_clients, weights_global, weights_local)
+            else:
+                clients_dataset, _ = get_tf_train_dataset(x_train, y_train, n_clients, weights_global, weights_local)
+            federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients, n_features, seed)
             for fl in fls:
-                fl.iterate(dataset, federated_train_data, x_train, x_val, y_val, x_test, y_test)
+                fl.iterate(dataset, federated_train_data, n_features, x_val, y_val, x_test, y_test)
 
         for fl in fls:
             fl.save_metrics_to_file(dataset.name, run, alpha)
@@ -62,26 +68,27 @@ def set_random_seeds(seed_value):
     tf.compat.v1.keras.backend.set_session(sess)
 
 
-def create_fls(federated_train_data, x_train, dataset, aggregation_metrics):
+def create_fls(federated_train_data, n_features, dataset, aggregation_metrics):
     fls = [
-        FedAvg(federated_train_data, x_train),
-        FedAvgGR(federated_train_data, x_train),
-        FedAvgLR(federated_train_data, x_train)
+        FedAvg(federated_train_data, n_features),
+        FedAvgGR(federated_train_data, n_features),
+        FedAvgLR(federated_train_data, n_features)
     ]
 
-    """
     # FedMom
-    for beta in [0.8, 0.9, 0.99]:
-        fls.append(FedMom(federated_train_data, x_train, dataset, beta=beta))"""
+    for beta in [0.7, 0.8, 0.9, 0.99]:
+        fls.append(FedMom(federated_train_data, n_features, dataset, beta=beta))
 
     for metric in aggregation_metrics:
         metric.reset()
 
-    for beta in [0.8, 0.9, 0.99]:
-        for lambda_ in [0.045, 0.05, 0.07, 0.08]:
-            fls.append(FairFate(federated_train_data, x_train, dataset, aggregation_metrics, lambda_exponential=lambda_, beta=beta))
+    for beta in [0.7, 0.8, 0.9, 0.99]:
+        for lambda_exponential in [0.04, 0.045, 0.05]:
+            fls.append(FairFate(federated_train_data, n_features, dataset, aggregation_metrics, lambda_exponential=lambda_exponential, beta=beta))
 
-    fls.append(FairFate(federated_train_data, x_train, dataset, aggregation_metrics, lambda_fixed=0.5, beta=0.9))
+    for beta in [0.7, 0.8, 0.9, 0.99]:
+        for lambda_fixed in [0.5, 0.6, 0.7, 0.8, 0.9]:
+            fls.append(FairFate(federated_train_data, n_features, dataset, aggregation_metrics, lambda_fixed=lambda_fixed, beta=beta))
 
     return fls
 

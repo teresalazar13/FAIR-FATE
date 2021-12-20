@@ -8,7 +8,7 @@ def get_x_dirichlet(random_state, alpha, dataset, x_train, y_train):
     num_classes = len(dataset.combs_without_target)
     np.random.seed(random_state)
     s = np.random.dirichlet(np.ones(num_clients) * alpha, num_classes)
-    plot_distributions(num_clients, num_classes, s)
+    plot_distributions(num_clients, dataset.combs_without_target, s)
 
     df = join_x_and_y(dataset, x_train, y_train)
     df.sample(frac=1)  # shuffle
@@ -34,16 +34,21 @@ def get_x_dirichlet(random_state, alpha, dataset, x_train, y_train):
             x_train_dirichlet[client_idx].extend(x_train_client)
             y_train_dirichlet[client_idx].extend(y_train_client)
 
-    return np.array(sum(x_train_dirichlet, [])), np.array(sum(y_train_dirichlet, [])).reshape(1, -1).T
-    # desired shape for func get_tf_train_dataset()
+    return x_train_dirichlet, y_train_dirichlet
 
 
-def plot_distributions(num_clients, num_classes, s):
+def plot_distributions(num_clients, combs_without_target, s):
     sum = 0
-    for i in range(num_classes):
-        plt.barh(range(num_clients), s[i], left=sum)
+    for i in range(len(combs_without_target)):
+        label = ""
+        for k, v in combs_without_target[i].items():
+            label += "{}: {};".format(k, v[-1])
+        plt.barh(range(num_clients), s[i], left=sum, label=label[:-1])
         sum += s[i]
-    # plt.show()
+    plt.yticks([i for i in range(num_clients)], ["Client {}".format(i + 1) for i in range(num_clients)])
+    plt.xlabel("Sensitive attribute distribution")
+    plt.legend()
+    plt.show()
 
 
 def join_x_and_y(dataset, x_train, y_train):

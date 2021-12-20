@@ -43,8 +43,8 @@ class FederatedMomentum:
 
         return calculate_momentum(self.momentum[layer], self.beta, new_state_layer)
 
-    def update_model(self, clients_weights, x_train, _, __):
-        model = get_model(x_train)
+    def update_model(self, clients_weights, n_features, _, __):
+        model = get_model(n_features)
         state_update_clients = self._calculate_local_update(clients_weights)  # alphas
 
         new_state_with_momentum = []
