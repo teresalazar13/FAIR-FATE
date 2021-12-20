@@ -4,13 +4,11 @@ from code.metrics.Metric import Metric
 class SuperGroupBasedMetric(Metric):
     def __init__(self, name, group_based_metrics):
         self.name = name
-        self.ratios = []
-        self.differences = []
-        super().__init__(name, self.ratios, self.differences, None)
+        super().__init__(name)
 
         self.group_based_metrics = group_based_metrics
 
-    def calculate(self, sensitive_attributes, df):
+    def calculate(self, sensitive_attributes, df, debug=True):
         ratio = []
         difference = []
 
@@ -24,8 +22,9 @@ class SuperGroupBasedMetric(Metric):
         self.ratios.append(avg_ratio)
         self.differences.append(avg_difference)
 
-        print("{}_ratio - {}".format(self.name, avg_ratio))
-        print("{}_diff - {}".format(self.name, avg_difference))
+        if debug:
+            print("{}_ratio - {}".format(self.name, avg_ratio))
+            print("{}_diff - {}".format(self.name, avg_difference))
 
         return avg_ratio, avg_difference
 

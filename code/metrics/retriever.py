@@ -1,4 +1,6 @@
 from code.metrics.Accuracy import Accuracy
+from code.metrics.F1Score import F1Score
+from code.metrics.MCC import MCC
 from code.metrics.SuperGroupBasedMetric import SuperGroupBasedMetric
 from code.metrics.GroupBasedMetric import GroupBasedMetric, TN, TP, FN, FP, PosSens, Sens
 
@@ -8,6 +10,8 @@ import pandas as pd
 
 def create_metrics():
     ACC = Accuracy("ACC")
+    f1Score = F1Score("F1Score")
+    mcc = MCC("MCC")
     SP = GroupBasedMetric("SP", PosSens(), Sens())
     TPR = GroupBasedMetric("TPR", TP(), FN())
     TNR = GroupBasedMetric("TNR", TN(), FP())
@@ -22,17 +26,19 @@ def create_metrics():
     EQO = SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
 
     return [
-        ACC, SP, TPR, TNR, FPR, FNR, PPV, NPV, FDR, FOR, EQO
+        ACC, f1Score, mcc, SP,
+        TPR, FPR, EQO,
+        TNR, FNR, PPV, NPV, FDR, FOR
     ]
 
 
-def get_fairness(dataset, x_val, y_pred, y_val, metrics):
+def get_fairness(dataset, x_val, y_pred, y_val, metrics, debug=True):
     df = create_dataframe_for_eval(dataset.all_columns, x_val, y_pred, y_val)
     sensitive_attributes = [s.name for s in dataset.sensitive_attributes]
 
     metrics_values = []
     for metric in metrics:
-        metrics_values.append(metric.calculate(sensitive_attributes, df)[0])
+        metrics_values.append(metric.calculate(sensitive_attributes, df, debug=debug)[0])
 
     return metrics_values
 

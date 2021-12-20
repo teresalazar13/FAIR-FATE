@@ -4,9 +4,7 @@ from code.metrics.Metric import Metric
 class GroupBasedMetric(Metric):
     def __init__(self, name, group_numerator, group_denominator):
         self.name = name
-        self.ratios = []
-        self.differences = []
-        super().__init__(name, self.ratios, self.differences, None)
+        super().__init__(name)
 
         self.group_numerator = group_numerator
         self.group_denominator = group_denominator
@@ -25,6 +23,7 @@ class GroupBasedMetric(Metric):
             else:
                 privileged = numerators[0] / (numerators[0] + denominators[0])
                 unprivileged = numerators[1] / (numerators[1] + denominators[1])
+                #print("{} - {}-{}".format(self.name, round(privileged, 2), round(unprivileged, 2)))
                 sum_ratio += min(unprivileged / privileged, privileged / unprivileged)
                 sum_difference += abs(privileged - unprivileged)
 

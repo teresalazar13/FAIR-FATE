@@ -13,7 +13,7 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, we
         client_name = "client_" + str(i)
         start = n_instances_client * (i - 1)
         end = n_instances_client * i
-        print("Client {}: start: {}, end: {}".format(i, start, end))
+        #print("Client {}: start: {}, end: {}".format(i, start, end))
 
         data = collections.OrderedDict((
             ('y', y_train[start:end]),

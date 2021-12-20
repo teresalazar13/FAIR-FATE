@@ -8,15 +8,22 @@ from code.tensorflow.models import get_model
 
 class FederatedFairMomentum:
 
-    def __init__(self, state, dataset, aggregation_metrics, beta=0.9, lambda_=0.5):
+    def __init__(self, state, dataset, aggregation_metrics, lambda_exponential=None, lambda_fixed=None, beta=0.9):
         self.actual_state = deepcopy(state)  # weights
         self.dataset = dataset
         self.momentum = self._get_model_shape()  # copy shape of state with zeros
-        self.lambda_ = lambda_
+        self.iteration = 1  # round_num
+        self.lambda_exponential = lambda_exponential
+        self.lambda_fixed = lambda_fixed
+        self.lambda_ = self.get_lambda()
         self.beta = beta
         self.aggregation_metrics = aggregation_metrics
-        self.iteration = 1  # round_num
         self.epsilon = 0.0001
+
+    def get_lambda(self):
+        if self.lambda_fixed:
+            return self.lambda_fixed
+        return 0.1 * ((1 + self.lambda_exponential) ** self.iteration)
 
     def _get_model_shape(self):
         momentum = []
@@ -41,7 +48,7 @@ class FederatedFairMomentum:
         model.set_weights(self.actual_state)
         y_pred = model.predict(x_val)
 
-        return get_fairness(self.dataset, x_val, y_pred, y_val, self.aggregation_metrics)
+        return get_fairness(self.dataset, x_val, y_pred, y_val, self.aggregation_metrics, debug=False)
 
     def calculate_fairness_clients(self, clients_weights, model, x_val, y_val):
         fairness_clients = []
@@ -49,7 +56,7 @@ class FederatedFairMomentum:
         for client in clients_weights:
             model.set_weights(client)
             y_pred = model.predict(x_val)
-            fairness = get_fairness(self.dataset, x_val, y_pred, y_val, self.aggregation_metrics)
+            fairness = get_fairness(self.dataset, x_val, y_pred, y_val, self.aggregation_metrics, debug=False)
             fairness_clients.append(fairness)
 
         return fairness_clients
@@ -83,7 +90,7 @@ class FederatedFairMomentum:
                 fairness_sum_fair_clients += fairness_clients[c]
 
         if fairness_sum_fair_clients == 0:
-            new_state_layer = np.zeros_like(new_state_layer)
+            new_state_layer = np.zeros_like(self.momentum[layer])
         else:
             new_state_layer = new_state_layer / fairness_sum_fair_clients
 
@@ -110,6 +117,17 @@ class FederatedFairMomentum:
         self.actual_state = deepcopy(new_state_with_momentum)
         model.set_weights(self.actual_state)
         self.iteration += 1
+        self.lambda_ = self.get_lambda()
+
+        """
+        if self.iteration <= 40:
+        #if self.iteration <= 60:
+            self.lambda_ = 0.05 * ((1 + 0.1) ** self.iteration)
+            #self.lambda_ = 0.02 * ((1 + 0.1025) ** self.iteration)  # 50 rounds
+        #self.lambda_ = 0.02 * ((1 + 0.0575) ** self.iteration)  # 70 rounds
+
+        #if self.iteration <= 60:
+            #self.lambda_ = 0.1 * ((1 + 0.04) ** self.iteration)"""
 
         return new_state_with_momentum, model
 
@@ -128,8 +146,10 @@ def normalize_avg_fairness(fairness_clients, fairness_server):
         max_fs = max(fs)
 
         for i in range(len(fairness_clients)):  # for each client
-            fairness_clients_avg[i] += normalize(fairness_clients[i][j], min_fs, max_fs)
-        fairness_server_avg += normalize(f_server, min_fs, max_fs)
+            #fairness_clients_avg[i] += normalize(fairness_clients[i][j], min_fs, max_fs)
+            fairness_clients_avg[i] += fairness_clients[i][j]
+        #fairness_server_avg += normalize(f_server, min_fs, max_fs)
+        fairness_server_avg += f_server
 
     return fairness_clients_avg, fairness_server_avg
 

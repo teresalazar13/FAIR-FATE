@@ -4,14 +4,19 @@ from code.tensorflow.FederatedFairMomentum import FederatedFairMomentum
 
 
 class FairFate(FederatedLearningAlgorithm):
-    def __init__(self, federated_train_data, x_train, dataset, aggregation_metrics, lambda_=.5, beta=.9):
+    def __init__(self, federated_train_data, x_train, dataset, aggregation_metrics, lambda_exponential=None, lambda_fixed=None, beta=.9):
         name = "fair_fate"
         algorithm = FederatedLearningClientSide(False, federated_train_data, x_train[0])
         state = algorithm.initialize()
-        hyperparameter_specs_str = "l_{}_b_{}".format(str(lambda_), str(beta))
+        aggregation_metrics_string = "-".join([metric.name for metric in aggregation_metrics])
+        lambda_ = "e{}".format(lambda_exponential)
+        if not lambda_exponential:
+            lambda_ = "f{}".format(lambda_fixed)
+        hyperparameter_specs_str = "l_{}_b_{}_{}".format(str(lambda_), str(beta), aggregation_metrics_string)
         super().__init__(name, algorithm, state, hyperparameter_specs_str)
 
-        self.ffm = FederatedFairMomentum(state, dataset, aggregation_metrics, beta=beta, lambda_=lambda_)
+        self.ffm = FederatedFairMomentum(state, dataset, aggregation_metrics, beta=beta, lambda_exponential=lambda_exponential, lambda_fixed=lambda_fixed)
 
     def update(self, weights, x_train, x_val, y_val):
+        print("\nLambda: {}".format(round(self.ffm.lambda_, 2)))
         return self.ffm.update_model(weights, x_train, x_val, y_val)

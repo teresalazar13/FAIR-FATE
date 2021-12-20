@@ -1,6 +1,11 @@
 class Metric:
-    def __init__(self, name, ratios, differences, values):
+    def __init__(self, name):
         self.name = name
-        self.ratios = ratios
-        self.differences = differences
-        self.values = values
+        self.ratios = []
+        self.differences = []
+        self.values = []
+
+    def reset(self):
+        self.ratios = []
+        self.differences = []
+        self.values = []

@@ -6,8 +6,7 @@ import numpy as np
 class Accuracy(Metric):
     def __init__(self, name):
         self.name = name
-        self.values = []
-        super().__init__(name, None, None, self.values)
+        super().__init__(name)
 
     def calculate(self, _, df):
         y_pred = np.greater_equal(df["y_pred"], 0.5)
