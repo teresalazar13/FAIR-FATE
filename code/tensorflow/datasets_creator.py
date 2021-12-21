@@ -15,6 +15,9 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, we
         end = n_instances_client * i
         #print("Client {}: start: {}, end: {}".format(i, start, end))
 
+        if len(weights_global[i - 1]) == 0:  # in case it wont be used just add 0s
+            weights_global[i - 1] = [0 for _ in range(n_instances_client)]
+
         data = collections.OrderedDict((
             ('y', y_train[start:end]),
             ('x', x_train[start:end]),
@@ -85,6 +88,7 @@ def make_federated_data(sensitive_idx, client_data, clients, n_features, seed):
 
     for i in range(len(clients)):
         federated_data.append(
-            get_client_tf_dataset(sensitive_idx, client_data.create_tf_dataset_for_client(clients[i]), n_features, seed))
+            get_client_tf_dataset(sensitive_idx, client_data.create_tf_dataset_for_client(clients[i]), n_features, seed)
+        )
 
     return federated_data

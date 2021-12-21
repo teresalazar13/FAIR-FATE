@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from kneed import KneeLocator
 
 
 def plot_avg_results(dataset_name, num_runs):
-    fls = ["fedavg_alpha-1", "fedavg_gr_alpha-1", "fedavg_lr_alpha-1"]
+    fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
     metrics = ["TPR_ratio"]
     metrics_results = ["ACC", "F1Score", "MCC", "TPR_ratio"]
     fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results)["ACC"].iloc[-1]
@@ -24,7 +25,7 @@ def plot_avg_results(dataset_name, num_runs):
     dfs_fair_fate_exp = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
         for lambda_exponential in [0.04, 0.045, 0.05]:
-            fl = "fair_fate_l_e{}_b_{}_TPR_alpha-1".format(str(lambda_exponential), str(beta))
+            fl = "fair_fate_l_e{}_b_{}_TPR".format(str(lambda_exponential), str(beta))
             fls_fair_fate_exp.append(fl)
             df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
             dfs_fair_fate_exp.append(df)
@@ -32,24 +33,16 @@ def plot_avg_results(dataset_name, num_runs):
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
-    # FAIR-FATE fixed
-    fls_fair_fate_fixed = []
-    dfs_fair_fate_fixed = []
-    for beta in [0.7, 0.8, 0.9, 0.99]:
-        for lambda_fixed in [0.5, 0.6, 0.7, 0.8, 0.9]:
-            fl = "fair_fate_l_f{}_b_{}_TPR_alpha-1".format(str(lambda_fixed), str(beta))
-            fls_fair_fate_fixed.append(fl)
-            df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
-            dfs_fair_fate_fixed.append(df)
-    best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate_fixed, dfs_fair_fate_fixed, metrics, best, fedavg_acc)
-    dfs.append(best_df_fair_fate)
-    fls.append(best_fl_fair_fate)
+    #fl = "fair_fate_l_e0.05_b_0.9_TPR"
+    #fls.append(fl)
+    #df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
+    #dfs.append(df)
 
     # FedMom
     fls_fedmom = []
     dfs_fedmom = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
-        fl = "fedmom_b_{}_alpha-1".format(str(beta))
+        fl = "fedmom_b_{}".format(str(beta))
         fls_fedmom.append(fl)
         df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
         dfs_fedmom.append(df)
@@ -57,26 +50,36 @@ def plot_avg_results(dataset_name, num_runs):
     dfs.append(best_df_fedmom)
     fls.append(best_fl_fedmom)
 
-    plot_results(dfs, fls, './datasets/{}/rounds_plot_alpha-1.png'.format(dataset_name), metrics_results)
-    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_alpha-1.png'.format(dataset_name), metrics_results)
-    #plot_pareto_front(dfs_fair_fate_fixed, fls_fair_fate_fixed, './datasets/{}/pareto_front_random.png'.format(dataset_name), "ACC", "TPR_ratio")
+    plot_results(dfs, fls, './datasets/{}/rounds_plot_random.png'.format(dataset_name), metrics_results)
+    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_random.png'.format(dataset_name), metrics_results)
+    plot_pareto_front(dfs_fair_fate_exp, fls_fair_fate_exp, './datasets/{}/pareto_front_random.png'.format(dataset_name), "ACC", "TPR_ratio")
 
 
 def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
     x = []
     y = []
+    labels = []
+    costs = []
 
     for i in range(len(dfs)):
-        value_a = dfs[i][metric_a].iloc[-1]
-        value_b = dfs[i][metric_b].iloc[-1]
-        x.append(value_a)
-        y.append(value_b)
+        if "b_0.7_" in fls[i]:
+            print(fls[i])
+            labels.append(fls[i])
+            value_a = dfs[i][metric_a].iloc[-1]
+            value_b = dfs[i][metric_b].iloc[-1]
+            x.append(value_a)
+            y.append(value_b)
+            costs.append([x, y])
 
+    #kneedle = KneeLocator(x, y, curve="convex", direction="increasing")
+    #print(kneedle.knee)
+    plt.figure(figsize=(5, 5))
     plt.xlabel(metric_a)
     plt.ylabel(metric_b)
     plt.scatter(x, y)
-    for i in range(len(fls)):
-        plt.annotate(fls[i], (x[i], y[i]))
+
+    for i in range(len(x)):
+        plt.annotate(labels[i], (x[i], y[i]))
 
     plt.savefig(filename, bbox_inches='tight')
     # plt.show()
