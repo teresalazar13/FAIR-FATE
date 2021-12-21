@@ -4,7 +4,7 @@ import numpy as np
 
 
 def plot_avg_results(dataset_name, num_runs):
-    fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
+    fls = ["fedavg_alpha-1", "fedavg_gr_alpha-1", "fedavg_lr_alpha-1"]
     metrics = ["TPR_ratio"]
     metrics_results = ["ACC", "F1Score", "MCC", "TPR_ratio"]
     fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results)["ACC"].iloc[-1]
@@ -24,7 +24,7 @@ def plot_avg_results(dataset_name, num_runs):
     dfs_fair_fate_exp = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
         for lambda_exponential in [0.04, 0.045, 0.05]:
-            fl = "fair_fate_l_e{}_b_{}_TPR".format(str(lambda_exponential), str(beta))
+            fl = "fair_fate_l_e{}_b_{}_TPR_alpha-1".format(str(lambda_exponential), str(beta))
             fls_fair_fate_exp.append(fl)
             df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
             dfs_fair_fate_exp.append(df)
@@ -37,7 +37,7 @@ def plot_avg_results(dataset_name, num_runs):
     dfs_fair_fate_fixed = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
         for lambda_fixed in [0.5, 0.6, 0.7, 0.8, 0.9]:
-            fl = "fair_fate_l_f{}_b_{}_TPR".format(str(lambda_fixed), str(beta))
+            fl = "fair_fate_l_f{}_b_{}_TPR_alpha-1".format(str(lambda_fixed), str(beta))
             fls_fair_fate_fixed.append(fl)
             df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
             dfs_fair_fate_fixed.append(df)
@@ -49,7 +49,7 @@ def plot_avg_results(dataset_name, num_runs):
     fls_fedmom = []
     dfs_fedmom = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
-        fl = "fedmom_b_{}".format(str(beta))
+        fl = "fedmom_b_{}_alpha-1".format(str(beta))
         fls_fedmom.append(fl)
         df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
         dfs_fedmom.append(df)
@@ -57,8 +57,8 @@ def plot_avg_results(dataset_name, num_runs):
     dfs.append(best_df_fedmom)
     fls.append(best_fl_fedmom)
 
-    plot_results(dfs, fls, './datasets/{}/rounds_plot_random.png'.format(dataset_name), metrics_results)
-    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_random.png'.format(dataset_name), metrics_results)
+    plot_results(dfs, fls, './datasets/{}/rounds_plot_alpha-1.png'.format(dataset_name), metrics_results)
+    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_alpha-1.png'.format(dataset_name), metrics_results)
     #plot_pareto_front(dfs_fair_fate_fixed, fls_fair_fate_fixed, './datasets/{}/pareto_front_random.png'.format(dataset_name), "ACC", "TPR_ratio")
 
 

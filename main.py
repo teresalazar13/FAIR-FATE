@@ -7,8 +7,8 @@ from code.metrics.SuperGroupBasedMetric import SuperGroupBasedMetric
 from code.run import run
 
 if __name__ == '__main__':
-    #dataset = Adult()
-    dataset = Compas()
+    dataset = Adult()
+    #dataset = Compas()
 
     """
     create_stats_sensitive_distribution_all(
@@ -23,7 +23,7 @@ if __name__ == '__main__':
         #SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
     ]
 
-    run(dataset, 50, 10, aggregation_metrics, alpha=1)
+    run(dataset, 50, 10, aggregation_metrics)
     #plot_avg_results(dataset.name, 10)
 
     """
