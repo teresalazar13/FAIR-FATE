@@ -63,13 +63,14 @@ class FederatedFairMomentum:
         return fairness_clients
 
     # calculate the new model (new_state), aN = (a1*w1+a2*w2+...+an*wn) / N
-    def calculate_momentum_update_layer(self, layer, state_update_clients):
+    def calculate_momentum_update_layer(self, layer, state_update_clients, clients_data_size):
         new_state_layer = np.zeros_like(state_update_clients[0][layer])
+        sum_clients_data_size = sum(clients_data_size)
 
         for c in range(self.dataset.num_clients_per_round):
             new_state_layer = np.add(
                 new_state_layer,
-                np.multiply(state_update_clients[c][layer], 1 / self.dataset.num_clients_per_round)
+                np.multiply(state_update_clients[c][layer], clients_data_size[c] / sum_clients_data_size)
             )
 
         mom_bias_correction = self.momentum[layer] / (1.0 - math.pow(self.beta, self.iteration))
@@ -97,7 +98,7 @@ class FederatedFairMomentum:
 
         return calculate_momentum(self.momentum[layer], self.beta, new_state_layer)
 
-    def update_model(self, clients_weights, n_features, x_val, y_val):
+    def update_model(self, clients_weights, n_features, x_val, y_val, clients_data_size):
         model = get_model(n_features)
         state_update_clients = self._calculate_local_update(clients_weights)  # alphas
 
@@ -112,7 +113,7 @@ class FederatedFairMomentum:
             )
             self.momentum[layer] = deepcopy(update_m_fair)
 
-            update_m = self.calculate_momentum_update_layer(layer, state_update_clients)
+            update_m = self.calculate_momentum_update_layer(layer, state_update_clients, clients_data_size)
             new_state_with_momentum.append(self.actual_state[layer] + update_m)
 
         self.actual_state = deepcopy(new_state_with_momentum)

@@ -50,8 +50,10 @@ def run(dataset, num_rounds, num_runs, aggregation_metrics, alpha=None):
             else:
                 clients_dataset, _ = get_tf_train_dataset(x_train, y_train, n_clients, weights_global, weights_local)
             federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients, n_features, seed)
+            clients_data_size = [len(client_data) for client_data in [clients_dataset_x_y_label[i][0] for i in clients_idx]]
+
             for fl in fls:
-                fl.iterate(dataset, federated_train_data, n_features, x_val, y_val, x_test, y_test)
+                fl.iterate(dataset, federated_train_data, n_features, x_val, y_val, x_test, y_test, clients_data_size)
 
         for fl in fls:
             fl.save_metrics_to_file(dataset.name, run, alpha)

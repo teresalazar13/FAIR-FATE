@@ -10,5 +10,5 @@ class FedAvgGR(FederatedLearningAlgorithm):  # Global Reweighting
         state = algorithm.initialize()
         super().__init__(name, algorithm, state)
 
-    def update(self, weights, n_features, unused_x_val, unused_y_val):
-        return fed_avg_update(weights, n_features)
+    def update(self, weights, n_features, unused_x_val, unused_y_val, clients_data_size):
+        return fed_avg_update(weights, n_features, clients_data_size)

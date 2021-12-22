@@ -13,5 +13,5 @@ class FedMom(FederatedLearningAlgorithm):
 
         self.ffm = FederatedMomentum(state, dataset, beta=beta)
 
-    def update(self, weights, n_features, x_val, y_val):
-        return self.ffm.update_model(weights, n_features, x_val, y_val)
+    def update(self, weights, n_features, x_val, y_val, clients_data_size):
+        return self.ffm.update_model(weights, n_features, clients_data_size)

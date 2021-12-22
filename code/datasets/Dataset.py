@@ -149,8 +149,8 @@ def get_weight(df, comb):
         ououou = ououou * (len(df[df[k] == v]) / len(df))
 
     eeee = len(df_temp) / len(df)
-    if eeee == 0:
-        weight = 1
+    if eeee == 0 or ououou == 0:
+        weight = 1.0
     else:
         weight = ououou / eeee
 

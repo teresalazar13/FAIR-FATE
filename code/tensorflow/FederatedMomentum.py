@@ -1,5 +1,6 @@
 from copy import deepcopy
 import numpy as np
+import math
 
 from code.tensorflow.models import get_model
 
@@ -32,27 +33,28 @@ class FederatedMomentum:
 
         return state_update
 
-    def calculate_momentum_update_layer(self, layer, state_update_clients):
+    def calculate_momentum_update_layer(self, layer, state_update_clients, clients_data_size):
         new_state_layer = np.zeros_like(state_update_clients[0][layer])
+        sum_clients_data_size = sum(clients_data_size)
 
         for c in range(self.dataset.num_clients_per_round):
             new_state_layer = np.add(
                 new_state_layer,
-                np.multiply(state_update_clients[c][layer], 1 / self.dataset.num_clients_per_round)
+                np.multiply(state_update_clients[c][layer], clients_data_size[c] / sum_clients_data_size)
             )
 
         return calculate_momentum(self.momentum[layer], self.beta, new_state_layer)
 
-    def update_model(self, clients_weights, n_features, _, __):
+    def update_model(self, clients_weights, n_features, clients_data_size):
         model = get_model(n_features)
         state_update_clients = self._calculate_local_update(clients_weights)  # alphas
 
         new_state_with_momentum = []
         for layer in range(len(clients_weights[0])):
-            update_m = self.calculate_momentum_update_layer(layer, state_update_clients)
+            update_m = self.calculate_momentum_update_layer(layer, state_update_clients, clients_data_size)
             self.momentum[layer] = deepcopy(update_m)
-            # bias_correction = update_m = update_m / (1.0 - math.pow(self.beta, self.iteration)) # TODO
-            new_state_with_momentum.append(self.actual_state[layer] + update_m)
+            bias_correction = update_m / (1.0 - math.pow(self.beta, self.iteration))
+            new_state_with_momentum.append(self.actual_state[layer] + bias_correction)
 
         self.actual_state = deepcopy(new_state_with_momentum)
         model.set_weights(self.actual_state)

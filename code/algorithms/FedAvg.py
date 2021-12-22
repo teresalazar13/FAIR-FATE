@@ -12,20 +12,20 @@ class FedAvg(FederatedLearningAlgorithm):
         state = algorithm.initialize()
         super().__init__(name, algorithm, state)
 
-    def update(self, weights, n_features, unused_x_val, unused_y_val):
-        return fed_avg_update(weights, n_features)
+    def update(self, weights, n_features, unused_x_val, unused_y_val, clients_data_size):
+        return fed_avg_update(weights, n_features, clients_data_size)
 
 
-def fed_avg_update(weights, n_features):
+def fed_avg_update(weights, n_features, clients_data_size):
     model = get_model(n_features)
     new_state = []
     n_layers = len(weights[0])
+    sum_clients_data_size = sum(clients_data_size)
 
     for l in range(n_layers):
-        sum_ = np.array(weights[0][l])
+        sum_ = np.array(weights[0][l]) * clients_data_size[0] / sum_clients_data_size
         for c in range(1, len(weights)):
-            sum_ = np.add(sum_, weights[c][l])
-        sum_ = sum_ / len(weights)
+            sum_ = np.add(sum_, weights[c][l] * clients_data_size[c] / sum_clients_data_size)
         new_state.append(sum_)
 
     model.set_weights(new_state)
