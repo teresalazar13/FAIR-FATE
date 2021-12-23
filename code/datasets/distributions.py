@@ -5,19 +5,19 @@ import pandas as pd
 
 def get_x_dirichlet(random_state, alpha, dataset, x_train, y_train):
     num_clients = dataset.number_of_clients
-    num_classes = len(dataset.combs_without_target)
+    num_classes = len(dataset.combs)
     np.random.seed(random_state)
     s = np.random.dirichlet(np.ones(num_clients) * alpha, num_classes)
-    plot_distributions(num_clients, dataset.combs_without_target, s)
+    plot_distributions(num_clients, dataset.combs, s)
 
     df = join_x_and_y(dataset, x_train, y_train)
     df.sample(frac=1)  # shuffle
 
     x_train_dirichlet = [[] for _ in range(num_clients)]
     y_train_dirichlet = [[] for _ in range(num_clients)]
-    for comb_idx in range(len(dataset.combs_without_target)):
+    for comb_idx in range(len(dataset.combs)):
         df_temp = df.copy(deep=True)
-        for k, [v, _, _] in dataset.combs_without_target[comb_idx].items():
+        for k, [v, _, _] in dataset.combs[comb_idx].items():
             df_temp = df_temp[df_temp[k] == v]
 
         size = len(df_temp)
@@ -37,11 +37,11 @@ def get_x_dirichlet(random_state, alpha, dataset, x_train, y_train):
     return x_train_dirichlet, y_train_dirichlet
 
 
-def plot_distributions(num_clients, combs_without_target, s):
+def plot_distributions(num_clients, combs, s):
     sum = 0
-    for i in range(len(combs_without_target)):
+    for i in range(len(combs)):
         label = ""
-        for k, v in combs_without_target[i].items():
+        for k, v in combs[i].items():
             label += "{}: {};".format(k, v[-1])
         plt.barh(range(num_clients), s[i], left=sum, label=label[:-1])
         sum += s[i]

@@ -23,8 +23,8 @@ if __name__ == '__main__':
         #SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
     ]
 
-    run(dataset, 50, 10, aggregation_metrics, 0.5)
-    #plot_avg_results(dataset.name, 2)
+    run(dataset, 50, 10, aggregation_metrics, 1)
+    #plot_avg_results(dataset.name, 10)
 
     """
     for alpha in [0.5, 1, 5000]:
