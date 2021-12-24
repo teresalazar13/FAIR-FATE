@@ -5,7 +5,7 @@ from kneed import KneeLocator
 
 
 def plot_avg_results(dataset_name, num_runs):
-    fls = ["fedavg_alpha-1", "fedavg_gr_alpha-1", "fedavg_lr_alpha-1"]
+    fls = ["fedavg_alpha-2", "fedavg_gr_alpha-2", "fedavg_lr_alpha-2"]
     metrics = ["TPR_ratio"]
     metrics_results = ["ACC", "F1Score", "MCC", "TPR_ratio"]
     fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results)["ACC"].iloc[-1]
@@ -25,7 +25,7 @@ def plot_avg_results(dataset_name, num_runs):
     dfs_fair_fate_exp = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
         for lambda_exponential in [0.04, 0.045, 0.05]:
-            fl = "fair_fate_l_e{}_b_{}_TPR_alpha-1".format(str(lambda_exponential), str(beta))
+            fl = "fair_fate_l_e{}_b_{}_TPR_alpha-2".format(str(lambda_exponential), str(beta))
             fls_fair_fate_exp.append(fl)
             df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
             dfs_fair_fate_exp.append(df)
@@ -42,7 +42,7 @@ def plot_avg_results(dataset_name, num_runs):
     fls_fedmom = []
     dfs_fedmom = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
-        fl = "fedmom_b_{}_alpha-1".format(str(beta))
+        fl = "fedmom_b_{}_alpha-2".format(str(beta))
         fls_fedmom.append(fl)
         df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
         dfs_fedmom.append(df)
