@@ -28,6 +28,5 @@ if __name__ == '__main__':
 
     run(dataset, 50, 10, aggregation_metrics, 0.25)
     run(dataset, 50, 10, aggregation_metrics, 0.5)
-    run(dataset, 50, 10, aggregation_metrics, 1)
     run(dataset, 50, 10, aggregation_metrics, 5000)
     run(dataset, 50, 10, aggregation_metrics)
