@@ -71,6 +71,8 @@ def set_random_seeds(seed_value):
 
 
 def create_fls(federated_train_data, n_features, dataset, aggregation_metrics):
+    fls = []
+    """
     fls = [
         FedAvg(federated_train_data, n_features),
         FedAvgGR(federated_train_data, n_features),
@@ -80,7 +82,7 @@ def create_fls(federated_train_data, n_features, dataset, aggregation_metrics):
     # FedMom
     for beta in [0.7, 0.8, 0.9, 0.99]:
         fls.append(FedMom(federated_train_data, n_features, dataset, beta=beta))
-
+    """
     for metric in aggregation_metrics:
         metric.reset()
 

@@ -17,14 +17,15 @@ if __name__ == '__main__':
 
     # FAIR-FATE
     aggregation_metrics = [
-        #GroupBasedMetric("SP", PosSens(), Sens()),
-        GroupBasedMetric("TPR", TP(), FN()),
+        GroupBasedMetric("SP", PosSens(), Sens()),
+        #GroupBasedMetric("TPR", TP(), FN()),
         #GroupBasedMetric("FPR", FP(), TN())
         #SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
     ]
 
-    plot(dataset.name, 10, ["TPR_ratio"], alpha=5000)
+    #plot(dataset.name, 10, ["SP_ratio"], alpha=5000)
 
-    #run(dataset, 50, 10, aggregation_metrics, 0.25)
-    #run(dataset, 50, 10, aggregation_metrics, 0.5)
-    #run(dataset, 50, 10, aggregation_metrics, 5000)
+    run(dataset, 50, 10, aggregation_metrics, 0.25)
+    run(dataset, 50, 10, aggregation_metrics, 0.5)
+    run(dataset, 50, 10, aggregation_metrics, 5000)
+    run(dataset, 50, 10, aggregation_metrics)
