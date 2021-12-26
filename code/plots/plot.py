@@ -4,57 +4,31 @@ import numpy as np
 from kneed import KneeLocator
 
 
-RESULTS_FOLDER = "/SP"
-
-def plot_avg_results(dataset_name, num_runs):
-    fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
-    metrics = ["SP_ratio"]
-    metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio"]
-    fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results)["ACC"].iloc[-1]
-    best = [0 for _ in metrics]
-    dfs = []
-
-    for fl in fls:
-        df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
-        dfs.append(df)
-        for i in range(len(metrics)):
-            value = df[metrics[i]].iloc[-1]
+def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results, results_folder, alpha):
+    fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results, results_folder)["ACC"].iloc[-1]
+    best = [0 for _ in fairness_metrics]
+    dfs = get_dfs(fls, dataset_name, num_runs, metrics_results, results_folder)
+    for df in dfs:
+        for i in range(len(fairness_metrics)):
+            value = df[fairness_metrics[i]].iloc[-1]
             if value > best[i]:
                 best[i] = value
 
-    # FAIR-FATE exponential
-    fls_fair_fate_exp = []
-    dfs_fair_fate_exp = []
-    for beta in [0.7, 0.8, 0.9, 0.99]:
-        for lambda_exponential in [0.04, 0.045, 0.05]:
-            fl = "fair_fate_l_e{}_b_{}_SP".format(str(lambda_exponential), str(beta))
-            fls_fair_fate_exp.append(fl)
-            df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
-            dfs_fair_fate_exp.append(df)
-    best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate_exp, dfs_fair_fate_exp, metrics, best, fedavg_acc)
-    dfs.append(best_df_fair_fate)
-    fls.append(best_fl_fair_fate)
-
-    #fl = "fair_fate_l_e0.05_b_0.9_SP"
-    #fls.append(fl)
-    #df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
-    #dfs.append(df)
-
     # FedMom
-    fls_fedmom = []
-    dfs_fedmom = []
-    for beta in [0.7, 0.8, 0.9, 0.99]:
-        fl = "fedmom_b_{}".format(str(beta))
-        fls_fedmom.append(fl)
-        df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
-        dfs_fedmom.append(df)
-    best_df_fedmom, best_fl_fedmom = get_best_fl_group(fls_fedmom, dfs_fedmom, metrics, best, fedavg_acc)
+    dfs_fedmom = get_dfs(fls_fedmom, dataset_name, num_runs, metrics_results, results_folder)
+    best_df_fedmom, best_fl_fedmom = get_best_fl_group(fls_fedmom, dfs_fedmom, fairness_metrics, best, fedavg_acc)
     dfs.append(best_df_fedmom)
     fls.append(best_fl_fedmom)
 
-    plot_results(dfs, fls, './datasets/{}{}/rounds_plot.png'.format(dataset_name, RESULTS_FOLDER), metrics_results)
-    get_last_round_plot(dfs, fls, './datasets/{}{}/last_round_plot.png'.format(dataset_name, RESULTS_FOLDER), metrics_results)
-    plot_pareto_front(dfs_fair_fate_exp, fls_fair_fate_exp, './datasets/{}{}/pareto_front.png'.format(dataset_name, RESULTS_FOLDER), "ACC", "SP_ratio")
+    # FAIR-FATE
+    dfs_fair_fate = get_dfs(fls_fair_fate, dataset_name, num_runs, metrics_results, results_folder)
+    best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate, dfs_fair_fate, fairness_metrics, best, fedavg_acc)
+    dfs.append(best_df_fair_fate)
+    fls.append(best_fl_fair_fate)
+
+    plot_results(dfs, fls, './datasets/{}{}/rounds_plot_alpha-{}.png'.format(dataset_name, results_folder, alpha), metrics_results)
+    get_last_round_plot(dfs, fls, './datasets/{}{}/last_round_plot_alpha-{}.png'.format(dataset_name, results_folder, alpha), metrics_results)
+    plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}{}/pareto_front_alpha-{}.png'.format(dataset_name, results_folder, alpha), "ACC", "TPR_ratio")
 
 
 def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
@@ -65,7 +39,6 @@ def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
 
     for i in range(len(dfs)):
         if "b_0.7_" in fls[i]:
-            print(fls[i])
             labels.append(fls[i])
             value_a = dfs[i][metric_a].iloc[-1]
             value_b = dfs[i][metric_b].iloc[-1]
@@ -73,8 +46,8 @@ def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
             y.append(value_b)
             costs.append([x, y])
 
-    #kneedle = KneeLocator(x, y, curve="convex", direction="increasing")
-    #print(kneedle.knee)
+    # kneedle = KneeLocator(x, y, curve="convex", direction="increasing")
+    # print(kneedle.knee)
     plt.figure(figsize=(5, 5))
     plt.xlabel(metric_a)
     plt.ylabel(metric_b)
@@ -87,10 +60,20 @@ def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
     # plt.show()
 
 
-def get_avg_df(name, dataset_name, num_runs, metric_results):
+def get_dfs(fls, dataset_name, num_runs, metrics_results, results_folder):
+    dfs = []
+
+    for fl in fls:
+        df = get_avg_df(fl, dataset_name, num_runs, metrics_results, results_folder)
+        dfs.append(df)
+
+    return dfs
+
+
+def get_avg_df(name, dataset_name, num_runs, metric_results, results_folder):
     dfs = []
     for run_num in range(1, num_runs + 1):
-        filename = './datasets/{}{}/run_{}/{}.csv'.format(dataset_name, RESULTS_FOLDER, run_num, name)
+        filename = './datasets/{}{}/run_{}/{}.csv'.format(dataset_name, results_folder, run_num, name)
         df = pd.read_csv(filename)
         dfs.append(df)
 
