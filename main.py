@@ -25,9 +25,8 @@ if __name__ == '__main__':
 
     #plot_avg_results(dataset.name, 10)
 
-    #run(dataset, 50, 10, aggregation_metrics, 0.5)
-    #run(dataset, 50, 10, aggregation_metrics, 1)
-    #run(dataset, 50, 10, aggregation_metrics, 2)
+    run(dataset, 50, 10, aggregation_metrics, 0.5)
+    run(dataset, 50, 10, aggregation_metrics, 1)
+    run(dataset, 50, 10, aggregation_metrics, 2)
     run(dataset, 50, 10, aggregation_metrics, 5000)
-    #run(dataset, 50, 10, aggregation_metrics)
 
