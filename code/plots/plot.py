@@ -4,10 +4,12 @@ import numpy as np
 from kneed import KneeLocator
 
 
+RESULTS_FOLDER = "/SP"
+
 def plot_avg_results(dataset_name, num_runs):
-    fls = ["fedavg_alpha-5000", "fedavg_gr_alpha-5000", "fedavg_lr_alpha-5000"]
-    metrics = ["TPR_ratio"]
-    metrics_results = ["ACC", "F1Score", "MCC", "TPR_ratio"]
+    fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
+    metrics = ["SP_ratio"]
+    metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio"]
     fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results)["ACC"].iloc[-1]
     best = [0 for _ in metrics]
     dfs = []
@@ -25,7 +27,7 @@ def plot_avg_results(dataset_name, num_runs):
     dfs_fair_fate_exp = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
         for lambda_exponential in [0.04, 0.045, 0.05]:
-            fl = "fair_fate_l_e{}_b_{}_TPR_alpha-5000".format(str(lambda_exponential), str(beta))
+            fl = "fair_fate_l_e{}_b_{}_SP".format(str(lambda_exponential), str(beta))
             fls_fair_fate_exp.append(fl)
             df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
             dfs_fair_fate_exp.append(df)
@@ -33,7 +35,7 @@ def plot_avg_results(dataset_name, num_runs):
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
-    #fl = "fair_fate_l_e0.05_b_0.9_TPR"
+    #fl = "fair_fate_l_e0.05_b_0.9_SP"
     #fls.append(fl)
     #df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
     #dfs.append(df)
@@ -42,7 +44,7 @@ def plot_avg_results(dataset_name, num_runs):
     fls_fedmom = []
     dfs_fedmom = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
-        fl = "fedmom_b_{}_alpha-5000".format(str(beta))
+        fl = "fedmom_b_{}".format(str(beta))
         fls_fedmom.append(fl)
         df = get_avg_df(fl, dataset_name, num_runs, metrics_results)
         dfs_fedmom.append(df)
@@ -50,9 +52,9 @@ def plot_avg_results(dataset_name, num_runs):
     dfs.append(best_df_fedmom)
     fls.append(best_fl_fedmom)
 
-    plot_results(dfs, fls, './datasets/{}/rounds_plot_alpha-5000.png'.format(dataset_name), metrics_results)
-    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_alpha-5000.png'.format(dataset_name), metrics_results)
-    plot_pareto_front(dfs_fair_fate_exp, fls_fair_fate_exp, './datasets/{}/pareto_front_alpha-5000.png'.format(dataset_name), "ACC", "TPR_ratio")
+    plot_results(dfs, fls, './datasets/{}{}/rounds_plot.png'.format(dataset_name, RESULTS_FOLDER), metrics_results)
+    get_last_round_plot(dfs, fls, './datasets/{}{}/last_round_plot.png'.format(dataset_name, RESULTS_FOLDER), metrics_results)
+    plot_pareto_front(dfs_fair_fate_exp, fls_fair_fate_exp, './datasets/{}{}/pareto_front.png'.format(dataset_name, RESULTS_FOLDER), "ACC", "SP_ratio")
 
 
 def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
@@ -88,7 +90,7 @@ def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
 def get_avg_df(name, dataset_name, num_runs, metric_results):
     dfs = []
     for run_num in range(1, num_runs + 1):
-        filename = './datasets/{}/run_{}/{}.csv'.format(dataset_name, run_num, name)
+        filename = './datasets/{}{}/run_{}/{}.csv'.format(dataset_name, RESULTS_FOLDER, run_num, name)
         df = pd.read_csv(filename)
         dfs.append(df)
 

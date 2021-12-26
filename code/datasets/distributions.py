@@ -34,6 +34,14 @@ def get_x_dirichlet(random_state, alpha, dataset, x_train, y_train):
             x_train_dirichlet[client_idx].extend(x_train_client)
             y_train_dirichlet[client_idx].extend(y_train_client)
 
+    # shuffle
+    for i in range(len(x_train_dirichlet)):
+        x_train_dirichlet[i] = np.array(x_train_dirichlet[i])
+        y_train_dirichlet[i] = np.array(y_train_dirichlet[i])
+        p = np.random.permutation(len(x_train_dirichlet[i]))
+        x_train_dirichlet[i] = x_train_dirichlet[i][p]
+        y_train_dirichlet[i] = y_train_dirichlet[i][p]
+
     return x_train_dirichlet, y_train_dirichlet
 
 
