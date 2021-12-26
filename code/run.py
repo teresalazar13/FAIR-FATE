@@ -89,7 +89,6 @@ def create_fls(federated_train_data, n_features, dataset, aggregation_metrics):
         for lambda_exponential in [0.04, 0.045, 0.05]:
             fls.append(FairFate(federated_train_data, n_features, dataset, aggregation_metrics, lambda_exponential=lambda_exponential, beta=beta))
 
-    fls = [FedAvgGR(federated_train_data, n_features)]
     return fls
 
 
