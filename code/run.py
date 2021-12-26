@@ -84,7 +84,6 @@ def create_fls(federated_train_data, n_features, dataset, aggregation_metrics):
     for metric in aggregation_metrics:
         metric.reset()
 
-    fls = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
         for lambda_exponential in [0.04, 0.045, 0.05]:
             fls.append(FairFate(federated_train_data, n_features, dataset, aggregation_metrics, lambda_exponential=lambda_exponential, beta=beta))
