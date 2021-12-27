@@ -23,9 +23,11 @@ if __name__ == '__main__':
         SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
     ]
 
-    #plot(dataset.name, 10, ["SP_ratio"], alpha=5000)
+    for alpha in [0.25, 0.5, 5000, None]:
+        for metric in ["SP_ratio", "TPR_ratio", "EQO_ratio"]:
+            plot(dataset.name, 10, [metric], alpha=alpha)
 
-    run(dataset, 50, 10, aggregation_metrics, 0.25)
-    run(dataset, 50, 10, aggregation_metrics, 0.5)
-    run(dataset, 50, 10, aggregation_metrics, 5000)
-    run(dataset, 50, 10, aggregation_metrics)
+    #run(dataset, 50, 10, aggregation_metrics, 0.25)
+    #run(dataset, 50, 10, aggregation_metrics, 0.5)
+    #run(dataset, 50, 10, aggregation_metrics, 5000)
+    #run(dataset, 50, 10, aggregation_metrics)

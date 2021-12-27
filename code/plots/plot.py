@@ -4,10 +4,11 @@ import numpy as np
 from kneed import KneeLocator
 
 
-def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results, results_folder, alpha):
-    fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results, results_folder)["ACC"].iloc[-1]
+def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results, alpha):
+    fairness_metrics_string = "-".join([f.split("_")[0] for f in fairness_metrics])
+    fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results, fairness_metrics_string, True)["ACC"].iloc[-1]
     best = [0 for _ in fairness_metrics]
-    dfs = get_dfs(fls, dataset_name, num_runs, metrics_results, results_folder)
+    dfs = get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics_string, True)
     for df in dfs:
         for i in range(len(fairness_metrics)):
             value = df[fairness_metrics[i]].iloc[-1]
@@ -15,20 +16,20 @@ def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fai
                 best[i] = value
 
     # FedMom
-    dfs_fedmom = get_dfs(fls_fedmom, dataset_name, num_runs, metrics_results, results_folder)
+    dfs_fedmom = get_dfs(fls_fedmom, dataset_name, num_runs, metrics_results, fairness_metrics_string, True)
     best_df_fedmom, best_fl_fedmom = get_best_fl_group(fls_fedmom, dfs_fedmom, fairness_metrics, best, fedavg_acc)
     dfs.append(best_df_fedmom)
     fls.append(best_fl_fedmom)
 
     # FAIR-FATE
-    dfs_fair_fate = get_dfs(fls_fair_fate, dataset_name, num_runs, metrics_results, results_folder)
+    dfs_fair_fate = get_dfs(fls_fair_fate, dataset_name, num_runs, metrics_results, fairness_metrics_string, False)
     best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate, dfs_fair_fate, fairness_metrics, best, fedavg_acc)
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
-    plot_results(dfs, fls, './datasets/{}{}/rounds_plot_alpha-{}.png'.format(dataset_name, results_folder, alpha), metrics_results)
-    get_last_round_plot(dfs, fls, './datasets/{}{}/last_round_plot_alpha-{}.png'.format(dataset_name, results_folder, alpha), metrics_results)
-    plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}{}/pareto_front_alpha-{}.png'.format(dataset_name, results_folder, alpha), "ACC", "TPR_ratio")
+    plot_results(dfs, fls, './datasets/{}/rounds_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
+    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
+    plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}/pareto_front_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), "ACC", fairness_metrics[0])
 
 
 def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
@@ -60,20 +61,20 @@ def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
     # plt.show()
 
 
-def get_dfs(fls, dataset_name, num_runs, metrics_results, results_folder):
+def get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics_string, is_baseline):
     dfs = []
 
     for fl in fls:
-        df = get_avg_df(fl, dataset_name, num_runs, metrics_results, results_folder)
+        df = get_avg_df(fl, dataset_name, num_runs, metrics_results, fairness_metrics_string, is_baseline)
         dfs.append(df)
 
     return dfs
 
 
-def get_avg_df(name, dataset_name, num_runs, metric_results, results_folder):
+def get_avg_df(fl, dataset_name, num_runs, metric_results, fairness_metrics_string, is_baseline):
     dfs = []
     for run_num in range(1, num_runs + 1):
-        filename = './datasets/{}{}/run_{}/{}.csv'.format(dataset_name, results_folder, run_num, name)
+        filename = get_filename(dataset_name, run_num, fl, fairness_metrics_string, is_baseline)
         df = pd.read_csv(filename)
         dfs.append(df)
 
@@ -82,9 +83,18 @@ def get_avg_df(name, dataset_name, num_runs, metric_results, results_folder):
     df_concat_avg = df_concat.mean()
     df_concat_std = df_concat.std()
     for metric in metric_results:
-        print("{} - {}: {}+-{}".format(name, metric, round(df_concat_avg[metric].iloc[-1], 2), round(df_concat_std[metric].iloc[-1], 2)))
+        print("{} - {}: {}+-{}".format(fl, metric, round(df_concat_avg[metric].iloc[-1], 2), round(df_concat_std[metric].iloc[-1], 2)))
 
     return df_concat_avg
+
+
+def get_filename(dataset_name, run_num, fl, fairness_metrics_string, is_baseline):
+    if is_baseline:
+        filename = './datasets/{}/Baselines/run_{}/{}.csv'.format(dataset_name, run_num, fl)
+    else:
+        filename = './datasets/{}/{}/run_{}/{}.csv'.format(dataset_name, fairness_metrics_string, run_num, fl)
+
+    return filename
 
 
 def plot_results(dfs, fls, plot_filename, metrics):
