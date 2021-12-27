@@ -31,9 +31,10 @@ def run(dataset, num_rounds, num_runs, aggregation_metrics, alpha=None):
             _weights = [[0 for _ in range(len(x_train) // n_clients)] for _ in range(n_clients)]
             clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset(x_train, y_train, n_clients, _weights, _weights)
 
+        """
         if alpha:
             x_ys = [[x_val, y_val, "VAL"], [x_test, y_test, "TEST"], *clients_dataset_x_y_label]
-            create_stats_sensitive_distribution(x_ys, dataset, alpha, "./datasets/{}/run_{}".format(dataset.name, run))
+            create_stats_sensitive_distribution(x_ys, dataset, alpha, "./datasets/{}/run_{}".format(dataset.name, run))"""
 
         sensitive_idx = [df.columns.get_loc(s.name) for s in dataset.sensitive_attributes]
         federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients_dataset.client_ids[0:1], n_features, seed)
