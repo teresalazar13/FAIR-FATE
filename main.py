@@ -7,8 +7,8 @@ from code.metrics.SuperGroupBasedMetric import SuperGroupBasedMetric
 from code.run import run
 
 if __name__ == '__main__':
-    #dataset = Adult()
-    dataset = Compas()
+    dataset = Adult()
+    #dataset = Compas()
 
     """
     create_stats_sensitive_distribution_all(
@@ -25,7 +25,8 @@ if __name__ == '__main__':
 
     #plot(dataset.name, 10, ["SP_ratio"], alpha=5000)
 
-    run(dataset, 50, 10, aggregation_metrics, 0.25)
     run(dataset, 50, 10, aggregation_metrics, 0.5)
+    run(dataset, 50, 10, aggregation_metrics, 1)
+    run(dataset, 50, 10, aggregation_metrics, 2)
     run(dataset, 50, 10, aggregation_metrics, 5000)
     run(dataset, 50, 10, aggregation_metrics)
