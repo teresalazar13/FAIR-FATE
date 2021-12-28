@@ -2,7 +2,7 @@ from code.plots.plot import plot_avg_results
 
 
 def plot(dataset_name, num_runs, fairness_metrics, alpha=None):
-    metrics_results = ["ACC", "F1Score", "MCC"]
+    metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio", "TPR_ratio", "EQO_ratio"]
     metrics_results.extend(fairness_metrics)
     fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
     fairness_metrics_string = "-".join([f.split("_")[0] for f in fairness_metrics])

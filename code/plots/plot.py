@@ -7,6 +7,24 @@ from kneed import KneeLocator
 def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results, alpha):
     fairness_metrics_string = "-".join([f.split("_")[0] for f in fairness_metrics])
     fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results, fairness_metrics_string, True)["ACC"].iloc[-1]
+
+    # FedMom
+    dfs_fedmom = get_dfs(fls_fedmom, dataset_name, num_runs, metrics_results, fairness_metrics_string, True)
+    fairness_metrics__ = ["SP_ratio", "TPR_ratio", "EQO_ratio"]
+    best__ = [0 for _ in fairness_metrics__]
+    dfs = get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics_string, True)
+    for df in dfs:
+        for i in range(len(fairness_metrics__)):
+            value = df[fairness_metrics__[i]].iloc[-1]
+            if value > best__[i]:
+                best__[i] = value
+    best_df_fedmom, best_fl_fedmom = get_best_fl_group(fls_fedmom, dfs_fedmom, fairness_metrics__, best__, fedavg_acc)
+    print("best - {}".format(best_fl_fedmom))
+    dfs.append(best_df_fedmom)
+    fls.append(best_fl_fedmom)
+
+    # FAIR-FATE
+    dfs_fair_fate = get_dfs(fls_fair_fate, dataset_name, num_runs, metrics_results, fairness_metrics_string, False)
     best = [0 for _ in fairness_metrics]
     dfs = get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics_string, True)
     for df in dfs:
@@ -14,16 +32,8 @@ def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fai
             value = df[fairness_metrics[i]].iloc[-1]
             if value > best[i]:
                 best[i] = value
-
-    # FedMom
-    dfs_fedmom = get_dfs(fls_fedmom, dataset_name, num_runs, metrics_results, fairness_metrics_string, True)
-    best_df_fedmom, best_fl_fedmom = get_best_fl_group(fls_fedmom, dfs_fedmom, fairness_metrics, best, fedavg_acc)
-    dfs.append(best_df_fedmom)
-    fls.append(best_fl_fedmom)
-
-    # FAIR-FATE
-    dfs_fair_fate = get_dfs(fls_fair_fate, dataset_name, num_runs, metrics_results, fairness_metrics_string, False)
     best_df_fair_fate, best_fl_fair_fate = get_best_fl_group(fls_fair_fate, dfs_fair_fate, fairness_metrics, best, fedavg_acc)
+    print("best - {}".format(best_fl_fair_fate))
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
@@ -144,13 +154,13 @@ def get_best_fl_group(fls, dfs, metrics, best, fedavg_acc):
         improv = 0
         acc = df["ACC"].iloc[-1]
 
-        for i in range(len(metrics)):
-            value = df[metrics[i]].iloc[-1]
-            improv += value / best[i] - 1
+        for j in range(len(metrics)):
+            value = df[metrics[j]].iloc[-1]
+            improv += value / best[j] - 1
         improvs_fair_fate.append(improv)
         # print(fls[i])
         # print(values)
-        # print(round(improv, 2))
+        print(round(improv, 2))
     max_idx = np.argmax(improvs_fair_fate)
 
     return dfs[max_idx], fls[max_idx]
