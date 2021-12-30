@@ -25,7 +25,5 @@ if __name__ == '__main__':
 
     #plot(dataset.name, 10, ["TPR_ratio"])
 
-    run(dataset, 50, 10, aggregation_metrics, alpha=1)
-    """
     for alpha in [0.5, 1, None]:
-        run(dataset, 50, 10, aggregation_metrics, alpha=alpha)"""
+        run(dataset, 50, 10, aggregation_metrics, alpha=alpha)
