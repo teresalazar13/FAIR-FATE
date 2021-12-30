@@ -20,16 +20,12 @@ if __name__ == '__main__':
         #GroupBasedMetric("SP", PosSens(), Sens()),
         #GroupBasedMetric("TPR", TP(), FN()),
         #GroupBasedMetric("FPR", FP(), TN())
-        SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
+        #SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
     ]
 
-    """
-    for alpha in [0.25, 0.5, 5000, None]:
-        for metric in ["SP_ratio", "TPR_ratio", "EQO_ratio"]:
-            plot(dataset.name, 10, [metric], alpha=alpha)"""
+    #plot(dataset.name, 10, ["TPR_ratio"])
 
-    plot(dataset.name, 10, ["TPR_ratio"], alpha=0.5)
-    #run(dataset, 50, 10, aggregation_metrics, 0.25)
-    #run(dataset, 50, 10, aggregation_metrics, 0.5)
-    #run(dataset, 50, 10, aggregation_metrics, 5000)
-    #run(dataset, 50, 10, aggregation_metrics)
+    run(dataset, 50, 10, aggregation_metrics, alpha=1)
+    """
+    for alpha in [0.5, 1, None]:
+        run(dataset, 50, 10, aggregation_metrics, alpha=alpha)"""
