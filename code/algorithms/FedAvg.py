@@ -6,9 +6,9 @@ import numpy as np
 
 
 class FedAvg(FederatedLearningAlgorithm):
-    def __init__(self, federated_train_data, n_features):
+    def __init__(self, federated_train_data, n_features, seed):
         name = "fedavg"
-        algorithm = FederatedLearningClientSide(False, federated_train_data, n_features)
+        algorithm = FederatedLearningClientSide(False, federated_train_data, n_features, seed)
         state = algorithm.initialize()
         super().__init__(name, algorithm, state)
 

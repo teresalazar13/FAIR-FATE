@@ -4,9 +4,9 @@ from code.tensorflow.FLClientSide import FederatedLearningClientSide
 
 
 class FedMom(FederatedLearningAlgorithm):
-    def __init__(self, federated_train_data, n_features, dataset, beta=.5):
+    def __init__(self, federated_train_data, n_features, seed, dataset, beta=.5):
         name = "fedmom"
-        algorithm = FederatedLearningClientSide(False, federated_train_data, n_features)
+        algorithm = FederatedLearningClientSide(False, federated_train_data, n_features, seed)
         state = algorithm.initialize()
         hyperparameter_specs_str = "b_{}".format(str(beta))
         super().__init__(name, algorithm, state, hyperparameter_specs_str)

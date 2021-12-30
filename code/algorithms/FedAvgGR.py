@@ -4,9 +4,9 @@ from code.tensorflow.FLClientSide import FederatedLearningClientSide
 
 
 class FedAvgGR(FederatedLearningAlgorithm):  # Global Reweighting
-    def __init__(self, federated_train_data, n_features):
+    def __init__(self, federated_train_data, n_features, seed):
         name = "fedavg_gr"
-        algorithm = FederatedLearningClientSide("GR", federated_train_data, n_features)
+        algorithm = FederatedLearningClientSide("GR", federated_train_data, n_features, seed)
         state = algorithm.initialize()
         super().__init__(name, algorithm, state)
 

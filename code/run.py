@@ -39,7 +39,7 @@ def run(dataset, num_rounds, num_runs, aggregation_metrics, alpha=None):
         sensitive_idx = [df.columns.get_loc(s.name) for s in dataset.sensitive_attributes]
         federated_train_data = make_federated_data(sensitive_idx, clients_dataset, clients_dataset.client_ids[0:1], n_features, seed)
         weights_local = dataset.get_weights_local(clients_dataset_x_y_label)
-        fls = create_fls(federated_train_data, n_features, dataset, aggregation_metrics)
+        fls = create_fls(federated_train_data, n_features, dataset, aggregation_metrics, seed)
 
         for round_ in range(num_rounds):
             print('round {:2d}'.format(round_))
@@ -71,26 +71,25 @@ def set_random_seeds(seed_value):
     tf.compat.v1.keras.backend.set_session(sess)
 
 
-def create_fls(federated_train_data, n_features, dataset, aggregation_metrics):
-    fls = []
-    """
+def create_fls(federated_train_data, n_features, dataset, aggregation_metrics, seed):
     fls = [
-        FedAvg(federated_train_data, n_features),
-        FedAvgGR(federated_train_data, n_features),
-        FedAvgLR(federated_train_data, n_features)
+        FedAvg(federated_train_data, n_features, seed),
+        FedAvgGR(federated_train_data, n_features, seed),
+        FedAvgLR(federated_train_data, n_features, seed)
     ]
 
     # FedMom
     for beta in [0.7, 0.8, 0.9, 0.99]:
-        fls.append(FedMom(federated_train_data, n_features, dataset, beta=beta))
-    """
+        fls.append(FedMom(federated_train_data, n_features, seed, dataset, beta=beta))
+
     for metric in aggregation_metrics:
         metric.reset()
 
     for beta in [0.7, 0.8, 0.9, 0.99]:
         for lambda_exponential in [0.04, 0.045, 0.05]:
-            fls.append(FairFate(federated_train_data, n_features, dataset, aggregation_metrics, lambda_exponential=lambda_exponential, beta=beta))
+            fls.append(FairFate(federated_train_data, n_features, seed, dataset, aggregation_metrics, lambda_exponential=lambda_exponential, beta=beta))
 
+    fls = [FairFate(federated_train_data, n_features, seed, dataset, aggregation_metrics, lambda_exponential=0.04, beta=0.99)]
     return fls
 
 

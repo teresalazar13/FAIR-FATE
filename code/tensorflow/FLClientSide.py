@@ -5,16 +5,17 @@ from code.tensorflow.models import model_fn
 
 
 class FederatedLearningClientSide:
-    def __init__(self, type_fairness, federated_train_data, input_layer_shape):
+    def __init__(self, type_fairness, federated_train_data, input_layer_shape, seed):
         type_fairness = type_fairness
         federated_train_data = federated_train_data
         input_layer_shape = input_layer_shape
+        seed = seed
 
         tf_dataset_type = tff.SequenceType(federated_train_data[0].element_spec)
 
         @tff.tf_computation
         def server_init():
-            model = model_fn(federated_train_data, input_layer_shape)
+            model = model_fn(federated_train_data, input_layer_shape, seed)
             return model.trainable_variables
 
         model_weights_type = server_init.type_signature.result
@@ -65,7 +66,7 @@ class FederatedLearningClientSide:
 
         @tff.tf_computation(tf_dataset_type, model_weights_type)
         def client_update_fn(tf_dataset, server_weights):
-            model = model_fn(federated_train_data, input_layer_shape)
+            model = model_fn(federated_train_data, input_layer_shape, seed)
             client_optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
 
             return client_update(model, tf_dataset, server_weights, client_optimizer)
