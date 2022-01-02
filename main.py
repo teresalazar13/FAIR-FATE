@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     # FAIR-FATE
     aggregation_metrics = [
-        #GroupBasedMetric("SP", PosSens(), Sens()),
+        GroupBasedMetric("SP", PosSens(), Sens()),
         #GroupBasedMetric("TPR", TP(), FN()),
         #GroupBasedMetric("FPR", FP(), TN())
         #SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())])
@@ -25,5 +25,5 @@ if __name__ == '__main__':
 
     #plot(dataset.name, 10, ["TPR_ratio"])
 
-    for alpha in [0.5, 1, None]:
+    for alpha in [0.25, 0.5, None]:
         run(dataset, 50, 10, aggregation_metrics, alpha=alpha)
