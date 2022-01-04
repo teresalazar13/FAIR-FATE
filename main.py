@@ -23,7 +23,7 @@ def main(args):
     n_runs = int(args.n_runs)
     n_rounds = int(args.n_rounds)
     run(dataset, n_rounds, n_runs, fl, alpha=alpha)
-    #plot(dataset.name, 10, ["SP_ratio"])
+    # plot(dataset.name, 10, ["SP_ratio"])
 
 
 def get_dataset(dataset_name):
@@ -79,7 +79,6 @@ def get_aggregation_metrics(metrics_string_array):
             aggregation_metrics.append(SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())]))
 
     return aggregation_metrics
-
 
 
 def get_arguments():
