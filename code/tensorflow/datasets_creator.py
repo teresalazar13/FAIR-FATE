@@ -4,7 +4,7 @@ import tensorflow as tf
 import tensorflow_federated as tff
 
 
-def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, weights_local):
+def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_local, weights_global):
     n_instances_client = int(np.floor(len(x_train) / number_of_clients))
     client_train_dataset_ = collections.OrderedDict()
     client_train_dataset_x_y_label = []
@@ -21,8 +21,8 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, we
         data = collections.OrderedDict((
             ('y', y_train[start:end]),
             ('x', x_train[start:end]),
-            ('reweighting_weights_global', tf.cast(weights_global[i - 1], tf.float32)),
-            ('reweighting_weights_local', tf.cast(weights_local[i - 1], tf.float32))
+            ('reweighting_weights_local', tf.cast(weights_local[i - 1], tf.float32)),
+            ('reweighting_weights_global', tf.cast(weights_global[i - 1], tf.float32))
         ))
         client_train_dataset_[client_name] = data
 
@@ -34,7 +34,7 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_global, we
     # TODO - TestClientData? instead of ClientData
 
 
-def get_tf_train_dataset_distributions(x_train, y_train, number_of_clients, weights_global, weights_local):
+def get_tf_train_dataset_distributions(x_train, y_train, number_of_clients, weights_local, weights_global):
     client_train_dataset_ = collections.OrderedDict()
     client_train_dataset_x_y_label = []
 
@@ -49,8 +49,8 @@ def get_tf_train_dataset_distributions(x_train, y_train, number_of_clients, weig
         data = collections.OrderedDict((
             ('y', y_train_client),
             ('x', x_train_client),
-            ('reweighting_weights_global', tf.cast(weights_global[i - 1], tf.float32)),
-            ('reweighting_weights_local', tf.cast(weights_local[i - 1], tf.float32))
+            ('reweighting_weights_local', tf.cast(weights_local[i - 1], tf.float32)),
+            ('reweighting_weights_global', tf.cast(weights_global[i - 1], tf.float32))
         ))
         client_train_dataset_[client_name] = data
 

@@ -6,14 +6,19 @@ import numpy as np
 
 
 class FedAvg(FederatedLearningAlgorithm):
-    def __init__(self, federated_train_data, n_features, seed):
+    def __init__(self, dataset):
         name = "fedavg"
-        algorithm = FederatedLearningClientSide(False, federated_train_data, n_features, seed)
-        state = algorithm.initialize()
-        super().__init__(name, algorithm, state)
+        super().__init__(name)
 
-    def update(self, weights, n_features, unused_x_val, unused_y_val, clients_data_size):
-        return fed_avg_update(weights, n_features, clients_data_size)
+        self.dataset = dataset
+
+    def reset(self, federated_train_data, seed):
+        algorithm = FederatedLearningClientSide(False, federated_train_data, self.dataset.n_features, seed)
+        state = algorithm.initialize()
+        super().reset_algorithm(algorithm, state)
+
+    def update(self, weights, unused_x_val, unused_y_val, clients_data_size):
+        return fed_avg_update(weights, self.dataset.n_features, clients_data_size)
 
 
 def fed_avg_update(weights, n_features, clients_data_size):

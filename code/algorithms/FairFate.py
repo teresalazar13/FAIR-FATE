@@ -4,20 +4,34 @@ from code.tensorflow.FederatedFairMomentum import FederatedFairMomentum
 
 
 class FairFate(FederatedLearningAlgorithm):
-    def __init__(self, federated_train_data, n_features, seed, dataset, aggregation_metrics, lambda_exponential=None, lambda_fixed=None, beta=.9):
+    def __init__(self, dataset, beta, lambda_init, aggregation_metrics):
         name = "fair_fate"
-        algorithm = FederatedLearningClientSide(False, federated_train_data, n_features, seed)
+        hyperparameter_specs_str = get_hyperparameter_specs_str(beta, lambda_init, aggregation_metrics)
+        super().__init__(name, hyperparameter_specs_str)
+
+        self.dataset = dataset
+        self.beta = beta
+        self.lambda_init = lambda_init
+        self.aggregation_metrics = aggregation_metrics
+        self.ffm = None
+
+    def reset(self, federated_train_data, seed):
+        algorithm = FederatedLearningClientSide(False, federated_train_data, self.dataset.n_features, seed)
         state = algorithm.initialize()
-        aggregation_metrics_string = "-".join([metric.name for metric in aggregation_metrics])
-        lambda_ = "e{}".format(lambda_exponential)
-        if not lambda_exponential:
-            lambda_ = "f{}".format(lambda_fixed)
-        hyperparameter_specs_str = "l_{}_b_{}_{}".format(str(lambda_), str(beta), aggregation_metrics_string)
-        super().__init__(name, algorithm, state, hyperparameter_specs_str)
+        super().reset_algorithm(algorithm, state)
 
-        self.ffm = FederatedFairMomentum(state, dataset, aggregation_metrics, beta=beta, lambda_exponential=lambda_exponential, lambda_fixed=lambda_fixed)
+        for metric in self.aggregation_metrics:
+            metric.reset()
+        self.ffm = FederatedFairMomentum(state, self.dataset, self.aggregation_metrics, beta=self.beta, lambda_init=self.lambda_init)
 
-    def update(self, weights, n_features, x_val, y_val, clients_data_size):
+    def update(self, weights, x_val, y_val, clients_data_size):
         print("\nLambda: {}".format(round(self.ffm.lambda_, 2)))
 
-        return self.ffm.update_model(weights, n_features, x_val, y_val, clients_data_size)
+        return self.ffm.update_model(weights, self.dataset.n_features, x_val, y_val, clients_data_size)
+
+
+def get_hyperparameter_specs_str(beta, lambda_init, aggregation_metrics):
+    aggregation_metrics_string = "-".join([metric.name for metric in aggregation_metrics])
+    lambda_ = "e{}".format(lambda_init)
+
+    return "l_{}_b_{}_{}".format(str(lambda_), str(beta), aggregation_metrics_string)

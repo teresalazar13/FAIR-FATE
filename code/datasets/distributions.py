@@ -3,15 +3,15 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def get_x_dirichlet(random_state, alpha, dataset, x_train, y_train):
+def get_x_dirichlet(seed, alpha, dataset, x_train, y_train):
     num_clients = dataset.number_of_clients
     num_classes = len(dataset.combs)
-    np.random.seed(random_state)
+    np.random.seed(seed)
     s = np.random.dirichlet(np.ones(num_clients) * alpha, num_classes)
     plot_distributions(num_clients, dataset.combs, s)
 
     df = join_x_and_y(dataset, x_train, y_train)
-    df.sample(frac=1)  # shuffle
+    df.sample(frac=1, random_state=seed)  # shuffle
 
     x_train_dirichlet = [[] for _ in range(num_clients)]
     y_train_dirichlet = [[] for _ in range(num_clients)]

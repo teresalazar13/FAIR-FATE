@@ -37,9 +37,9 @@ def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fai
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
-    plot_results(dfs, fls, './datasets/{}/rounds_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
-    get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
-    plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}/pareto_front_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), "ACC", fairness_metrics[0])
+    #plot_results(dfs, fls, './datasets/{}/rounds_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
+    #get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
+    #plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}/pareto_front_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), "ACC", fairness_metrics[0])
 
 
 def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
@@ -87,6 +87,8 @@ def get_avg_df(fl, dataset_name, num_runs, metric_results, fairness_metrics_stri
         filename = get_filename(dataset_name, run_num, fl, fairness_metrics_string, is_baseline)
         df = pd.read_csv(filename)
         dfs.append(df)
+        for metric in metric_results:
+            print("{} ({}) - {}: {}+-{}".format(fl, run_num, metric, round(df[metric].iloc[-1], 2), round(df[metric].iloc[-1], 2)))
 
     df_concat = pd.concat((dfs))
     df_concat = df_concat.groupby(df_concat.index)

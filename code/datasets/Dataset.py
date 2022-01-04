@@ -11,9 +11,12 @@ class Dataset:
                  num_clients_per_round, metric):
         self.name = name
         self.sensitive_attributes = sensitive_attributes
+        df = pd.read_csv('./datasets/{}/{}.csv'.format(self.name, self.name))
+        self.sensitive_idx = [df.columns.get_loc(s.name) for s in sensitive_attributes]
         self.target = target
         self.cat_columns = cat_columns
         self.all_columns = all_columns
+        self.n_features = len(all_columns)
         self.number_of_clients = number_of_clients
         self.num_clients_per_round = num_clients_per_round
         self.metric = metric
@@ -49,7 +52,8 @@ class Dataset:
 
         return df
 
-    def train_val_test_split(self, df, seed):
+    def train_val_test_split(self, seed):
+        df = self.preprocess()
         X = df.loc[:, df.columns != self.target.name].to_numpy()
         y = df[self.target.name].to_numpy()
         x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=seed)
@@ -140,19 +144,20 @@ class Dataset:
         raise NotImplementedError("Must override update")
 
 
+# comb = {"gender": "Female", "income": ">50K"}
 def get_weight(df, comb):
     df_temp = df.copy(deep=True)
-    ououou = 1
+    expected = 1
 
-    for k, [v, _, _] in comb.items():
-        df_temp = df_temp[df_temp[k] == v]
-        ououou = ououou * (len(df[df[k] == v]) / len(df))
+    for attribute_name, [attribute_value, _, _] in comb.items():
+        df_temp = df_temp[df_temp[attribute_name] == attribute_value]
+        expected = expected * (len(df[df[attribute_name] == attribute_value]) / len(df))
 
-    eeee = len(df_temp) / len(df)
-    if eeee == 0 or ououou == 0:
+    observed = len(df_temp) / len(df)
+    if observed == 0 or expected == 0:
         weight = 1.0
     else:
-        weight = ououou / eeee
+        weight = expected / observed
 
     return weight
 

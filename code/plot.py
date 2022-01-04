@@ -9,8 +9,8 @@ def plot(dataset_name, num_runs, fairness_metrics, alpha=None):
 
     fls_fair_fate = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
-        for lambda_exponential in [0.04, 0.045, 0.05]:
-            fl = "fair_fate_l_e{}_b_{}_{}".format(str(lambda_exponential), str(beta), fairness_metrics_string)
+        for lambda_init in [0.035, 0.04, 0.045, 0.047, 0.05]:
+            fl = "fair_fate_l_e{}_b_{}_{}".format(str(lambda_init), str(beta), fairness_metrics_string)
             fls_fair_fate.append(fl)
 
     fls_fedmom = []
