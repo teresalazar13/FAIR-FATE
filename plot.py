@@ -32,4 +32,4 @@ def plot(dataset_name, num_runs, fairness_metrics, alpha=None):
 
 
 if __name__ == '__main__':
-    plot(Compas().name, 10, ["EQO_ratio"])
+    plot(Adult().name, 10, ["EQO_ratio"], alpha=0.25)
