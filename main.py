@@ -1,6 +1,5 @@
 from code.datasets.Adult import Adult
 from code.datasets.Compas import Compas
-from code.plot import plot
 from code.plots.pie_chart import create_stats_sensitive_distribution_all
 from code.metrics.GroupBasedMetric import GroupBasedMetric, PosSens, Sens, TP, FN, FP, TN
 from code.metrics.SuperGroupBasedMetric import SuperGroupBasedMetric
@@ -23,7 +22,6 @@ def main(args):
     n_runs = int(args.n_runs)
     n_rounds = int(args.n_rounds)
     run(dataset, n_rounds, n_runs, fl, alpha=alpha)
-    # plot(dataset.name, 10, ["SP_ratio"])
 
 
 def get_dataset(dataset_name):
