@@ -22,7 +22,7 @@ def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fai
 
     #plot_results(dfs, fls, './datasets/{}/rounds_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
     #get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
-    #plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}/pareto_front_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), "ACC", fairness_metrics[0])
+    plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}/pareto_front_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), "ACC", fairness_metrics[0])
 
 
 def get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics, is_baseline):
