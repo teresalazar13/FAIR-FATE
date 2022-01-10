@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results):
+def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results, alpha):
     fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results, fairness_metrics, True)["ACC"].iloc[-1]
     dfs = get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics, True)
 
@@ -20,10 +20,8 @@ def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fai
     dfs.append(best_df_fair_fate)
     fls.append(best_fl_fair_fate)
 
-    #plot_results(dfs, fls, './datasets/{}/rounds_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
-    #get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), metrics_results)
-    plot_pareto_front(dfs_fair_fate, fls_fair_fate, './datasets/{}/pareto_front_{}_alpha-{}.png'.format(dataset_name, fairness_metrics_string, alpha), "ACC", fairness_metrics[0])
-
+    #plot_results(dfs, fls, './datasets/{}/rounds_plot.png'.format(dataset_name), metrics_results)
+    #get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot.png'.format(dataset_name), metrics_results)
 
 def get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics, is_baseline):
     dfs = []
@@ -67,34 +65,6 @@ def get_best_fl_group(fls, dfs, metrics, best, fedavg_acc):
     max_idx = np.argmax(improvs_fair_fate)
 
     return dfs[max_idx], fls[max_idx]
-
-
-def plot_pareto_front(dfs, fls, filename, metric_a, metric_b):
-    x = []
-    y = []
-    labels = []
-    costs = []
-
-    for i in range(len(dfs)):
-        if "b_0.7_" in fls[i]:
-            labels.append(fls[i])
-            value_a = dfs[i][metric_a].iloc[-1]
-            value_b = dfs[i][metric_b].iloc[-1]
-            x.append(value_a)
-            y.append(value_b)
-            costs.append([x, y])
-
-    plt.figure(figsize=(5, 5))
-    plt.xlabel(metric_a)
-    plt.ylabel(metric_b)
-    plt.scatter(x, y)
-
-    for i in range(len(x)):
-        plt.annotate(labels[i], (x[i], y[i]))
-
-    plt.savefig(filename, bbox_inches='tight')
-    # plt.show()
-
 
 def get_avg_df(fl, dataset_name, num_runs, metrics_results, fairness_metrics, is_baseline):
     dfs = []
