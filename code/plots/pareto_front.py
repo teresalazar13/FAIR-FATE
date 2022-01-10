@@ -34,10 +34,10 @@ def plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate_alpha_metric, lambd
     plt.tight_layout(h_pad=0.75, w_pad=0.75)
 
     lambda_handles = [plt.plot([], [], color=colors[i], marker="o", ls="")[0] for i in range(len(colors))]
-    lambda_legend = plt.legend(handles=lambda_handles, labels=lambdas_labels, loc=(-2.65, -0.45), prop={'size': 11}, ncol=len(lambda_handles))
+    lambda_legend = plt.legend(handles=lambda_handles, labels=lambdas_labels, loc=(-2.63, -0.63), prop={'size': 11}, ncol=len(lambda_handles))
     plt.gca().add_artist(lambda_legend)
     beta_handles = [plt.plot([], [], color="black", marker=markers[i], ls="")[0] for i in range(len(markers[:len(betas_labels)]))]
-    beta_legend = plt.legend(handles=beta_handles, labels=betas_labels, loc=(-2.65, -0.32), prop={'size': 11}, ncol=len(betas_labels))
+    beta_legend = plt.legend(handles=beta_handles, labels=betas_labels, loc=(-1.6, -0.45), prop={'size': 11}, ncol=len(betas_labels))
     plt.gca().add_artist(beta_legend)
 
     filename = './datasets/{}/pareto_fronts.png'.format(dataset_name)
