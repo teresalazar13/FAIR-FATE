@@ -67,13 +67,14 @@ def get_fl(dataset, fl_string, beta_string, lambda_string, metrics_string_array)
 
 def get_aggregation_metrics(metrics_string_array):
     aggregation_metrics = []
-
     for metric_string in metrics_string_array:
         if metric_string == "SP":
             aggregation_metrics.append(GroupBasedMetric("SP", PosSens(), Sens()))
         elif metric_string == "TPR":
             aggregation_metrics.append(GroupBasedMetric("TPR", TP(), FN()))
-        else:
+        elif metric_string == "FPR":
+            aggregation_metrics.append(GroupBasedMetric("FPR", FP(), TN()))
+        elif metric_string == "EQO":
             aggregation_metrics.append(SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()), GroupBasedMetric("FPR", FP(), TN())]))
 
     return aggregation_metrics
