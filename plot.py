@@ -54,4 +54,4 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics):
 
 if __name__ == '__main__':
     #plot(Compas().name, 10, ["SP_ratio"])
-    plot_paretos(Compas().name, 10, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]])
+    plot_paretos(Adult().name, 10, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]])
