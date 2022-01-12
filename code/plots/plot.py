@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results, alpha):
+def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results):
     fedavg_acc = get_avg_df(fls[0], dataset_name, num_runs, metrics_results, fairness_metrics, True)["ACC"].iloc[-1]
     dfs = get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics, True)
 
@@ -22,6 +22,7 @@ def plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fai
 
     #plot_results(dfs, fls, './datasets/{}/rounds_plot.png'.format(dataset_name), metrics_results)
     #get_last_round_plot(dfs, fls, './datasets/{}/last_round_plot.png'.format(dataset_name), metrics_results)
+
 
 def get_dfs(fls, dataset_name, num_runs, metrics_results, fairness_metrics, is_baseline):
     dfs = []
@@ -49,6 +50,7 @@ def get_best_fl(dfs, fls_alg, dfs_alg, fairness_metrics_all, fedavg_acc):
 def get_best_fl_group(fls, dfs, metrics, best, fedavg_acc):
     improvs_fair_fate = []
 
+    print("\nImprovements:")
     for i in range(len(dfs)):
         df = dfs[i]
         values = [df[metric].iloc[-1] for metric in metrics]
@@ -57,14 +59,14 @@ def get_best_fl_group(fls, dfs, metrics, best, fedavg_acc):
 
         for j in range(len(metrics)):
             value = df[metrics[j]].iloc[-1]
-            improv += value / best[j] - 1
+            improv += value - best[j]
         improvs_fair_fate.append(improv)
-        # print(fls[i])
         # print(values)
-        print(round(improv, 2))
+        print("F:{:.2f} | ACC:{:.2f} | {}".format(improv, acc-fedavg_acc, fls[i]))
     max_idx = np.argmax(improvs_fair_fate)
 
     return dfs[max_idx], fls[max_idx]
+
 
 def get_avg_df(fl, dataset_name, num_runs, metrics_results, fairness_metrics, is_baseline):
     dfs = []

@@ -5,17 +5,7 @@ from random import randint
 from code.plots.plot import get_dfs
 
 
-def get_random_colors(size):
-    colors = []
-    random.seed(10)
-
-    for i in range(size):
-        colors.append('#%06X' % randint(0, 0xFFFFFF))
-
-    return colors
-
-
-def plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate_alpha_metric, lambdas_, betas):
+def plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate_alpha_metric, metric_a, metric_b, lambdas_, betas, filename):
     metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio", "TPR_ratio", "EQO_ratio"]
     plot_index = 1
     plt.figure(figsize=(8, 8))
@@ -26,26 +16,39 @@ def plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate_alpha_metric, lambd
     markers = ["o", "+", "*", "x", "v"]
 
     for fls_fair_fate in fls_fair_fate_alpha_metric:
-        alpha, metric, fls = fls_fair_fate
-        dfs_fair_fate = get_dfs(fls, dataset_name, num_runs, metrics_results, [metric], False)
-        plot_pareto_front(dfs_fair_fate, fls, "ACC", metric, alpha, plot_index, lambdas_, betas, colors, markers)
+        alpha, metrics_F, fls = fls_fair_fate
+        dfs_fair_fate = get_dfs(fls, dataset_name, num_runs, metrics_results, metrics_F, False)
+        plot_pareto_front(dfs_fair_fate, fls, metrics_F, metric_a, metric_b, alpha, plot_index, lambdas_, betas, colors, markers)
         plot_index += 1
 
     plt.tight_layout(h_pad=0.75, w_pad=0.75)
 
+    if dataset_name == "compas":
+        coords = [(-2.63, -0.63), (-1.6, -0.45)]
+    else:
+        coords = [(-2.45, -0.63), (-1.48, -0.45)]
     lambda_handles = [plt.plot([], [], color=colors[i], marker="o", ls="")[0] for i in range(len(colors))]
-    lambda_legend = plt.legend(handles=lambda_handles, labels=lambdas_labels, loc=(-2.63, -0.63), prop={'size': 11}, ncol=len(lambda_handles))
+    lambda_legend = plt.legend(handles=lambda_handles, labels=lambdas_labels, loc=coords[0], prop={'size': 11}, ncol=len(lambda_handles))
     plt.gca().add_artist(lambda_legend)
     beta_handles = [plt.plot([], [], color="black", marker=markers[i], ls="")[0] for i in range(len(markers[:len(betas_labels)]))]
-    beta_legend = plt.legend(handles=beta_handles, labels=betas_labels, loc=(-1.6, -0.45), prop={'size': 11}, ncol=len(betas_labels))
+    beta_legend = plt.legend(handles=beta_handles, labels=betas_labels, loc=coords[1], prop={'size': 11}, ncol=len(betas_labels))
     plt.gca().add_artist(beta_legend)
 
-    filename = './datasets/{}/pareto_fronts.png'.format(dataset_name)
-    plt.savefig(filename, bbox_inches='tight')
+    plt.savefig('./datasets/{}/{}.png'.format(dataset_name, filename), bbox_inches='tight')
     # plt.show()
 
 
-def plot_pareto_front(dfs, fls, metric_a, metric_b, alpha, plot_index, lambdas_set, betas_set, colors, markers):
+def get_random_colors(size):
+    colors = []
+    random.seed(10)
+
+    for i in range(size):
+        colors.append('#%06X' % randint(0, 0xFFFFFF))
+
+    return colors
+
+
+def plot_pareto_front(dfs, fls, metrics_F, metric_a, metric_b, alpha, plot_index, lambdas_set, betas_set, colors, markers):
     x = []
     y = []
     costs = []
@@ -67,15 +70,14 @@ def plot_pareto_front(dfs, fls, metric_a, metric_b, alpha, plot_index, lambdas_s
         y.append(value_b)
         costs.append([x, y])
 
-    fairness_metric = metric_b.split("_")[0]
     if alpha:
-        title = r'$\alpha={}$'.format(alpha)
+        title = r'$\alpha$={}, $F$={{{}}}'.format(alpha, ",".join(metrics_F).replace("_ratio", ""))
     else:
-        title = "RND"
+        title = r'RND, $F$={{{}}}'.format(", ".join(metrics_F).replace("_ratio", ""))
     plt.subplot(3, 3, plot_index)
     plt.title(title)
-    plt.xlabel(metric_a)
-    plt.ylabel(fairness_metric)
+    plt.xlabel(metric_a.replace("_ratio", ""))
+    plt.ylabel(metric_b.replace("_ratio", ""))
     plt.xticks(fontsize=8)
     plt.yticks(fontsize=8)
 
