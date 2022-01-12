@@ -5,7 +5,7 @@ from random import randint
 from code.plots.plot import get_dfs
 
 
-def plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate_alpha_metric, metric_a, metric_b, lambdas_, betas, filename):
+def plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate_alpha_metric, metric_a, lambdas_, betas, filename):
     metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio", "TPR_ratio", "EQO_ratio"]
     plot_index = 1
     plt.figure(figsize=(8, 8))
@@ -18,7 +18,7 @@ def plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate_alpha_metric, metri
     for fls_fair_fate in fls_fair_fate_alpha_metric:
         alpha, metrics_F, fls = fls_fair_fate
         dfs_fair_fate = get_dfs(fls, dataset_name, num_runs, metrics_results, metrics_F, False)
-        plot_pareto_front(dfs_fair_fate, fls, metrics_F, metric_a, metric_b, alpha, plot_index, lambdas_, betas, colors, markers)
+        plot_pareto_front(dfs_fair_fate, fls, metrics_F, metric_a, alpha, plot_index, lambdas_, betas, colors, markers)
         plot_index += 1
 
     plt.tight_layout(h_pad=0.75, w_pad=0.75)
@@ -48,7 +48,7 @@ def get_random_colors(size):
     return colors
 
 
-def plot_pareto_front(dfs, fls, metrics_F, metric_a, metric_b, alpha, plot_index, lambdas_set, betas_set, colors, markers):
+def plot_pareto_front(dfs, fls, metric_F, metric_a, alpha, plot_index, lambdas_set, betas_set, colors, markers):
     x = []
     y = []
     costs = []
@@ -65,19 +65,20 @@ def plot_pareto_front(dfs, fls, metrics_F, metric_a, metric_b, alpha, plot_index
         labels.append(r'$\lambda={}-\beta={}$'.format(lambda_, beta))
 
         value_a = dfs[i][metric_a].iloc[-1]
-        value_b = dfs[i][metric_b].iloc[-1]
+        value_b = dfs[i][metric_F].iloc[-1]
         x.append(value_a)
         y.append(value_b)
         costs.append([x, y])
 
+    metric_fairness = metric_F[0].replace("_ratio", "")
     if alpha:
-        title = r'$\alpha$={}, $F$={{{}}}'.format(alpha, ",".join(metrics_F).replace("_ratio", ""))
+        title = r'$\alpha$={}, $F$={{{}}}'.format(alpha, metric_fairness)
     else:
-        title = r'RND, $F$={{{}}}'.format(", ".join(metrics_F).replace("_ratio", ""))
+        title = r'RND, $F$={{{}}}'.format(metric_fairness)
     plt.subplot(3, 3, plot_index)
     plt.title(title)
     plt.xlabel(metric_a.replace("_ratio", ""))
-    plt.ylabel(metric_b.replace("_ratio", ""))
+    plt.ylabel(metric_fairness)
     plt.xticks(fontsize=8)
     plt.yticks(fontsize=8)
 

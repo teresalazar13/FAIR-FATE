@@ -32,28 +32,26 @@ def plot(dataset_name, num_runs, fairness_metrics, alpha=None):
     plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results)
 
 
-def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, metric_b, filename):
+def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
     lambdas_ = [0.035, 0.04, 0.045, 0.047, 0.05]
     betas = [0.7, 0.8, 0.9, 0.99]
     fls_fair_fate = []
 
     for alpha in alphas:
-        for metrics in metrics_F:
+        for metric_F in metrics_F:
             fls_fair_fate_alpha_metric = []
             for beta in betas:
                 for lambda_init in lambdas_:
-                    fairness_metrics_string = "-".join([f.split("_")[0] for f in metrics])
-                    fl = "fair_fate_l_e{}_b_{}_{}".format(str(lambda_init), str(beta), fairness_metrics_string)
+                    fl = "fair_fate_l_e{}_b_{}_{}".format(str(lambda_init), str(beta), metric_F[0].replace("_ratio", ""))
                     if alpha:
                         fl = "{}_alpha-{}".format(fl, alpha)
                     fls_fair_fate_alpha_metric.append(fl)
-            fls_fair_fate.append([alpha, metrics, fls_fair_fate_alpha_metric])
+            fls_fair_fate.append([alpha, metric_F, fls_fair_fate_alpha_metric])
 
-    plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate, metric_a, metric_b, lambdas_, betas, filename)
+    plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate, metric_a, lambdas_, betas, filename)
 
 
 if __name__ == '__main__':
-    plot(Adult().name, 10, ["TPR_ratio"])
-    #plot(Adult().name, 10, ["TPR_ratio", "FPR_ratio"], alpha=1.0)
+    #plot(Adult().name, 10, ["EQO_ratio"])
     #plot_paretos(Adult().name, 10, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
-    #plot_paretos(Compas().name, 10, [None, 0.5, 0.25], [["EQO_ratio"], ["TPR_ratio", "FPR_ratio"]], "TPR_ratio", "FPR_ratio", "pareto_fronts-compas-EQO")
+    plot_paretos(Compas().name, 10, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")
