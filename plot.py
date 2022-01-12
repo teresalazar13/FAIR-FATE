@@ -53,7 +53,7 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, metric_b, 
 
 
 if __name__ == '__main__':
-    plot(Compas().name, 10, ["TPR_ratio"], alpha=0.25)
-    #plot(Compas().name, 10, ["TPR_ratio", "FPR_ratio"])
+    plot(Adult().name, 10, ["TPR_ratio"])
+    #plot(Adult().name, 10, ["TPR_ratio", "FPR_ratio"], alpha=1.0)
     #plot_paretos(Adult().name, 10, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
     #plot_paretos(Compas().name, 10, [None, 0.5, 0.25], [["EQO_ratio"], ["TPR_ratio", "FPR_ratio"]], "TPR_ratio", "FPR_ratio", "pareto_fronts-compas-EQO")

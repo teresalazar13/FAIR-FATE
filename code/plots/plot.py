@@ -60,9 +60,10 @@ def get_best_fl_group(fls, dfs, metrics, best, fedavg_acc):
         for j in range(len(metrics)):
             value = df[metrics[j]].iloc[-1]
             improv += value - best[j]
+        improv = improv / len(metrics)
         improvs_fair_fate.append(improv)
         # print(values)
-        print("F:{:.2f} | ACC:{:.2f} | {}".format(improv, acc-fedavg_acc, fls[i]))
+        print("F:{} | ACC:{} | {}".format(round(improv, 2), round(acc-fedavg_acc, 2), fls[i]))
     max_idx = np.argmax(improvs_fair_fate)
 
     return dfs[max_idx], fls[max_idx]
@@ -72,12 +73,16 @@ def get_avg_df(fl, dataset_name, num_runs, metrics_results, fairness_metrics, is
     dfs = []
     print(fl)
     print(fairness_metrics)
+    metrics_values = [0 for _ in range(num_runs)]
     for run_num in range(1, num_runs + 1):
         filename = get_filename(dataset_name, run_num, fl, is_baseline)
         df = pd.read_csv(filename)
         dfs.append(df)
         for metric in fairness_metrics:
-            print("{}".format(round(df[metric].iloc[-1], 2)))
+            metrics_values[run_num - 1] += df[metric].iloc[-1]
+
+    for run_num in range(num_runs):
+        print("{}".format(round(metrics_values[run_num] / len(fairness_metrics), 2)))
 
     df_concat = pd.concat((dfs))
     df_concat = df_concat.groupby(df_concat.index)
