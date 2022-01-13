@@ -58,8 +58,7 @@ do
   done
 done
 
-:'
-
+: '
 DATASET=adult
 
 python3 main.py --dataset $DATASET --fl FedAvg --n_runs $N_RUNS --n_rounds $N_ROUNDS
