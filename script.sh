@@ -1,6 +1,7 @@
 N_RUNS=20
 N_ROUNDS=50
 
+: '
 DATASET=adult
 ALPHA=1.0
 
@@ -19,6 +20,7 @@ do
     done
   done
 done
+'
 
 DATASET=adult
 ALPHA=0.5
