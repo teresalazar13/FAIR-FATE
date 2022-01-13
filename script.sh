@@ -20,6 +20,7 @@ do
   done
 done
 
+DATASET=adult
 ALPHA=0.5
 
 python3 main.py --dataset $DATASET --fl FedAvg --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
@@ -38,24 +39,6 @@ do
   done
 done
 
-
-python3 main.py --dataset $DATASET --fl FedAvg --n_runs $N_RUNS --n_rounds $N_ROUNDS
-python3 main.py --dataset $DATASET --fl FedAvgGR --n_runs $N_RUNS --n_rounds $N_ROUNDS
-python3 main.py --dataset $DATASET --fl FedAvgLR --n_runs $N_RUNS --n_rounds $N_ROUNDS
-
-for BETA in 0.7 0.8 0.9 0.99
-do
-	python3 main.py --dataset $DATASET --fl FedMom --beta $BETA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-	for LAMBDA_ in 0.035 0.04 0.045 0.047 0.05
-	do
-	  for METRICS in SP TPR EQO
-	  do
-      python3 main.py --dataset $DATASET --fl FairFate --beta $BETA --lambda_ $LAMBDA_ --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
-    done
-  done
-done
-
-:'
 DATASET=compas
 ALPHA=0.5
 
@@ -75,6 +58,28 @@ do
   done
 done
 
+:'
+
+DATASET=adult
+
+python3 main.py --dataset $DATASET --fl FedAvg --n_runs $N_RUNS --n_rounds $N_ROUNDS
+python3 main.py --dataset $DATASET --fl FedAvgGR --n_runs $N_RUNS --n_rounds $N_ROUNDS
+python3 main.py --dataset $DATASET --fl FedAvgLR --n_runs $N_RUNS --n_rounds $N_ROUNDS
+
+for BETA in 0.7 0.8 0.9 0.99
+do
+	python3 main.py --dataset $DATASET --fl FedMom --beta $BETA --n_runs $N_RUNS --n_rounds $N_ROUNDS
+	for LAMBDA_ in 0.035 0.04 0.045 0.047 0.05
+	do
+	  for METRICS in SP TPR EQO
+	  do
+      python3 main.py --dataset $DATASET --fl FairFate --beta $BETA --lambda_ $LAMBDA_ --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
+    done
+  done
+done
+
+
+DATASET=compas
 ALPHA=0.25
 
 python3 main.py --dataset $DATASET --fl FedAvg --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
@@ -92,6 +97,8 @@ do
     done
   done
 done
+
+DATASET=compas
 
 python3 main.py --dataset $DATASET --fl FedAvg --n_runs $N_RUNS --n_rounds $N_ROUNDS
 python3 main.py --dataset $DATASET --fl FedAvgGR --n_runs $N_RUNS --n_rounds $N_ROUNDS
