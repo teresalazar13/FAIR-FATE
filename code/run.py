@@ -3,7 +3,6 @@ import tensorflow as tf
 import numpy as np
 
 from code.datasets.distributions import get_x_dirichlet
-from code.plots.pie_chart import create_stats_sensitive_distribution
 from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federated_data, get_tf_train_dataset_distributions
 
 
@@ -72,8 +71,6 @@ def get_clients_dataset_temp(alpha, x_train, y_train, x_train_array, y_train_arr
         clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset_distributions(
             x_train_array, y_train_array, n_clients, _weights, _weights
         )
-        # x_ys = [[x_val, y_val, "VAL"], [x_test, y_test, "TEST"], *clients_dataset_x_y_label]
-        # create_stats_sensitive_distribution(x_ys, dataset, alpha, "./datasets/{}/run_{}".format(dataset.name, run))
     else:
         _weights = [[0 for _ in range(len(x_train) // n_clients)] for _ in range(n_clients)]
         clients_dataset, clients_dataset_x_y_label = get_tf_train_dataset(
