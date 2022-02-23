@@ -1,5 +1,6 @@
 from code.datasets.Adult import Adult
 from code.datasets.Compas import Compas
+from code.datasets.Law import Law
 from code.plots.pie_chart import create_stats_sensitive_distribution_all
 from code.metrics.GroupBasedMetric import GroupBasedMetric, PosSens, Sens, TP, FN, FP, TN
 from code.metrics.SuperGroupBasedMetric import SuperGroupBasedMetric
@@ -31,6 +32,8 @@ def get_dataset(dataset_name):
         dataset = Adult()
     elif dataset_name == "compas":
         dataset = Compas()
+    elif dataset_name == "law":
+        dataset = Law()
 
     return dataset
 
@@ -82,7 +85,7 @@ def get_aggregation_metrics(metrics_string_array):
 
 def get_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', choices=["adult", "compas"], required=True, help='dataset name')
+    parser.add_argument('--dataset', choices=["adult", "compas", "law"], required=True, help='dataset name')
     parser.add_argument('--fl', choices=["FedAvg", "FedAvgLR", "FedAvgGR", "FedMom", "FairFate"], required=True,
                         help='Federated Learning algorithm')
     parser.add_argument('--alpha', required=False, help='alpha')

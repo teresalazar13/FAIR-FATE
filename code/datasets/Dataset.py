@@ -8,7 +8,7 @@ import itertools
 
 class Dataset:
     def __init__(self, name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
-                 num_clients_per_round, metric):
+                 num_clients_per_round, num_epochs, learning_rate):
         self.name = name
         self.sensitive_attributes = sensitive_attributes
         df = pd.read_csv('./datasets/{}/{}.csv'.format(self.name, self.name))
@@ -19,7 +19,8 @@ class Dataset:
         self.n_features = len(all_columns)
         self.number_of_clients = number_of_clients
         self.num_clients_per_round = num_clients_per_round
-        self.metric = metric
+        self.num_epochs = num_epochs
+        self.learning_rate = learning_rate
         self.combs = self.create_combinations(True)
         self.combs_without_target = self.create_combinations(False)
 
@@ -38,6 +39,9 @@ class Dataset:
         negative = df[self.target.name] == self.target.negative
         df.loc[positive, self.target.name] = 1.0
         df.loc[negative, self.target.name] = 0.0
+
+        if self.name == "law":  # already clean
+            return df
 
         df[self.cat_columns] = df[self.cat_columns].astype('category')
         df[self.cat_columns] = df[self.cat_columns].apply(lambda x: x.cat.codes)
@@ -60,12 +64,48 @@ class Dataset:
         x_test, x_val, y_test, y_val = train_test_split(x_test, y_test, test_size=0.5, random_state=seed)
         x_train = x_train.astype(np.float32)
         y_train = y_train.astype(np.int32)
+        #print("Train : ", self._calculate_sp(self._create_dataframe_for_eval(self.all_columns, x_train, y_train.reshape(len(y_train), 1)), self))
         x_test = x_test.astype(np.float32)
         y_test = y_test.astype(np.int32).reshape(len(y_test), 1)
+        #print("Test : ", self._calculate_sp(self._create_dataframe_for_eval(self.all_columns, x_test, y_test), self))
         x_val = x_val.astype(np.float32)
         y_val = y_val.astype(np.int32).reshape(len(y_val), 1)
+        #print("Val : ", self._calculate_sp(self._create_dataframe_for_eval(self.all_columns, x_val, y_val), self))
 
         return x_train, y_train, x_test, y_test, x_val, y_val
+
+    def _create_dataframe_for_eval(self, all_columns, x, y):
+        df = pd.DataFrame(data=np.concatenate((x, np.stack(y, axis=0)), axis=1),
+                          columns=all_columns + ["pass_bar"])
+
+        return df
+
+    def _calculate_sp(self, df, dataset):
+        df_temp_unpriv = df.copy(deep=True)
+        df_temp_priv = df.copy(deep=True)
+
+        for s in dataset.sensitive_attributes:
+            df_temp_unpriv = df_temp_unpriv[df_temp_unpriv[s.name] == 0.0]
+            df_temp_priv = df_temp_priv[df_temp_priv[s.name] == 1.0]
+
+        S_0 = len(df_temp_unpriv)
+        S_1 = len(df_temp_priv)
+        df_temp_unpriv = df_temp_unpriv[df_temp_unpriv[dataset.target.name] == 1.0]
+        df_temp_priv = df_temp_priv[df_temp_priv[dataset.target.name] == 1.0]
+        Y_1_S_0 = len(df_temp_unpriv)
+        Y_1_S_1 = len(df_temp_priv)
+
+        print("S_0", S_0)
+        print("Y_1_S_0", Y_1_S_0)
+        print("S_1", S_1)
+        print("Y_1_S_1", Y_1_S_1)
+
+        if S_0 == 0 or S_1 == 0:
+            return 0
+
+        if (Y_1_S_1 / S_1) == 0:
+            return 0
+        return round((Y_1_S_0 / S_0) / (Y_1_S_1 / S_1), 3)
 
     # for global reweighting baseline
     def get_weights_global(self, x_ys, idx):

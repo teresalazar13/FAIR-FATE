@@ -11,7 +11,9 @@ class FedAvgLR(FederatedLearningAlgorithm):  # Local Reweighting
         self.dataset = dataset
 
     def reset(self, federated_train_data, seed):
-        algorithm = FederatedLearningClientSide("LR", federated_train_data, self.dataset.n_features, seed)
+        algorithm = FederatedLearningClientSide(
+            "LR", federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
+        )
         state = algorithm.initialize()
         super().reset_algorithm(algorithm, state)
 

@@ -16,7 +16,9 @@ class FairFate(FederatedLearningAlgorithm):
         self.ffm = None
 
     def reset(self, federated_train_data, seed):
-        algorithm = FederatedLearningClientSide(False, federated_train_data, self.dataset.n_features, seed)
+        algorithm = FederatedLearningClientSide(
+            False, federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
+        )
         state = algorithm.initialize()
         super().reset_algorithm(algorithm, state)
 

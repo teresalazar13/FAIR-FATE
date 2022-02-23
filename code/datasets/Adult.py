@@ -15,9 +15,10 @@ class Adult(Dataset):
                        "native-country"]
         number_of_clients = 15
         num_clients_per_round = 5
-        metric = "SP"
+        num_epochs = 10
+        learning_rate = 0.01
         super().__init__(name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
-                         num_clients_per_round, metric)
+                         num_clients_per_round, num_epochs, learning_rate)
 
     def custom_preprocess(self, df):
         return df

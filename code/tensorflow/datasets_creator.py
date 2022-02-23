@@ -62,8 +62,7 @@ def get_tf_train_dataset_distributions(x_train, y_train, number_of_clients, weig
     # TODO - TestClientData? instead of ClientData
 
 
-def get_client_tf_dataset(sensitive_idx, dataset_for_client, n_features, seed):
-    num_epochs = 10  # local epochs
+def get_client_tf_dataset(sensitive_idx, dataset_for_client, n_features, num_epochs, seed):
     batch_size = 10
     shuffle_buffer = 100
     prefetch_buffer = 10
@@ -83,12 +82,12 @@ def get_client_tf_dataset(sensitive_idx, dataset_for_client, n_features, seed):
     return dataset_for_client.repeat(num_epochs).shuffle(shuffle_buffer, seed=seed).batch(batch_size).map(batch_format_fn).prefetch(prefetch_buffer)
 
 
-def make_federated_data(sensitive_idx, client_data, clients, n_features, seed):
+def make_federated_data(sensitive_idx, client_data, clients, n_features, num_epochs, seed):
     federated_data = []
 
     for i in range(len(clients)):
         federated_data.append(
-            get_client_tf_dataset(sensitive_idx, client_data.create_tf_dataset_for_client(clients[i]), n_features, seed)
+            get_client_tf_dataset(sensitive_idx, client_data.create_tf_dataset_for_client(clients[i]), n_features, num_epochs, seed)
         )
 
     return federated_data

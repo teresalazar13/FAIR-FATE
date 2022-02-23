@@ -9,7 +9,7 @@ from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federate
 def run(dataset, num_rounds, num_runs, fl, alpha=None):
     n_clients = dataset.number_of_clients
 
-    for run in range(10, num_runs + 1):
+    for run in range(1, num_runs + 1):
         print('RUN {:2d}'.format(run))
         seed = run * 10
         set_random_seeds(seed)
@@ -17,7 +17,10 @@ def run(dataset, num_rounds, num_runs, fl, alpha=None):
         x_train_array, y_train_array = get_train_array_alpha(seed, alpha, dataset, x_train, y_train)
         clients_dataset, clients_dataset_x_y_label = get_clients_dataset_temp(alpha, x_train, y_train, x_train_array, y_train_array, n_clients)
         weights_local = dataset.get_weights_local(clients_dataset_x_y_label)
-        federated_train_data = make_federated_data(dataset.sensitive_idx, clients_dataset, clients_dataset.client_ids[0:1], dataset.n_features, seed)
+        federated_train_data = make_federated_data(
+            dataset.sensitive_idx, clients_dataset, clients_dataset.client_ids[0:1], dataset.n_features,
+            dataset.num_epochs, seed
+        )
         fl.reset(federated_train_data, seed)
 
         for round_ in range(num_rounds):
@@ -26,7 +29,9 @@ def run(dataset, num_rounds, num_runs, fl, alpha=None):
             clients = [clients_dataset.client_ids[i] for i in clients_idx]
             weights_global = dataset.get_weights_global([clients_dataset_x_y_label[i] for i in clients_idx], clients_idx)
             clients_dataset = get_clients_dataset(alpha, x_train, y_train, x_train_array, y_train_array, n_clients, weights_local, weights_global)
-            federated_train_data = make_federated_data(dataset.sensitive_idx, clients_dataset, clients, dataset.n_features, seed)
+            federated_train_data = make_federated_data(
+                dataset.sensitive_idx, clients_dataset, clients, dataset.n_features, dataset.num_epochs, seed
+            )
             clients_data_size = [len(client_data) for client_data in [clients_dataset_x_y_label[i][0] for i in clients_idx]]
             fl.iterate(dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size)
 

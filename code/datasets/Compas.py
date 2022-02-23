@@ -24,9 +24,10 @@ class Compas(Dataset):
                        "c_charge_degree", "c_charge_desc", "decile_score"]
         number_of_clients = 10
         num_clients_per_round = 3
-        metric = "SP"
+        num_epochs = 10
+        learning_rate = 0.01
         super().__init__(name, sensitive_attributes, target, cat_columns, all_columns, number_of_clients,
-                         num_clients_per_round, metric)
+                         num_clients_per_round, num_epochs, learning_rate)
 
     def custom_preprocess(self, df):
         return df.drop(["sex-race", "age_cat", "score_text"], axis=1)

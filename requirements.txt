@@ -4,3 +4,4 @@ matplotlib==3.3.3
 tensorflow==2.7.0
 tensorflow-estimator==2.7.0
 tensorflow-federated==0.19.0
+sklearn

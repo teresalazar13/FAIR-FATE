@@ -51,10 +51,11 @@ def calculate_sp(df, dataset):
 # Plot pie chart
 def plot_pie_chart(sp, labels, sizes, plot_filename):
     fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, labels=labels, autopct='%1.1f%%', labeldistance=1.2, startangle=90)
+    ax1.pie(sizes, autopct='%1.1f%%', labeldistance=1.2, startangle=90)
+    plt.legend(labels=labels, loc='lower right', prop={'size': 8})
     ax1.axis('equal')
     plt.title("SP: {}".format(sp))
     plt.rcParams['figure.dpi'] = 300
     plt.rcParams['savefig.dpi'] = 300
     plt.savefig(plot_filename)
-    #plt.show()
+    # plt.show()

@@ -5,10 +5,11 @@ from code.tensorflow.models import model_fn
 
 
 class FederatedLearningClientSide:
-    def __init__(self, type_fairness, federated_train_data, input_layer_shape, seed):
+    def __init__(self, type_fairness, federated_train_data, input_layer_shape, learning_rate, seed):
         type_fairness = type_fairness
         federated_train_data = federated_train_data
         input_layer_shape = input_layer_shape
+        learning_rate = learning_rate
         seed = seed
 
         tf_dataset_type = tff.SequenceType(federated_train_data[0].element_spec)
@@ -35,7 +36,7 @@ class FederatedLearningClientSide:
             client_weights = model.trainable_variables
             tf.nest.map_structure(lambda x, y: x.assign(y), client_weights, server_weights)
 
-            for batch in dataset:
+            for batch in iter(dataset):
                 with tf.GradientTape() as tape:
                     outputs = model._model._keras_model(batch['x'], training=True)
 
@@ -67,7 +68,7 @@ class FederatedLearningClientSide:
         @tff.tf_computation(tf_dataset_type, model_weights_type)
         def client_update_fn(tf_dataset, server_weights):
             model = model_fn(federated_train_data, input_layer_shape, seed)
-            client_optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
+            client_optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate)
 
             return client_update(model, tf_dataset, server_weights, client_optimizer)
 
