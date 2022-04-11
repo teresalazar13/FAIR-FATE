@@ -1,12 +1,13 @@
 from code.plots.pareto_front import plot_pareto_fronts
-from code.plots.plot import plot_avg_results
+from code.plots.plot_results_epochs import plot_results_epochs
+from code.plots.plot import print_avg_results
 from code.datasets.Adult import Adult
 from code.datasets.Compas import Compas
 from code.datasets.Law import Law
 from code.datasets.Dutch import Dutch
 
 
-def plot(dataset_name, num_runs, fairness_metrics, alpha=None):
+def print_results(dataset_name, num_runs, fairness_metrics, alpha=None):
     metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio", "TPR_ratio", "EQO_ratio"]
     metrics_results.extend(fairness_metrics)
     fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
@@ -31,7 +32,7 @@ def plot(dataset_name, num_runs, fairness_metrics, alpha=None):
         for i in range(len(fls_fedmom)):
             fls_fedmom[i] = "{}_alpha-{}".format(fls_fedmom[i], alpha)
 
-    plot_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results)
+    print_avg_results(dataset_name, num_runs, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results)
 
 
 def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
@@ -54,6 +55,45 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
 
 
 if __name__ == '__main__':
-    plot(Dutch().name, 20, ["EQO_ratio"], alpha=0.5)
-    #plot_paretos(Adult().name, 10, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
-    #plot_paretos(Compas().name, 10, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")
+    alpha = None
+    dataset_name = Dutch().name
+    metrics = ["EQO_ratio"]
+    #print_results(dataset_name, 20, metrics, alpha=alpha)
+
+    plot_results_epochs(
+        Dutch().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        [0.5, 1.0, None],
+        [[0.04, 0.04, 0.045], [0.045, 0.047, 0.047], [0.05, 0.047, 0.05]],
+        [[0.9, 0.99, 0.7], [0.7, 0.8, 0.8], [0.99, 0.99, 0.99]],
+        [0.8, 0.9, 0.9]
+    )
+    """
+    plot_results_epochs(
+        Law().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        [0.25, 0.5, None],
+        [[0.05, 0.04, 0.045], [0.05, 0.047, 0.047], [0.05, 0.04, 0.045]],
+        [[0.7, 0.7, 0.8], [0.8, 0.9, 0.7], [0.9, 0.8, 0.8]],
+        [0.8, 0.7, 0.99]
+    )
+    """
+    """
+    plot_results_epochs(
+        Adult().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        [0.5, 1.0, None],
+        [[0.045, 0.045, 0.045], [0.045, 0.047, 0.045], [0.05, 0.047, 0.05]],
+        [[0.7, 0.8, 0.7], [0.7, 0.7, 0.7], [0.99, 0.99, 0.99]],
+        [0.9, 0.9, 0.9]
+    )
+    """
+    """
+    plot_results_epochs(
+        Compas().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        [0.25, 0.5, None],
+        [[0.045, 0.047, 0.045], [0.05, 0.045, 0.045], [0.05, 0.05, 0.05]],
+        [[0.9, 0.8, 0.9], [0.7, 0.7, 0.7], [0.99, 0.99, 0.99]],
+        [0.8, 0.9, 0.99]
+    )
+    """
+
+    #plot_paretos(Adult().name, 20, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
+    #plot_paretos(Compas().name, 20, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")
