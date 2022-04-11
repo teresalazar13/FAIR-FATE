@@ -1,13 +1,16 @@
 from code.datasets.Dataset import Dataset
 from code.datasets.Feature import Feature
 
+
 class Law(Dataset):
     def __init__(self):
         name = "law"
         sensitive_attributes = [Feature("race", ["White"], ["Non-White"], "White", "Non-White")]
         target = Feature("pass_bar", 1.0, 0.0, "pass", "non-pass")
         cat_columns = []
-        all_columns = ["decile1b", "decile3", "lsat", "ugpa", "zfygpa", "zgpa", "fulltime", "fam_inc", "male", "tier", "race"]
+        all_columns = [
+            "decile1b", "decile3", "lsat", "ugpa", "zfygpa", "zgpa", "fulltime", "fam_inc", "male", "tier", "race"
+        ]
         number_of_clients = 12
         num_clients_per_round = 4
         num_epochs = 10

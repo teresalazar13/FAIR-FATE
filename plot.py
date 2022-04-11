@@ -3,6 +3,7 @@ from code.plots.plot import plot_avg_results
 from code.datasets.Adult import Adult
 from code.datasets.Compas import Compas
 from code.datasets.Law import Law
+from code.datasets.Dutch import Dutch
 
 
 def plot(dataset_name, num_runs, fairness_metrics, alpha=None):
@@ -53,6 +54,6 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
 
 
 if __name__ == '__main__':
-    plot(Law().name, 20, ["SP_ratio"], alpha=0.25)
+    plot(Dutch().name, 20, ["EQO_ratio"], alpha=0.5)
     #plot_paretos(Adult().name, 10, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
     #plot_paretos(Compas().name, 10, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")

@@ -1,6 +1,7 @@
 from code.datasets.Adult import Adult
 from code.datasets.Compas import Compas
 from code.datasets.Law import Law
+from code.datasets.Dutch import Dutch
 from code.plots.pie_chart import create_stats_sensitive_distribution_all
 from code.metrics.GroupBasedMetric import GroupBasedMetric, PosSens, Sens, TP, FN, FP, TN
 from code.metrics.SuperGroupBasedMetric import SuperGroupBasedMetric
@@ -19,7 +20,7 @@ def main(args):
     dataset = get_dataset(args.dataset)
     create_stats_sensitive_distribution_all(dataset, "./datasets/{}".format(dataset.name))
     alpha = get_alpha(args.alpha)
-    fl = get_fl(dataset, args.fl, args.beta, args.lambda_, args.metrics)
+    fl = get_fl(dataset, args.fl, args.beta, args.rho, args.metrics)
     n_runs = int(args.n_runs)
     n_rounds = int(args.n_rounds)
     run(dataset, n_rounds, n_runs, fl, alpha=alpha)
@@ -34,6 +35,8 @@ def get_dataset(dataset_name):
         dataset = Compas()
     elif dataset_name == "law":
         dataset = Law()
+    elif dataset_name == "dutch":
+        dataset = Dutch()
 
     return dataset
 
@@ -47,7 +50,7 @@ def get_alpha(alpha_string):
     return alpha
 
 
-def get_fl(dataset, fl_string, beta_string, lambda_string, metrics_string_array):
+def get_fl(dataset, fl_string, beta_string, rho_string, metrics_string_array):
     fl = None
 
     if fl_string == "FedAvg":
@@ -61,9 +64,9 @@ def get_fl(dataset, fl_string, beta_string, lambda_string, metrics_string_array)
         if fl_string == "FedMom":
             fl = FedMom(dataset, beta)
         elif fl_string == "FairFate":
-            lambda_init = float(lambda_string)
+            rho = float(rho_string)
             aggregation_metrics = get_aggregation_metrics(metrics_string_array)
-            fl = FairFate(dataset, beta, lambda_init, aggregation_metrics)
+            fl = FairFate(dataset, beta, rho, aggregation_metrics)
 
     return fl
 
@@ -85,12 +88,12 @@ def get_aggregation_metrics(metrics_string_array):
 
 def get_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', choices=["adult", "compas", "law"], required=True, help='dataset name')
+    parser.add_argument('--dataset', choices=["adult", "compas", "law", "dutch"], required=True, help='dataset name')
     parser.add_argument('--fl', choices=["FedAvg", "FedAvgLR", "FedAvgGR", "FedMom", "FairFate"], required=True,
                         help='Federated Learning algorithm')
     parser.add_argument('--alpha', required=False, help='alpha')
     parser.add_argument('--beta', required=False, help='beta')
-    parser.add_argument('--lambda_', required=False, help='lambda')
+    parser.add_argument('--rho', required=False, help='rho')
     parser.add_argument('--metrics', required=False, help='metrics', nargs='+')
     parser.add_argument('--n_runs', required=True, help='n_runs')
     parser.add_argument('--n_rounds', required=True, help='n_rounds')
