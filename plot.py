@@ -12,6 +12,8 @@ def print_results(dataset_name, num_runs, fairness_metrics, alpha=None):
     metrics_results.extend(fairness_metrics)
     fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
     fairness_metrics_string = "-".join([f.split("_")[0] for f in fairness_metrics])
+    fl_fedval = "fed_val_{}".format(fairness_metrics_string)
+    fls.append(fl_fedval)
 
     fls_fair_fate = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
@@ -56,10 +58,11 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
 
 if __name__ == '__main__':
     alpha = None
-    dataset_name = Dutch().name
+    dataset_name = Law().name
     metrics = ["EQO_ratio"]
-    #print_results(dataset_name, 20, metrics, alpha=alpha)
+    print_results(dataset_name, 20, metrics, alpha=alpha)
 
+    """
     plot_results_epochs(
         Dutch().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
@@ -67,6 +70,7 @@ if __name__ == '__main__':
         [[0.9, 0.99, 0.7], [0.7, 0.8, 0.8], [0.99, 0.99, 0.99]],
         [0.8, 0.9, 0.9]
     )
+    """
     """
     plot_results_epochs(
         Law().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
