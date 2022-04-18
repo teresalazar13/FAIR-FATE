@@ -6,7 +6,7 @@ class Dutch(Dataset):
     def __init__(self):
         name = "dutch"
         sensitive_attributes = [Feature("sex", ["male"], ["female"], "Male", "Female")]
-        target = Feature("occupation", 1, 0)
+        target = Feature("occupation", 1, 0, "'high level'", "'low level'")
         cat_columns = []
         all_columns = [
             "sex", "age", "household_position", "household_size", "prev_residence_place", "citizenship",

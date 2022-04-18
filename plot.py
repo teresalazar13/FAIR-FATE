@@ -59,12 +59,11 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
 
 
 if __name__ == '__main__':
-    alpha = 0.1
+    alpha = 0.25
     dataset_name = Compas().name
     metrics = ["TPR_ratio"]
-    print_results(dataset_name, 20, metrics, alpha=alpha)
+    #print_results(dataset_name, 20, metrics, alpha=alpha)
 
-    """
     plot_results_epochs(
         Dutch().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
@@ -72,8 +71,6 @@ if __name__ == '__main__':
         [[0.9, 0.99, 0.7], [0.7, 0.8, 0.8], [0.99, 0.99, 0.99]],
         [0.8, 0.9, 0.9]
     )
-    """
-    """
     plot_results_epochs(
         Law().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.25, 0.5, None],
@@ -81,8 +78,6 @@ if __name__ == '__main__':
         [[0.7, 0.7, 0.8], [0.8, 0.9, 0.7], [0.9, 0.8, 0.8]],
         [0.8, 0.7, 0.99]
     )
-    """
-    """
     plot_results_epochs(
         Adult().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
@@ -90,8 +85,6 @@ if __name__ == '__main__':
         [[0.7, 0.8, 0.7], [0.7, 0.7, 0.7], [0.99, 0.99, 0.99]],
         [0.9, 0.9, 0.9]
     )
-    """
-    """
     plot_results_epochs(
         Compas().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.25, 0.5, None],
@@ -99,7 +92,6 @@ if __name__ == '__main__':
         [[0.9, 0.8, 0.9], [0.7, 0.7, 0.7], [0.99, 0.99, 0.99]],
         [0.8, 0.9, 0.99]
     )
-    """
 
     #plot_paretos(Adult().name, 20, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
     #plot_paretos(Compas().name, 20, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")

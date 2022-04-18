@@ -45,16 +45,16 @@ def calculate_sp(df, dataset):
 
     if (Y_1_S_1 / S_1) == 0:
         return 0
-    return round((Y_1_S_0 / S_0) / (Y_1_S_1 / S_1), 3)
+    return round((Y_1_S_0 / S_0) / (Y_1_S_1 / S_1), 2)
 
 
 # Plot pie chart
 def plot_pie_chart(sp, labels, sizes, plot_filename):
     fig1, ax1 = plt.subplots()
     ax1.pie(sizes, autopct='%1.1f%%', labeldistance=1.2, startangle=90)
-    plt.legend(labels=labels, loc='lower right', prop={'size': 8})
+    plt.legend(labels=labels, loc=(-0.145, 0), prop={'size': 8})  #loc=(-0.145, 0) -> compas
     ax1.axis('equal')
-    plt.title("SP: {}".format(sp))
+    plt.title("SP*: {}".format(sp))
     plt.rcParams['figure.dpi'] = 300
     plt.rcParams['savefig.dpi'] = 300
     plt.savefig(plot_filename)
