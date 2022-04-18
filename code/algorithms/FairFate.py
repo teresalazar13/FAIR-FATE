@@ -26,7 +26,7 @@ class FairFate(FederatedLearningAlgorithm):
             metric.reset()
         self.ffm = FederatedFairMomentum(state, self.dataset, self.aggregation_metrics, beta=self.beta, rho=self.rho)
 
-    def update(self, weights, x_val, y_val, clients_data_size):
+    def update(self, weights, x_val, y_val, clients_data_size, _):
         print("\nLambda: {}".format(round(self.ffm.lambda_, 2)))
 
         return self.ffm.update_model(weights, self.dataset.n_features, x_val, y_val, clients_data_size)

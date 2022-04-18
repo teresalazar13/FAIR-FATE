@@ -17,5 +17,5 @@ class FedAvgLR(FederatedLearningAlgorithm):  # Local Reweighting
         state = algorithm.initialize()
         super().reset_algorithm(algorithm, state)
 
-    def update(self, weights, unused_x_val, unused_y_val, clients_data_size):
+    def update(self, weights, unused_x_val, unused_y_val, clients_data_size, _):
         return fed_avg_update(weights, self.dataset.n_features, clients_data_size)

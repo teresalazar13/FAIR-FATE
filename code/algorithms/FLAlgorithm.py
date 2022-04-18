@@ -15,15 +15,15 @@ class FederatedLearningAlgorithm:
         self.state = state
         self.metrics = create_metrics()
 
-    def iterate(self, dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size):
+    def iterate(self, dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size, clients_idx):
         self.state, weights = self.algorithm.next(self.state, federated_train_data)
-        self.state, model = self.update(weights, x_val, y_val, clients_data_size)
+        self.state, model = self.update(weights, x_val, y_val, clients_data_size, clients_idx)
         y_pred = model.predict(x_test)
         print("\n\n{}-{}\n".format(self.name, self.hyperparameter_specs_str))
         calculate_metrics(dataset, self.metrics, x_test, y_pred, y_test)
 
     @abstractmethod
-    def update(self, weights, x_val, y_val, clients_data_size):
+    def update(self, weights, x_val, y_val, clients_data_size, clients_idx):
         raise NotImplementedError("Must override update")
 
     def save_metrics_to_file(self, dataset_name, run_num, alpha):

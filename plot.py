@@ -14,6 +14,8 @@ def print_results(dataset_name, num_runs, fairness_metrics, alpha=None):
     fairness_metrics_string = "-".join([f.split("_")[0] for f in fairness_metrics])
     fl_fedval = "fed_val_{}".format(fairness_metrics_string)
     fls.append(fl_fedval)
+    fl_fairfed = "fair_fed_{}".format(fairness_metrics_string)
+    fls.append(fl_fairfed)
 
     fls_fair_fate = []
     for beta in [0.7, 0.8, 0.9, 0.99]:
@@ -57,9 +59,9 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
 
 
 if __name__ == '__main__':
-    alpha = None
-    dataset_name = Law().name
-    metrics = ["EQO_ratio"]
+    alpha = 0.1
+    dataset_name = Compas().name
+    metrics = ["TPR_ratio"]
     print_results(dataset_name, 20, metrics, alpha=alpha)
 
     """

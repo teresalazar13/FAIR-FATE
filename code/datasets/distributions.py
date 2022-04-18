@@ -5,19 +5,21 @@ import pandas as pd
 
 def get_x_dirichlet(seed, alpha, dataset, x_train, y_train):
     num_clients = dataset.number_of_clients
-    num_classes = len(dataset.combs)
+    num_classes = len(dataset.combs_without_target)
     np.random.seed(seed)
     s = np.random.dirichlet(np.ones(num_clients) * alpha, num_classes)
-    plot_distributions(num_clients, dataset.combs, s)
+    plot_distributions(num_clients, dataset.combs_without_target, s)
 
     df = join_x_and_y(dataset, x_train, y_train)
     df.sample(frac=1, random_state=seed)  # shuffle
 
     x_train_dirichlet = [[] for _ in range(num_clients)]
     y_train_dirichlet = [[] for _ in range(num_clients)]
-    for comb_idx in range(len(dataset.combs)):
+
+    #d = {}
+    for comb_idx in range(len(dataset.combs_without_target)):
         df_temp = df.copy(deep=True)
-        for k, [v, _, _] in dataset.combs[comb_idx].items():
+        for k, [v, _, _] in dataset.combs_without_target[comb_idx].items():
             df_temp = df_temp[df_temp[k] == v]
 
         size = len(df_temp)
@@ -27,12 +29,48 @@ def get_x_dirichlet(seed, alpha, dataset, x_train, y_train):
                 n_instances_for_client = round(size * s[comb_idx][client_idx])
                 df_client = df_temp.iloc[start:start+n_instances_for_client]
                 start = start + n_instances_for_client
-            else:   # get the rest
+
+            else:  # get the rest
                 df_client = df_temp.iloc[start:]
+                #n_instances_for_client = len(df_client)
+
+            """
+            # TOPRINT
+            if client_idx in d and dataset.combs_without_target[comb_idx][dataset.target.name][-1] in d[client_idx]:
+                d[client_idx][dataset.combs_without_target[comb_idx][dataset.target.name][-1]] += n_instances_for_client
+            else:
+                if client_idx in d:
+                    d[client_idx][dataset.combs_without_target[comb_idx][dataset.target.name][-1]] = n_instances_for_client
+                else:
+                    d[client_idx] = {dataset.combs_without_target[comb_idx][dataset.target.name][-1]: n_instances_for_client}
+            # ENDTOPRINT"""
+
             x_train_client = df_client[dataset.all_columns].to_numpy().tolist()
             y_train_client = df_client[dataset.target.name].to_numpy()
             x_train_dirichlet[client_idx].extend(x_train_client)
             y_train_dirichlet[client_idx].extend(y_train_client)
+
+    """
+    # TOPRINT
+    for k, v in d.items():
+        #print("k ", k)
+        a = 0
+        b = 0
+        for i, j in v.items():
+            if not a:
+                a = j
+            else:
+                b = j
+            #print("i ", i, j)
+            #if j == 0:
+                #print("OIOI")
+        if a < b:
+            a, b = b, a
+        div = round(b / (a + b), 2)
+        print(div)
+
+    # ENDTOPRINT
+    """
 
     # shuffle
     for i in range(len(x_train_dirichlet)):

@@ -2,6 +2,7 @@ import random
 import tensorflow as tf
 import numpy as np
 
+from code.algorithms.FairFed import FairFed
 from code.datasets.distributions import get_x_dirichlet
 from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federated_data, get_tf_train_dataset_distributions
 
@@ -15,6 +16,7 @@ def run(dataset, num_rounds, num_runs, fl, alpha=None):
         set_random_seeds(seed)
         x_train, y_train, x_test, y_test, x_val, y_val = dataset.train_val_test_split(seed)
         x_train_array, y_train_array = get_train_array_alpha(seed, alpha, dataset, x_train, y_train)
+
         clients_dataset, clients_dataset_x_y_label = get_clients_dataset_temp(alpha, x_train, y_train, x_train_array, y_train_array, n_clients)
         weights_local = dataset.get_weights_local(clients_dataset_x_y_label)
         federated_train_data = make_federated_data(
@@ -33,10 +35,13 @@ def run(dataset, num_rounds, num_runs, fl, alpha=None):
                 dataset.sensitive_idx, clients_dataset, clients, dataset.n_features, dataset.num_epochs, seed
             )
             clients_data_size = [len(client_data) for client_data in [clients_dataset_x_y_label[i][0] for i in clients_idx]]
-            fl.iterate(dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size)
-
+            if fl.name == FairFed.NAME:
+                fl.iterate(dataset, federated_train_data, clients_dataset_x_y_label, None, x_test, y_test, clients_data_size, clients_idx)  # there is no validation set in the FairFed setup
+            else:
+                fl.iterate(dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size, None)
+            
+            
         fl.save_metrics_to_file(dataset.name, run, alpha)
-
 
 def set_random_seeds(seed_value):
     #os.environ['PYTHONHASHSEED'] = str(seed_value)

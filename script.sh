@@ -1,82 +1,27 @@
 N_RUNS=20
 N_ROUNDS=50
 
-#python3 main.py --dataset $DATASET --fl FedAvg --n_runs $N_RUNS --n_rounds $N_ROUNDS
-#python3 main.py --dataset $DATASET --fl FedAvgGR --n_runs $N_RUNS --n_rounds $N_ROUNDS
-#python3 main.py --dataset $DATASET --fl FedAvgLR --n_runs $N_RUNS --n_rounds $N_ROUNDS
-
-#for BETA in 0.7 0.8 0.9 0.99
-#do
-	#python3 main.py --dataset $DATASET --fl FedMom --beta $BETA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-	#for RHO in 0.035 0.04 0.045 0.047 0.05
-	#do
-	  #for METRICS in SP TPR EQO
-	  #do
-      #python3 main.py --dataset $DATASET --fl FairFate --beta $BETA --rho $RHO --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
-    #done
-  #done
-#done
-
-DATASET=adult
-ALPHA=0.5
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-ALPHA=1.0
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-
 DATASET=compas
-ALPHA=0.25
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
 ALPHA=0.5
-for METRICS in SP TPR EQO
+
+python3 main.py --dataset $DATASET --fl FedAvg --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
+python3 main.py --dataset $DATASET --fl FedAvgGR --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
+python3 main.py --dataset $DATASET --fl FedAvgLR --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
+
+for METRICS in TPR #SP TPR EQO
 do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
+  python3 main.py --dataset $DATASET --fl FairFed --alpha $ALPHA --beta 1 --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
+  python3 main.py --dataset $DATASET --fl FedVal --alpha $ALPHA --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
 done
 
-DATASET=dutch
-ALPHA=0.5
-for METRICS in SP TPR EQO
+for BETA in 0.7 0.8 0.9 0.99
 do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-ALPHA=1.0
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-
-DATASET=law
-ALPHA=0.25
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-ALPHA=0.5
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --alpha $ALPHA --n_runs $N_RUNS --n_rounds $N_ROUNDS
-done
-for METRICS in SP TPR EQO
-do
-  python3 main.py --dataset $DATASET --fl FedVal --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
+	python3 main.py --dataset $DATASET --fl FedMom --alpha $ALPHA --beta $BETA --n_runs $N_RUNS --n_rounds $N_ROUNDS
+	for RHO in 0.035 0.04 0.045 0.047 0.05
+	do
+	  for METRICS in TPR #SP TPR EQO
+	  do
+      python3 main.py --dataset $DATASET --fl FairFate --alpha $ALPHA --beta $BETA --rho $RHO --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS
+    done
+  done
 done

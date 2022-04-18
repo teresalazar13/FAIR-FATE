@@ -11,12 +11,17 @@ def plot_results_epochs(dataset_name, num_runs, fairness_metrics, alphas, lambda
 
     for a in range(len(alphas)):
         fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
+        fairness_metrics_string = "-".join([f.split("_")[0] for f in fairness_metrics])
+        fl_fedval = "fed_val_{}".format(fairness_metrics_string)
+        fls.append(fl_fedval)
+        fl_fairfed = "fair_fed_{}".format(fairness_metrics_string)
+        fls.append(fl_fairfed)
         fls.append("fedmom_b_{}".format(str(beta_fedmom[a])))
         dfs_alpha = []
 
         for i in range(len(fairness_metrics)):
             fls_metric = fls[:]
-            fairfate_fl = "fair_fate_l_e{}_b_{}_{}".format(str(lambdas_fairfate[a][i]), str(betas_fairfate[a][i]), fairness_metrics[i].split("_")[0])
+            fairfate_fl = "fair_fate_l_e{}_b_{}_{}".format(str(lambdas_fairfate[a][i]), str(betas_fairfate[a][i]), fairness_metrics_string)
             fls_metric.append(fairfate_fl)
             if alphas[a]:
                 for j in range(len(fls_metric)):
