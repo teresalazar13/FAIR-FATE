@@ -4,14 +4,16 @@ from code.tensorflow.FederatedFairMomentum import FederatedFairMomentum
 
 
 class FairFate(FederatedLearningAlgorithm):
-    def __init__(self, dataset, beta, rho, aggregation_metrics):
+    def __init__(self, dataset, beta, rho, l0, MAX,  aggregation_metrics):
         name = "fair_fate"
-        hyperparameter_specs_str = get_hyperparameter_specs_str(beta, rho, aggregation_metrics)
+        hyperparameter_specs_str = get_hyperparameter_specs_str(beta, rho, l0, MAX, aggregation_metrics)
         super().__init__(name, hyperparameter_specs_str)
 
         self.dataset = dataset
         self.beta = beta
         self.rho = rho
+        self.l0 = l0
+        self.MAX = MAX
         self.aggregation_metrics = aggregation_metrics
         self.ffm = None
 
@@ -24,7 +26,7 @@ class FairFate(FederatedLearningAlgorithm):
 
         for metric in self.aggregation_metrics:
             metric.reset()
-        self.ffm = FederatedFairMomentum(state, self.dataset, self.aggregation_metrics, beta=self.beta, rho=self.rho)
+        self.ffm = FederatedFairMomentum(state, self.dataset, self.aggregation_metrics, beta=self.beta, rho=self.rho, MAX=self.MAX, l0=self.l0)
 
     def update(self, weights, x_val, y_val, clients_data_size, _):
         print("\nLambda: {}".format(round(self.ffm.lambda_, 2)))
@@ -32,8 +34,7 @@ class FairFate(FederatedLearningAlgorithm):
         return self.ffm.update_model(weights, self.dataset.n_features, x_val, y_val, clients_data_size)
 
 
-def get_hyperparameter_specs_str(beta, rho, aggregation_metrics):
+def get_hyperparameter_specs_str(beta, rho, l0, MAX, aggregation_metrics):
     aggregation_metrics_string = "-".join([metric.name for metric in aggregation_metrics])
-    rho_ = "e{}".format(rho)
 
-    return "l_{}_b_{}_{}".format(str(rho_), str(beta), aggregation_metrics_string)
+    return "rho-{}_l0-{}_max-{}_b-{}_{}".format(str(rho), str(l0), str(MAX), str(beta), aggregation_metrics_string)

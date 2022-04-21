@@ -8,19 +8,25 @@ from code.tensorflow.models import get_model
 
 class FederatedFairMomentum:
 
-    def __init__(self, state, dataset, aggregation_metrics, rho=None, beta=0.9):
+    def __init__(self, state, dataset, aggregation_metrics, rho=None, MAX=10000, beta=0.9, l0=0.1):
         self.actual_state = deepcopy(state)  # weights
         self.dataset = dataset
         self.momentum = self._get_model_shape()  # copy shape of state with zeros
         self.iteration = 1  # round_num
         self.rho = rho
-        self.lambda_ = self.get_lambda()
+        self.l0 = l0
         self.beta = beta
+        self.MAX = MAX
+        self.lambda_ = self.get_lambda()
         self.aggregation_metrics = aggregation_metrics
         self.epsilon = 0.0001
 
     def get_lambda(self):
-        return 0.1 * ((1 + self.rho) ** self.iteration)
+        lambda_ = self.l0 * ((1 + self.rho) ** self.iteration)
+        if lambda_ > self.MAX:
+            lambda_ = self.MAX
+
+        return lambda_
 
     def _get_model_shape(self):
         momentum = []

@@ -22,7 +22,7 @@ def main(args):
     dataset = get_dataset(args.dataset)
     create_stats_sensitive_distribution_all(dataset, "./datasets/{}".format(dataset.name))
     alpha = get_alpha(args.alpha)
-    fl = get_fl(dataset, args.fl, args.beta, args.rho, args.metrics)
+    fl = get_fl(dataset, args.fl, args.beta, args.rho, args.l0, args.MAX, args.metrics)
     n_runs = int(args.n_runs)
     n_rounds = int(args.n_rounds)
     run(dataset, n_rounds, n_runs, fl, alpha=alpha)
@@ -52,7 +52,7 @@ def get_alpha(alpha_string):
     return alpha
 
 
-def get_fl(dataset, fl_string, beta_string, rho_string, metrics_string_array):
+def get_fl(dataset, fl_string, beta_string, rho_string, l0_string, MAX_string, metrics_string_array):
     fl = None
 
     if fl_string == "FedAvg":
@@ -74,8 +74,16 @@ def get_fl(dataset, fl_string, beta_string, rho_string, metrics_string_array):
             fl = FedMom(dataset, beta)
         elif fl_string == "FairFate":
             rho = float(rho_string)
+            if l0_string:
+                l0 = float(l0_string)
+            else:
+                l0 = 0.1  # default
+            if MAX_string:
+                MAX = float(MAX_string)
+            else:
+                MAX = 10000  # default
             aggregation_metrics = get_aggregation_metrics(metrics_string_array)
-            fl = FairFate(dataset, beta, rho, aggregation_metrics)
+            fl = FairFate(dataset, beta, rho, l0, MAX, aggregation_metrics)
 
     return fl
 
@@ -103,6 +111,8 @@ def get_arguments():
     parser.add_argument('--alpha', required=False, help='alpha')
     parser.add_argument('--beta', required=False, help='beta')
     parser.add_argument('--rho', required=False, help='rho')
+    parser.add_argument('--l0', required=False, help='l0')
+    parser.add_argument('--MAX', required=False, help='MAX')
     parser.add_argument('--metrics', required=False, help='metrics', nargs='+')
     parser.add_argument('--n_runs', required=True, help='n_runs')
     parser.add_argument('--n_rounds', required=True, help='n_rounds')
