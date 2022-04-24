@@ -16,7 +16,7 @@ class FairFedAggregation:
 
     def calculate_fairness_weights(self, model, clients_dataset_x_y_label, clients_idx):
         n = []
-        denominator_unpriv = []
+        denominator_unpriv = []  # matrix where lines are clients and columns are metrics
         denominator_priv = []
         numerator_unpriv = []
         numerator_priv = []
@@ -28,7 +28,6 @@ class FairFedAggregation:
             df = create_dataframe_for_eval(self.dataset.all_columns, clients_dataset_x_y_label[idx][0], y_pred, clients_dataset_x_y_label[idx][1])
             sensitive_attribute = self.dataset.sensitive_attributes[0].name
             metric = self.aggregation_metrics[0].name
-
             [
                 denominator_unpriv_client_array,
                 denominator_priv_client_array,
@@ -44,16 +43,16 @@ class FairFedAggregation:
             local_fairness_clients.append(fairness)
 
         global_fairness = calculate_global_fairness(n, denominator_unpriv, denominator_priv, numerator_unpriv, numerator_priv)
-        if global_fairness == -1:
-            return [1 for _ in range(len(local_fairness_clients))]
+        if global_fairness == 0:  # edge case
+            return [n[i]/sum(n) for i in range(len(local_fairness_clients))]
 
         weight_clients = []
         for i in range(len(local_fairness_clients)):
-            weight = math.exp(-self.beta * abs(local_fairness_clients[i][0] - global_fairness)) * n[i] / sum(n)
+            weight = math.exp(-self.beta * abs(local_fairness_clients[i][0] - global_fairness)) * (n[i] / sum(n))
             weight_clients.append(weight)
 
-        if sum(weight_clients) == 0:
-            return [1 for _ in range(len(local_fairness_clients))]
+        if sum(weight_clients) == 0:  # edge case
+            return [n[i]/sum(n) for i in range(len(local_fairness_clients))]
 
         total = sum(weight_clients)
         for i in range(len(weight_clients)):
@@ -127,26 +126,20 @@ def calculate_global_fairness_probs(metric, df, sensitive_attribute):
 
 
 def calculate_global_fairness(n, denominator_unpriv, denominator_priv, numerator_unpriv, numerator_priv):
-    number_of_metrics = len(numerator_unpriv)
-    number_of_clients = len(denominator_unpriv[0])
+    number_of_metrics = len(numerator_unpriv[0])
+    number_of_clients = len(denominator_unpriv)
+    total_number_of_datapoints = sum(n)
     global_fairness = 0
 
     for j in range(number_of_metrics):
-        global_fairness_iter = []
+        sum_denominator_unpriv = sum([denominator_unpriv[g][j] for g in range(number_of_clients)])
+        sum_denominator_priv = sum([denominator_priv[g][j] for g in range(number_of_clients)])
 
-        for i in range(number_of_clients):
-            sum_denominator_unpriv = sum([denominator_unpriv[j][i] for j in range(len(denominator_unpriv))])
-            sum_denominator_priv = sum([denominator_priv[j][i] for j in range(len(denominator_priv))])
+        if sum_denominator_unpriv != 0 and sum_denominator_priv != 0:
+            for i in range(number_of_clients):
+                if numerator_priv[i][j] != 0:
+                    unpriv_global_fairness = (numerator_unpriv[j][i] / sum_denominator_unpriv)
+                    priv_global_fairness = (numerator_priv[j][i] / sum_denominator_priv)
+                    global_fairness += (n[j] / total_number_of_datapoints) * unpriv_global_fairness / priv_global_fairness
 
-            if sum_denominator_unpriv == 0 or sum_denominator_priv == 0:
-                return -1
-
-            if numerator_unpriv[j][i] != 0 and numerator_priv[j][i] != 0:
-                unpriv_global_fairness = (numerator_unpriv[j][i] / sum_denominator_unpriv)
-                priv_global_fairness = (numerator_priv[j][i] / sum_denominator_priv)
-                global_fairness_iter.append((n[j] / sum(n)) * unpriv_global_fairness / priv_global_fairness)
-
-        if len(global_fairness_iter) != 0:
-            global_fairness += sum(global_fairness_iter) / len(global_fairness_iter)
-
-    return global_fairness
+    return global_fairness / number_of_metrics
