@@ -21,8 +21,6 @@ def plot_results_epochs(n_rounds, dataset_name, num_runs, fairness_metrics, alph
             fairness_metrics_string = fairness_metrics[i].split("_")[0]
             fl_fedval = "fed_val_{}".format(fairness_metrics_string)
             fls_metric.append(fl_fedval)
-            fl_fairfed = "fair_fed_{}".format(fairness_metrics_string)
-            fls_metric.append(fl_fairfed)
             fairfate_fl = "fair_fate_l_e{}_b_{}_{}".format(str(lambdas_fairfate[a][i]), str(betas_fairfate[a][i]), fairness_metrics_string)
             fls_metric.append(fairfate_fl)
             if alphas[a]:
@@ -35,15 +33,13 @@ def plot_results_epochs(n_rounds, dataset_name, num_runs, fairness_metrics, alph
         dfs_alpha.insert(0, dfs_alpha.pop())
         dfs.extend(dfs_alpha)
 
-    matplotlib.rcParams.update({'font.size': 13})
-    plt.figure(figsize=(23, 7))
-    plt.subplots_adjust(top=2)
+    plt.figure(figsize=(17, 14))
     x_plot = [i for i in range(0, len(dfs[0][0]))]
     fls_legend = [
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-SP", "FedVal-EO", "FedVal-EQO", "FedFair-SP", "FedFair-EO", "FedFair-EQO", "FAIR-FATE-SP", "FAIR-FATE-EO", "FAIR-FATE-EQO"],
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-SP", "FedFair-SP", "FAIR-FATE-SP"],
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-EO", "FedFair-EO", "FAIR-FATE-EO"],
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-EQO", "FedFair-EQO", "FAIR-FATE-EQO"]
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-SP", "FedVal-EO", "FedVal-EQO", "FAIR-FATE-SP", "FAIR-FATE-EO", "FAIR-FATE-EQO"],
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-SP", "FAIR-FATE-SP"],
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-EO", "FAIR-FATE-EO"],
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-EQO", "FAIR-FATE-EQO"]
     ]
     colors = distinctipy.get_colors(len(fls_legend[0]), rng=10)
     d = {}
@@ -59,14 +55,15 @@ def plot_results_epochs(n_rounds, dataset_name, num_runs, fairness_metrics, alph
             plt.plot(x_plot, dfs[i][j][metrics[i_]].tolist(), color=d[fls_legend[i_][j]])
         plt.xlabel("Round Number")
         plt.ylabel(metrics[i_].replace("_ratio", "").replace("TPR", "EO"))
+        plt.xlim([0, 50])
         plt.ylim([0, 1])
 
     handles = [plt.plot([], [], color=colors[i], marker="o", ls="")[0] for i in range(len(colors))]
-    coords = (-1.95, -0.45)
-    rho_legend = plt.legend(handles=handles, labels=fls_legend[0], loc=coords, prop={'size': 13}, ncol=int(len(handles)/2))
+    coords = (-2.3, -0.64)
+    rho_legend = plt.legend(handles=handles, labels=fls_legend[0], loc=coords, ncol=int(len(handles)/2))
     plt.gca().add_artist(rho_legend)
     plt.savefig('./datasets/{}/rounds_plot.png'.format(dataset_name), bbox_inches='tight')
-    # plt.show()
+    plt.show()
 
 
 def plot_results_epochs_specific(dataset_name, num_runs, fls_array, titles, fls_legend):

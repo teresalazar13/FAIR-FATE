@@ -39,7 +39,7 @@ def print_results(dataset_name, num_runs, n_rounds, fairness_metrics, alpha=None
     print_avg_results(dataset_name, num_runs, n_rounds, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results)
 
 
-def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
+def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a, filename):
     rhos = [0.035, 0.04, 0.045, 0.047, 0.05]
     betas = [0.7, 0.8, 0.9, 0.99]
     fls_fair_fate = []
@@ -55,13 +55,13 @@ def plot_paretos(dataset_name, num_runs, alphas, metrics_F, metric_a, filename):
                     fls_fair_fate_alpha_metric.append(fl)
             fls_fair_fate.append([alpha, metric_F, fls_fair_fate_alpha_metric])
 
-    plot_pareto_fronts(dataset_name, num_runs, fls_fair_fate, metric_a, rhos, betas, filename)
+    plot_pareto_fronts(dataset_name, num_runs, num_rounds, fls_fair_fate, metric_a, rhos, betas, filename)
 
 
 if __name__ == '__main__':
-    alpha = None
-    dataset_name = Dutch().name
-    metrics = ["EQO_ratio"]
+    alpha = 0.5
+    dataset_name = Law().name
+    metrics = ["TPR_ratio"]
     print_results(dataset_name, 20, 50, metrics, alpha=alpha)
 
     """
@@ -96,49 +96,6 @@ if __name__ == '__main__':
 
     """
     plot_results_epochs_specific(
-        Adult().name, 20,
-        [[
-            "fedavg",
-            "fedmom_b_0.9",
-            "fedavg_gr",
-            "fedavg_lr",
-            "fed_val_TPR",
-            "fair_fed_TPR",
-            "fair_fate_rho-0.047_l0-0.1_max-1.0_b-0.99_TPR"
-        ],
-        [
-            "fedavg_alpha-1.0",
-            "fedmom_b_0.9_alpha-1.0",
-            "fedavg_gr_alpha-1.0",
-            "fedavg_lr_alpha-1.0",
-            "fed_val_TPR_alpha-1.0",
-            "fair_fed_TPR_alpha-1.0",
-            "fair_fate_rho-0.047_l0-0.1_max-1.0_b-0.7_TPR_alpha-1.0"
-        ],
-        [
-            "fedavg_alpha-0.5",
-            "fedmom_b_0.9_alpha-0.5",
-            "fedavg_gr_alpha-0.5",
-            "fedavg_lr_alpha-0.5",
-            "fed_val_TPR_alpha-0.5",
-            "fair_fed_TPR_alpha-0.5",
-            "fair_fate_rho-0.045_l0-0.1_max-1.0_b-0.8_TPR_alpha-0.5"
-        ]],
-        [
-            "RND", r'$\alpha=1.0$', r'$\alpha=0.5$'
-        ],
-        [
-            "FedAvg",
-            "FedMom",
-            "FedAvg+GR",
-            "FedAvg+LR",
-            "FedVal (F=TPR)",
-            "FairFed (F=TPR)",
-            'FAIR-FATE (F=TPR)'
-        ]
-    )"""
-
-    plot_results_epochs_specific(
         Compas().name, 20,
         [[
             "fedavg_alpha-0.25",
@@ -146,7 +103,6 @@ if __name__ == '__main__':
             "fedavg_gr_alpha-0.25",
             "fedavg_lr_alpha-0.25",
             "fed_val_TPR_alpha-0.25",
-            "fair_fed_TPR_alpha-0.25",
             "fair_fate_rho-0.047_l0-0.1_max-1.0_b-0.8_TPR_alpha-0.25"
         ],
         [
@@ -155,7 +111,6 @@ if __name__ == '__main__':
             "fedavg_gr_alpha-0.5",
             "fedavg_lr_alpha-0.5",
             "fed_val_TPR_alpha-0.5",
-            "fair_fed_TPR_alpha-0.5",
             "fair_fate_rho-0.045_l0-0.1_max-1.0_b-0.7_TPR_alpha-0.5"
         ],
         [
@@ -164,7 +119,6 @@ if __name__ == '__main__':
             "fedavg_gr",
             "fedavg_lr",
             "fed_val_TPR",
-            "fair_fed_TPR",
             "fair_fate_rho-0.05_l0-0.1_max-1.0_b-0.8_TPR"
         ]],
         [
@@ -175,13 +129,12 @@ if __name__ == '__main__':
             "FedMom",
             "FedAvg+GR",
             "FedAvg+LR",
-            "FedVal (F=TPR)",
-            "FairFed (F=TPR)",
-            'FAIR-FATE (F=TPR)'
+            "FedVal (F=EO)",
+            'FAIR-FATE (F=EO)'
         ]
-    )
+    )"""
 
-    #plot_paretos(Adult().name, 20, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
-    #plot_paretos(Compas().name, 20, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")
-    #plot_paretos(Dutch().name, 20, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-dutch")
-    #plot_paretos(Law().name, 20, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-law")
+    #plot_paretos(Adult().name, 20, 50, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
+    #plot_paretos(Compas().name, 20, 50, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")
+    #plot_paretos(Dutch().name, 20, 50, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-dutch")
+    #plot_paretos(Law().name, 20, 50, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-law")

@@ -51,12 +51,16 @@ class FairFedAggregation:
             weight = math.exp(-self.beta * abs(local_fairness_clients[i][0] - global_fairness)) * (n[i] / sum(n))
             weight_clients.append(weight)
 
+        #print(global_fairness)
+        #print(local_fairness_clients)
         if sum(weight_clients) == 0:  # edge case
             return [n[i]/sum(n) for i in range(len(local_fairness_clients))]
 
         total = sum(weight_clients)
         for i in range(len(weight_clients)):
             weight_clients[i] = weight_clients[i] / total
+        #print(n)
+        #print(weight_clients)
 
         return weight_clients
 
@@ -138,8 +142,8 @@ def calculate_global_fairness(n, denominator_unpriv, denominator_priv, numerator
         if sum_denominator_unpriv != 0 and sum_denominator_priv != 0:
             for i in range(number_of_clients):
                 if numerator_priv[i][j] != 0:
-                    unpriv_global_fairness = (numerator_unpriv[j][i] / sum_denominator_unpriv)
-                    priv_global_fairness = (numerator_priv[j][i] / sum_denominator_priv)
-                    global_fairness += (n[j] / total_number_of_datapoints) * unpriv_global_fairness / priv_global_fairness
+                    unpriv_global_fairness = (numerator_unpriv[i][j] / sum_denominator_unpriv)
+                    priv_global_fairness = (numerator_priv[i][j] / sum_denominator_priv)
+                    global_fairness += (n[i] / total_number_of_datapoints) * unpriv_global_fairness / priv_global_fairness
 
     return global_fairness / number_of_metrics
