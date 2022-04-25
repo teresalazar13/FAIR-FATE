@@ -64,7 +64,6 @@ if __name__ == '__main__':
     metrics = ["TPR_ratio"]
     #print_results(dataset_name, 20, 50, metrics, alpha=alpha)
 
-    """
     plot_results_epochs(
         50, Dutch().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
@@ -92,7 +91,7 @@ if __name__ == '__main__':
         [[0.045, 0.047, 0.045], [0.05, 0.045, 0.045], [0.05, 0.05, 0.05]],
         [[0.9, 0.8, 0.9], [0.7, 0.7, 0.7], [0.99, 0.99, 0.99]],
         [0.8, 0.9, 0.99]
-    )"""
+    )
 
     """
     plot_results_epochs_specific(
@@ -133,8 +132,7 @@ if __name__ == '__main__':
             'FAIR-FATE (F=EO)'
         ]
     )"""
-
-
+    """
     plot_results_epochs_specific(
         Law().name, 20,
         [[
@@ -172,7 +170,7 @@ if __name__ == '__main__':
             "FedVal (F=EO)",
             'FAIR-FATE (F=EO)'
         ]
-    )
+    )"""
 
     #plot_paretos(Adult().name, 20, 50, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
     #plot_paretos(Compas().name, 20, 50, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")

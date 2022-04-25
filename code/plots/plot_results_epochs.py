@@ -36,12 +36,12 @@ def plot_results_epochs(n_rounds, dataset_name, num_runs, fairness_metrics, alph
     plt.figure(figsize=(17, 14))
     x_plot = [i for i in range(0, len(dfs[0][0]))]
     fls_legend = [
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-SP", "FedVal-EO", "FedVal-EQO", "FAIR-FATE-SP", "FAIR-FATE-EO", "FAIR-FATE-EQO"],
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-SP", "FAIR-FATE-SP"],
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-EO", "FAIR-FATE-EO"],
-        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal-EQO", "FAIR-FATE-EQO"]
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal (F=SP)", "FedVal (F=EO)", "FedVal (F=EQO)", "FAIR-FATE (F=SP)", "FAIR-FATE (F=EO)", "FAIR-FATE (F=EQO)"],
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal (F=SP)", "FAIR-FATE (F=SP)"],
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal (F=EO)", "FAIR-FATE (F=EO)"],
+        ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedVal (F=EQO)", "FAIR-FATE (F=EQO)"]
     ]
-    colors = distinctipy.get_colors(len(fls_legend[0]), rng=10)
+    colors = distinctipy.get_colors(len(fls_legend[0]), rng=1)
     d = {}
     for i in range(len(fls_legend[0])):
         d[fls_legend[0][i]] = colors[i]
