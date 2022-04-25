@@ -59,10 +59,10 @@ def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a
 
 
 if __name__ == '__main__':
-    alpha = 0.5
+    alpha = None
     dataset_name = Law().name
     metrics = ["TPR_ratio"]
-    print_results(dataset_name, 20, 50, metrics, alpha=alpha)
+    #print_results(dataset_name, 20, 50, metrics, alpha=alpha)
 
     """
     plot_results_epochs(
@@ -133,6 +133,46 @@ if __name__ == '__main__':
             'FAIR-FATE (F=EO)'
         ]
     )"""
+
+
+    plot_results_epochs_specific(
+        Law().name, 20,
+        [[
+            "fedavg_alpha-0.25",
+            "fedmom_b_0.8_alpha-0.25",
+            "fedavg_gr_alpha-0.25",
+            "fedavg_lr_alpha-0.25",
+            "fed_val_TPR_alpha-0.25",
+            "fair_fate_rho-0.04_l0-0.1_max-1.0_b-0.7_TPR_alpha-0.25"
+        ],
+        [
+            "fedavg_alpha-0.5",
+            "fedmom_b_0.7_alpha-0.5",
+            "fedavg_gr_alpha-0.5",
+            "fedavg_lr_alpha-0.5",
+            "fed_val_TPR_alpha-0.5",
+            "fair_fate_rho-0.047_l0-0.1_max-1.0_b-0.9_TPR_alpha-0.5"
+        ],
+        [
+            "fedavg",
+            "fedmom_b_0.99",
+            "fedavg_gr",
+            "fedavg_lr",
+            "fed_val_TPR",
+            "fair_fate_rho-0.04_l0-0.1_max-1.0_b-0.8_TPR"
+        ]],
+        [
+            r'$\alpha=0.25$', r'$\alpha=0.5$', "RND",
+        ],
+        [
+            "FedAvg",
+            "FedMom",
+            "FedAvg+GR",
+            "FedAvg+LR",
+            "FedVal (F=EO)",
+            'FAIR-FATE (F=EO)'
+        ]
+    )
 
     #plot_paretos(Adult().name, 20, 50, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
     #plot_paretos(Compas().name, 20, 50, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")
