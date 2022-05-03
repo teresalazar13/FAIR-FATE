@@ -11,6 +11,7 @@ from code.algorithms.FedAvg import FedAvg
 from code.algorithms.FedAvgLR import FedAvgLR
 from code.algorithms.FedAvgGR import FedAvgGR
 from code.algorithms.FedMom import FedMom
+from code.algorithms.FedDemon import FedDemon
 from code.algorithms.FedVal import FedVal
 from code.algorithms.FairFed import FairFed
 
@@ -72,6 +73,8 @@ def get_fl(dataset, fl_string, beta_string, rho_string, l0_string, MAX_string, m
         beta = float(beta_string)
         if fl_string == "FedMom":
             fl = FedMom(dataset, beta)
+        elif fl_string == "FedDemon":
+            fl = FedDemon(dataset, beta)
         elif fl_string == "FairFate":
             rho = float(rho_string)
             if l0_string:
@@ -106,7 +109,7 @@ def get_aggregation_metrics(metrics_string_array):
 def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', choices=["adult", "compas", "law", "dutch"], required=True, help='dataset name')
-    parser.add_argument('--fl', choices=["FedAvg", "FedAvgLR", "FedAvgGR", "FedMom", "FedVal", "FairFed", "FairFate"], required=True,
+    parser.add_argument('--fl', choices=["FedAvg", "FedAvgLR", "FedAvgGR", "FedMom", "FedDemon", "FedVal", "FairFed", "FairFate"], required=True,
                         help='Federated Learning algorithm')
     parser.add_argument('--alpha', required=False, help='alpha')
     parser.add_argument('--beta', required=False, help='beta')

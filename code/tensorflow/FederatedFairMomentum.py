@@ -15,11 +15,17 @@ class FederatedFairMomentum:
         self.iteration = 1  # round_num
         self.rho = rho
         self.l0 = l0
-        self.beta = beta
         self.MAX = MAX
         self.lambda_ = self.get_lambda()
+        self.beta_init = beta
+        self.beta = self.get_beta()
         self.aggregation_metrics = aggregation_metrics
         self.epsilon = 0.0001
+
+    def get_beta(self):
+        beta = self.beta_init * (1 - self.iteration/100) / ((1 - self.beta_init) + self.beta_init*(1 - self.iteration/100))
+
+        return beta
 
     def get_lambda(self):
         lambda_ = self.l0 * ((1 + self.rho) ** self.iteration)
@@ -122,6 +128,7 @@ class FederatedFairMomentum:
         model.set_weights(self.actual_state)
         self.iteration += 1
         self.lambda_ = self.get_lambda()
+        self.beta = self.get_beta()
 
         return new_state_with_momentum, model
 

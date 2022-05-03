@@ -30,6 +30,7 @@ class FairFate(FederatedLearningAlgorithm):
 
     def update(self, weights, x_val, y_val, clients_data_size, _):
         print("\nLambda: {}".format(round(self.ffm.lambda_, 2)))
+        print("Beta: {}".format(round(self.ffm.beta, 2)))
 
         return self.ffm.update_model(weights, self.dataset.n_features, x_val, y_val, clients_data_size)
 
@@ -37,4 +38,4 @@ class FairFate(FederatedLearningAlgorithm):
 def get_hyperparameter_specs_str(beta, rho, l0, MAX, aggregation_metrics):
     aggregation_metrics_string = "-".join([metric.name for metric in aggregation_metrics])
 
-    return "rho-{}_l0-{}_max-{}_b-{}_{}".format(str(rho), str(l0), str(MAX), str(beta), aggregation_metrics_string)
+    return "b0-{}_rho-{}_l0-{}_max-{}_{}".format(str(beta), str(rho), str(l0), str(MAX), aggregation_metrics_string)

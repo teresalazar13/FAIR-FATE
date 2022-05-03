@@ -59,11 +59,12 @@ def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a
 
 
 if __name__ == '__main__':
-    alpha = None
-    dataset_name = Law().name
+    alpha = 1.0
+    dataset_name = Adult().name
     metrics = ["TPR_ratio"]
     #print_results(dataset_name, 20, 50, metrics, alpha=alpha)
 
+    """
     plot_results_epochs(
         50, Dutch().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
@@ -91,7 +92,7 @@ if __name__ == '__main__':
         [[0.045, 0.047, 0.045], [0.05, 0.045, 0.045], [0.05, 0.05, 0.05]],
         [[0.9, 0.8, 0.9], [0.7, 0.7, 0.7], [0.99, 0.99, 0.99]],
         [0.8, 0.9, 0.99]
-    )
+    )"""
 
     """
     plot_results_epochs_specific(
@@ -171,6 +172,362 @@ if __name__ == '__main__':
             'FAIR-FATE (F=EO)'
         ]
     )"""
+
+    """
+    plot_results_epochs_specific(
+        Compas().name, 5, 100,
+        [[
+            #"fedavg_alpha-0.25",
+            #"fedavg_gr_alpha-0.25",
+            "fedavg_lr_alpha-0.25",
+            #"fair_fate_rho-0.045_l0-1.0_max-10000_b-0.9_SP_alpha-0.25",
+            "fair_fate_rho-0.045_l0-0.1_max-1.0_b-0.9_SP_alpha-0.25",
+            #"fair_fate_rho-0.03_l0-0.1_max-1.0_b-0.9_SP_alpha-0.25",
+            #"fair_fate_rho-0.03_l0-0.1_max-1.0_b-0.7_SP_alpha-0.25",
+            "fair_fate_rho-0.045_l0-0.1_max-0.6_b-0.9_SP_alpha-0.25",
+        ]],
+        [
+            r'$\alpha=0.25$'
+        ],
+        [
+            #"FedAvg",
+            #"FedAvg+GR",
+            "FedAvg+LR",
+            #'FAIR-FATE (F=SP) LOL',
+            'FAIR-FATE (F=SP) the one chosen',
+            #'FAIR-FATE (F=SP) less rho',
+            #'FAIR-FATE (F=SP) less rho less beta with decay',
+            'FAIR-FATE (F=SP) lower max and weight decay',
+        ]
+    )"""
+
+    """
+    # Adult SP RANDOM comparison com weight decay
+    plot_results_epochs_specific(
+        Adult().name, 1, 100, "SP"
+        [[
+            "fedavg_lr",
+            "fair_fate_rho-0.05_l0-0.1_max-1.0_b-0.99_SP",
+            #"fair_fate_rho-0.035_l0-0.1_max-1.0_b-0.99_SP",
+            #"fair_fate_rho-0.05_l0-0.1_max-1.0_b-0.7_SP",
+            #"fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.99_SP",
+            #"fair_fate_decay_rho-0.06_l0-0.1_max-1.0_b-0.9_SP",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.95_SP",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.975_SP",
+        ]],
+        [
+            "RND"
+        ],
+        [
+            "FedAvg+LR",
+            'FAIR-FATE (F=SP) the one chosen',
+            #'FAIR-FATE (F=SP) lower lambda',
+            #'FAIR-FATE (F=SP) lower beta',
+            #'FAIR-FATE (F=SP) the one chosen + weight decay',
+            #'FAIR-FATE (F=SP) higher rho beta=0.9 + weight decay',
+            'FAIR-FATE (F=SP) beta=0.95 + weight decay',
+            'FAIR-FATE (F=SP) beta=0.975 + weight decay',
+        ]
+    )
+    # Adult TPR RANDOM comparison com weight decay
+    plot_results_epochs_specific(
+        Adult().name, 1, 100, "TPR",
+        [[
+            "fedavg_lr",
+            "fair_fate_rho-0.047_l0-0.1_max-1.0_b-0.99_TPR",
+            #"fair_fate_decay_rho-0.047_l0-0.1_max-1.0_b-0.975_TPR",
+            #"fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.975_TPR",
+            #"fair_fate_decay_rho-0.06_l0-0.1_max-1.0_b-0.975_TPR",
+            #"fair_fate_decay_rho-0.045_l0-0.1_max-1.0_b-0.975_TPR"
+            #"fair_fate_decay_rho-0.047_l0-0.1_max-1.0_b-0.95_TPR",
+            #"fair_fate_decay_rho-0.047_l0-0.1_max-1.0_b-0.99_TPR",
+            #"fair_fate_decay_rho-0.047_l0-0.1_max-1.0_b-0.925_TPR",
+            #"fair_fate_decay_rho-0.047_l0-0.1_max-1.0_b-0.93_TPR",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.93_TPR",
+        ]],
+        [
+            "RND"
+        ],
+        [
+            "FedAvg+LR",
+            'FAIR-FATE (F=EO) the one chosen',
+            #'FAIR-FATE (F=EO) beta=0.975 + decay',
+            #'FAIR-FATE (F=EO) beta=0.975, rho=0.05 + decay',
+            #'FAIR-FATE (F=EO) beta=0.975, rho=0.06 + decay',
+            #'FAIR-FATE (F=EO) beta=0.975, rho=0.045 + decay'
+            #'FAIR-FATE (F=EO) beta=0.95 + decay',
+            #'FAIR-FATE (F=EO) beta=0.99 + decay',
+            #'FAIR-FATE (F=EO) beta=0.925 + decay',
+            #'FAIR-FATE (F=EO) beta=0.93 + decay',
+            'FAIR-FATE (F=EO) beta=0.93, rho=0.05 + decay',
+        ]
+    )
+    # Adult EQO RANDOM comparison com weight decay
+    plot_results_epochs_specific(
+        Adult().name, 1, 100, "EQO",
+        [[
+            "fedavg_lr",
+            "fair_fate_rho-0.05_l0-0.1_max-1.0_b-0.99_EQO",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.95_EQO",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.975_EQO",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.93_EQO"
+        ]],
+        [
+            "RND"
+        ],
+        [
+            "FedAvg+LR",
+            'FAIR-FATE (F=EQO) the one chosen',
+            'FAIR-FATE (F=EQO) beta=0.95 decay',
+            'FAIR-FATE (F=EQO) beta=0.975 decay',
+            'FAIR-FATE (F=EQO) beta=0.93 decay'
+        ]
+    )
+    # COMPAS SP RANDOM comparison com weight decay
+    plot_results_epochs_specific(
+        Compas().name, 1, 100, "SP",
+        [[
+            "fedavg_lr",
+            "fair_fate_rho-0.05_l0-0.1_max-1.0_b-0.99_SP",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.93_SP",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.95_SP",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.975_SP"
+        ]],
+        [
+            "RND"
+        ],
+        [
+            "FedAvg+LR",
+            'FAIR-FATE (F=SP) the one chosen',
+            'FAIR-FATE (F=SP) beta=0.93 decay',
+            'FAIR-FATE (F=SP) beta=0.95 decay',
+            'FAIR-FATE (F=SP) beta=0.975 decay'
+        ]
+    )
+    # COMPAS SP 0.25 comparison com weight decay
+    plot_results_epochs_specific(
+        Compas().name, 1, 100, "SP",
+        [[
+            "fed_val_SP_alpha-0.25",
+            "fair_fate_rho-0.045_l0-0.1_max-1.0_b-0.9_SP_alpha-0.25",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.93_SP_alpha-0.25",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.95_SP_alpha-0.25",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.975_SP_alpha-0.25"
+        ]],
+        [
+            "alpha=0.25"
+        ],
+        [
+            "FedVal (F=SP)",
+            'FAIR-FATE (F=SP) the one chosen',
+            'FAIR-FATE (F=SP) beta=0.93 decay',
+            'FAIR-FATE (F=SP) beta=0.95 decay',
+            'FAIR-FATE (F=SP) beta=0.975 decay'
+        ]
+    )
+    # DUTCH TPR 1.0 comparison com weight decay
+    plot_results_epochs_specific(
+        Dutch().name, 1, 100, "TPR",
+        [[
+            #"fedavg_gr_alpha-1.0",
+            "fair_fate_rho-0.047_l0-0.1_max-1.0_b-0.8_TPR_alpha-1.0",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.93_TPR_alpha-1.0",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.95_TPR_alpha-1.0",
+            "fair_fate_decay_rho-0.05_l0-0.1_max-1.0_b-0.975_TPR_alpha-1.0",
+            "fair_fate_decay_rho-0.04_l0-0.1_max-1.0_b-0.95_TPR_alpha-1.0"
+        ]],
+        [
+            "alpha=1.0"
+        ],
+        [
+            #"FedAvg+LR",
+            'FAIR-FATE (F=TPR) the one chosen',
+            'FAIR-FATE (F=TPR) beta=0.93 decay',
+            'FAIR-FATE (F=TPR) beta=0.95 decay',
+            'FAIR-FATE (F=TPR) beta=0.975 decay',
+            'FAIR-FATE (F=TPR) beta=0.95 0.4 rho decay',
+        ]
+    )"""
+
+    metric = "EQO"
+    alpha = "_alpha-0.5"
+    name = Law().name
+    plot_results_epochs_specific(
+        name, 1, 100, metric,
+        [[
+            #"fedavg{}".format(alpha),
+            #"fedavg_lr{}".format(alpha),
+            "fedavg_gr{}".format(alpha),
+
+            #"fedmom_b_0.8{}".format(alpha),
+            #"fedmom_b_0.85{}".format(alpha),
+            #"fedmom_b_0.9{}".format(alpha),
+            #"fedmom_b_0.95{}".format(alpha),
+            #"fedmom_b_0.99{}".format(alpha),
+
+            #"fed_demon_b_0.8{}".format(alpha),
+            #"fed_demon_b_0.85{}".format(alpha),
+            #"fed_demon_b_0.9{}".format(alpha),
+            #"fed_demon_b_0.95{}".format(alpha),
+            #"fed_demon_b_0.99{}".format(alpha),
+
+            #"fed_val_{}{}".format(metric, alpha),
+
+            #"fair_fate_b0-0.8_rho-0.04_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.8_rho-0.05_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.85_rho-0.04_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.85_rho-0.05_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.9_rho-0.04_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.9_rho-0.05_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.95_rho-0.04_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.95_rho-0.05_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.99_rho-0.04_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.99_rho-0.05_l0-0.1_max-1.0_{}{}".format(metric, alpha),
+
+            "fair_fate_b0-0.8_rho-0.04_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.8_rho-0.05_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.85_rho-0.04_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.85_rho-0.05_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.9_rho-0.04_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.9_rho-0.05_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.95_rho-0.04_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.95_rho-0.05_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.99_rho-0.04_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+            "fair_fate_b0-0.99_rho-0.05_l0-0.5_max-1.0_{}{}".format(metric, alpha),
+
+            #"fair_fate_b0-0.8_rho-0.04_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.8_rho-0.05_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.85_rho-0.04_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.85_rho-0.05_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.9_rho-0.04_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.9_rho-0.05_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.95_rho-0.04_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.95_rho-0.05_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.99_rho-0.04_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.99_rho-0.05_l0-0.1_max-0.9_{}{}".format(metric, alpha),
+
+            #"fair_fate_b0-0.8_rho-0.04_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.8_rho-0.05_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.85_rho-0.04_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.85_rho-0.05_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.9_rho-0.04_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.9_rho-0.05_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.95_rho-0.04_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.95_rho-0.05_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.99_rho-0.04_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+            #"fair_fate_b0-0.99_rho-0.05_l0-0.5_max-0.9_{}{}".format(metric, alpha),
+
+            # "fair_fate_b0-0.8_rho-0.04_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.8_rho-0.05_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.85_rho-0.04_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.85_rho-0.05_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.9_rho-0.04_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.9_rho-0.05_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.95_rho-0.04_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.95_rho-0.05_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.99_rho-0.04_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.99_rho-0.05_l0-0.1_max-0.8_{}{}".format(metric, alpha),
+
+            # "fair_fate_b0-0.8_rho-0.04_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.8_rho-0.05_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.85_rho-0.04_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.85_rho-0.05_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.9_rho-0.04_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.9_rho-0.05_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.95_rho-0.04_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.95_rho-0.05_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.99_rho-0.04_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+            # "fair_fate_b0-0.99_rho-0.05_l0-0.5_max-0.8_{}{}".format(metric, alpha),
+        ]],
+        [
+            "{} {} - {} ".format(name, metric, alpha)
+        ],
+        [
+            #"FedAvg",
+            #"FedAvg+LR",
+            "FedAvg+GR",
+
+            #"FedMom b=0.8",
+            #"FedMom b=0.85",
+            #"FedMom b=0.9",
+            #"FedMom b=0.95",
+            #"FedMom b=0.99",
+
+            #"FedDemon b0=0.8",
+            #"FedDemon b0=0.85",
+            #"FedDemon b0=0.9",
+            #"FedDemon b0=0.95",
+            #"FedDemon b0=0.99",
+
+            #"FedVal (F={})".format(metric),
+
+            #"FairFate (F={}) b0-0.8 rho-0.04 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.8 rho-0.05 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.85 rho-0.04 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.85 rho-0.05 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.9 rho-0.04 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.9 rho-0.05 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.95 rho-0.04 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.95 rho-0.05 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.99 rho-0.04 l0=0.1 max=1.0".format(metric),
+            #"FairFate (F={}) b0-0.99 rho-0.05 l0=0.1 max=1.0".format(metric),
+
+            "FairFate (F={}) b0-0.8 rho-0.04 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.8 rho-0.05 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.85 rho-0.04 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.85 rho-0.05 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.9 rho-0.04 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.9 rho-0.05 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.95 rho-0.04 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.95 rho-0.05 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.99 rho-0.04 l0=0.5 max=1.0".format(metric),
+            "FairFate (F={}) b0-0.99 rho-0.05 l0=0.5 max=1.0".format(metric),
+
+            #"FairFate (F={}) b0-0.8 rho-0.04 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.8 rho-0.05 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.85 rho-0.04 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.85 rho-0.05 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.9 rho-0.04 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.9 rho-0.05 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.95 rho-0.04 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.95 rho-0.05 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.99 rho-0.04 l0=0.1 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.99 rho-0.05 l0=0.1 max=0.9".format(metric),
+
+            #"FairFate (F={}) b0-0.8 rho-0.04 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.8 rho-0.05 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.85 rho-0.04 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.85 rho-0.05 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.9 rho-0.04 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.9 rho-0.05 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.95 rho-0.04 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.95 rho-0.05 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.99 rho-0.04 l0=0.5 max=0.9".format(metric),
+            #"FairFate (F={}) b0-0.99 rho-0.05 l0=0.5 max=0.9".format(metric),
+
+            # "FairFate (F={}) b0-0.8 rho-0.04 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.8 rho-0.05 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.85 rho-0.04 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.85 rho-0.05 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.9 rho-0.04 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.9 rho-0.05 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.95 rho-0.04 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.95 rho-0.05 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.99 rho-0.04 l0=0.1 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.99 rho-0.05 l0=0.1 max=0.8".format(metric),
+
+            # "FairFate (F={}) b0-0.8 rho-0.04 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.8 rho-0.05 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.85 rho-0.04 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.85 rho-0.05 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.9 rho-0.04 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.9 rho-0.05 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.95 rho-0.04 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.95 rho-0.05 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.99 rho-0.04 l0=0.5 max=0.8".format(metric),
+            # "FairFate (F={}) b0-0.99 rho-0.05 l0=0.5 max=0.8".format(metric),
+        ]
+    )
 
     #plot_paretos(Adult().name, 20, 50, [None, 1.0, 0.5], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-adult")
     #plot_paretos(Compas().name, 20, 50, [None, 0.5, 0.25], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC", "pareto_fronts-compas")

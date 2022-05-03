@@ -66,7 +66,7 @@ def plot_results_epochs(n_rounds, dataset_name, num_runs, fairness_metrics, alph
     plt.show()
 
 
-def plot_results_epochs_specific(dataset_name, num_runs, fls_array, titles, fls_legend):
+def plot_results_epochs_specific(dataset_name, num_runs, num_rounds, metric, fls_array, titles, fls_legend):
     colors = distinctipy.get_colors(len(fls_legend), rng=10)
     plt.figure(figsize=(7, 10))
     count = 0
@@ -76,12 +76,13 @@ def plot_results_epochs_specific(dataset_name, num_runs, fls_array, titles, fls_
         for fl in fls:
             df = get_avg_df_specific(fl, dataset_name, num_runs)
             dfs.append(df)
-        x_plot = [i for i in range(0, len(dfs[0]))]
+        x_plot = [i for i in range(0, num_rounds)]
 
         plt.subplot(len(fls_array), 2, count*2 + 2)
         i = 0
         for df in dfs:
-            plt.plot(x_plot, df["ACC"].tolist(), color=colors[i])
+            print(len(df["ACC"].tolist()))
+            plt.plot(x_plot, df["ACC"].tolist()[:num_rounds], color=colors[i])
             plt.xlabel("Round Number")
             plt.ylabel("ACC")
             i += 1
@@ -90,11 +91,11 @@ def plot_results_epochs_specific(dataset_name, num_runs, fls_array, titles, fls_
         plt.subplot(len(fls_array), 2, count*2 + 1)
         i = 0
         for df in dfs:
-            plt.plot(x_plot, df["TPR_ratio"].tolist(), color=colors[i])
+            plt.plot(x_plot, df["{}_ratio".format(metric)].tolist()[:num_rounds], color=colors[i])
             plt.xlabel("Round Number")
-            plt.ylabel("EO")
+            plt.ylabel(metric)
             i += 1
-        plt.ylim([0, 1])
+        plt.ylim([0, 1.2])
         plt.title(titles[count])
         count += 1
 
