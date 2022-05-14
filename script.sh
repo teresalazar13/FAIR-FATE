@@ -24,8 +24,8 @@ done
 
 for BETA in 0.8 0.9 0.99
 do
-	for RHO in 0.04 0.05
-	do
+  for RHO in 0.04 0.05
+  do
     for L0 in 0.1 0.5
     do
       for MAX in 0.8 0.9 1.0
