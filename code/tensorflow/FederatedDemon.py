@@ -12,8 +12,8 @@ class FederatedDemon:
         self.dataset = dataset
         self.momentum = self._get_model_shape()  # copy shape of state with zeros
         self.beta_init = beta
-        self.beta = self.get_beta()
         self.iteration = 1  # round_num
+        self.beta = self.get_beta()
 
     def get_beta(self):
         beta = self.beta_init * (1 - self.iteration/100) / ((1 - self.beta_init) + self.beta_init*(1 - self.iteration/100))
