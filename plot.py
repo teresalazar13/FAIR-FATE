@@ -71,19 +71,23 @@ def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a
 
 
 if __name__ == '__main__':
-    alpha = 0.5
-    dataset_name = Law().name
-    metrics = ["EQO_ratio"]
-    print_results(dataset_name, 10, 100, metrics, alpha=alpha)
+    #alpha = 0.5
+    #dataset_name = Law().name
+    #metrics = ["EQO_ratio"]
+    #print_results(dataset_name, 10, 100, metrics, alpha=alpha)
 
-    """
     plot_results_epochs(
-        50, Dutch().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        100, Law().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
-        [[0.04, 0.04, 0.045], [0.045, 0.047, 0.047], [0.05, 0.047, 0.05]],
-        [[0.9, 0.99, 0.7], [0.7, 0.8, 0.8], [0.99, 0.99, 0.99]],
+        [[0.9, 0.99, 0.8], [0.8, 0.8, 0.8], [0.99, 0.99, 0.99]],
+        [[0.04, 0.04, 0.05], [0.05, 0.05, 0.05], [0.05, 0.05, 0.05]],
+        [[0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1]],
+        [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]],
+        [0.8, 0.9, 0.9],
         [0.8, 0.9, 0.9]
     )
+
+    """
     plot_results_epochs(
         50, Law().name, 20, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.25, 0.5, None],
