@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def print_avg_results(dataset_name, num_runs, n_rounds, fls, fls_fair_fate, fls_fedmom, fairness_metrics, metrics_results):
+def print_avg_results(dataset_name, num_runs, n_rounds, fls, fls_fair_fate, fls_fedmom, fls_fed_demon, fairness_metrics, metrics_results):
     fedavg_acc = get_avg_df(n_rounds, fls[0], dataset_name, num_runs, metrics_results, fairness_metrics, True)["ACC"].iloc[n_rounds-1]
     dfs = get_dfs(n_rounds, fls, dataset_name, num_runs, metrics_results, fairness_metrics, True)
 
@@ -10,6 +10,11 @@ def print_avg_results(dataset_name, num_runs, n_rounds, fls, fls_fair_fate, fls_
     dfs_fedmom = get_dfs(n_rounds, fls_fedmom, dataset_name, num_runs, metrics_results, fairness_metrics, True)
     fairness_metrics_all = ["SP_ratio", "TPR_ratio", "EQO_ratio"]
     print_results(n_rounds, dfs, fls_fedmom, dfs_fedmom, fairness_metrics_all, fedavg_acc)
+
+    # FedDemon
+    dfs_fed_demon = get_dfs(n_rounds, fls_fed_demon, dataset_name, num_runs, metrics_results, fairness_metrics, True)
+    fairness_metrics_all = ["SP_ratio", "TPR_ratio", "EQO_ratio"]
+    print_results(n_rounds, dfs, fls_fed_demon, dfs_fed_demon, fairness_metrics_all, fedavg_acc)
 
     # FAIR-FATE
     dfs_fair_fate = get_dfs(n_rounds, fls_fair_fate, dataset_name, num_runs, metrics_results, fairness_metrics, False)

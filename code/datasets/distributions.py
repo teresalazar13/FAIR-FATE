@@ -16,7 +16,6 @@ def get_x_dirichlet(seed, alpha, dataset, x_train, y_train):
     x_train_dirichlet = [[] for _ in range(num_clients)]
     y_train_dirichlet = [[] for _ in range(num_clients)]
 
-    #d = {}
     for comb_idx in range(len(dataset.combs)):
         df_temp = df.copy(deep=True)
         for k, [v, _, _] in dataset.combs[comb_idx].items():
@@ -32,45 +31,11 @@ def get_x_dirichlet(seed, alpha, dataset, x_train, y_train):
 
             else:  # get the rest
                 df_client = df_temp.iloc[start:]
-                #n_instances_for_client = len(df_client)
-
-            """
-            # TOPRINT
-            if client_idx in d and dataset.combs[comb_idx][dataset.target.name][-1] in d[client_idx]:
-                d[client_idx][dataset.combs[comb_idx][dataset.target.name][-1]] += n_instances_for_client
-            else:
-                if client_idx in d:
-                    d[client_idx][dataset.combs[comb_idx][dataset.target.name][-1]] = n_instances_for_client
-                else:
-                    d[client_idx] = {dataset.combs[comb_idx][dataset.target.name][-1]: n_instances_for_client}
-            # ENDTOPRINT"""
 
             x_train_client = df_client[dataset.all_columns].to_numpy().tolist()
             y_train_client = df_client[dataset.target.name].to_numpy()
             x_train_dirichlet[client_idx].extend(x_train_client)
             y_train_dirichlet[client_idx].extend(y_train_client)
-
-    """
-    # TOPRINT
-    for k, v in d.items():
-        #print("k ", k)
-        a = 0
-        b = 0
-        for i, j in v.items():
-            if not a:
-                a = j
-            else:
-                b = j
-            #print("i ", i, j)
-            #if j == 0:
-                #print("OIOI")
-        if a < b:
-            a, b = b, a
-        div = round(b / (a + b), 2)
-        print(div)
-
-    # ENDTOPRINT
-    """
 
     # shuffle
     for i in range(len(x_train_dirichlet)):
@@ -88,13 +53,14 @@ def plot_distributions(num_clients, combs, s):
     for i in range(len(combs)):
         label = ""
         for k, v in combs[i].items():
-            label += "{}: {};".format(k, v[-1])
+            label += "{}: {}; ".format(k, v[-1])
         plt.barh(range(num_clients), s[i], left=sum, label=label[:-1])
         sum += s[i]
     plt.yticks([i for i in range(num_clients)], ["Client {}".format(i + 1) for i in range(num_clients)])
     plt.xlabel("Sensitive attribute distribution")
     plt.legend()
-    # plt.show()
+    plt.show()
+    exit(0)
 
 
 def join_x_and_y(dataset, x_train, y_train):

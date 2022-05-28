@@ -55,7 +55,7 @@ def plot_pie_chart(sp, labels, sizes, plot_filename):
     plt.legend(labels=labels, loc=(-0.145, 0), prop={'size': 8})  #loc=(-0.145, 0) -> compas
     ax1.axis('equal')
     plt.title("SP*: {}".format(sp))
-    plt.rcParams['figure.dpi'] = 300
-    plt.rcParams['savefig.dpi'] = 300
+    #plt.rcParams['figure.dpi'] = 300
+    #plt.rcParams['savefig.dpi'] = 300
     plt.savefig(plot_filename)
-    # plt.show()
+    plt.show()

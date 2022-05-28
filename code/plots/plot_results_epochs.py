@@ -11,33 +11,33 @@ def plot_results_epochs(
         betas_fairfate, rhos_fairfate, l0s_fairfate, maxs_fairfate,
         beta_fedmom, beta_fed_demon
 ):
-    dfs = []
     metrics = ["ACC"]
     metrics.extend(fairness_metrics)
+    dfs = []
 
     for a in range(len(alphas)):
-        fls = ["fedavg", "fedavg_gr", "fedavg_lr"]
-        fls.append("fedmom_b_{}".format(str(beta_fedmom[a])))
-        fls.append("fed_demon_b_{}".format(str(beta_fed_demon[a])))
         dfs_alpha = []
 
         for i in range(len(fairness_metrics)):
-            fls_metric = fls[:]
-            fairness_metrics_string = fairness_metrics[i].split("_")[0]
-            fl_fedval = "fed_val_{}".format(fairness_metrics_string)
-            fls_metric.append(fl_fedval)
-            fairfate_fl = "fair_fate_b0-{}_rho-{}_l0-{}_max-{}_{}".format(
-                str(betas_fairfate[a][i]), str(rhos_fairfate[a][i]), str(l0s_fairfate[a][i]), str(maxs_fairfate[a][i]),
-                fairness_metrics_string
-            )
-            fls_metric.append(fairfate_fl)
+            metric = fairness_metrics[i].split("_")[0]
+            fls = [
+                "fedavg", "fedavg_gr", "fedavg_lr",
+                "fedmom_b_{}".format(str(beta_fedmom[a])),
+                "fed_demon_b_{}".format(str(beta_fed_demon[a])),
+                "fed_val_{}".format(metric),
+                "fair_fate_b0-{}_rho-{}_l0-{}_max-{}_{}".format(
+                    str(betas_fairfate[a][i]), str(rhos_fairfate[a][i]), str(l0s_fairfate[a][i]), str(maxs_fairfate[a][i]), metric
+                )
+            ]
             if alphas[a]:
-                for j in range(len(fls_metric)):
-                    fls_metric[j] = "{}_alpha-{}".format(fls_metric[j], alphas[a])
-            print(fls_metric)
-            dfs_alpha.append(get_dfs(n_rounds, fls_metric, dataset_name, num_runs, metrics, fairness_metrics, True))
-        dfs_alpha.append(dfs_alpha[0][0:4])
-        dfs_alpha[-1].extend([dfs_alpha[0][-1], dfs_alpha[1][-1], dfs_alpha[2][-1]])
+                for j in range(len(fls)):
+                    fls[j] = "{}_alpha-{}".format(fls[j], alphas[a])
+            print(fls)
+            dfs_alpha.append(get_dfs(n_rounds, fls, dataset_name, num_runs, metrics, fairness_metrics, True))
+
+        dfs_alpha.append(dfs_alpha[0][0:5])  # fedavg, fedavg_gr", fedavg_lr, fedmom, fed_demon
+        dfs_alpha[-1].extend([dfs_alpha[0][-2], dfs_alpha[1][-2], dfs_alpha[2][-2]])  # add fedval
+        dfs_alpha[-1].extend([dfs_alpha[0][-1], dfs_alpha[1][-1], dfs_alpha[2][-1]])  # add fair_fate
         dfs_alpha.insert(0, dfs_alpha.pop())
         dfs.extend(dfs_alpha)
 
@@ -49,7 +49,7 @@ def plot_results_epochs(
         ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedDemon", "FedVal (F=EO)", "FAIR-FATE (F=EO)"],
         ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedDemon", "FedVal (F=EQO)", "FAIR-FATE (F=EQO)"]
     ]
-    colors = distinctipy.get_colors(len(fls_legend[0]), rng=1)
+    colors = distinctipy.get_colors(len(fls_legend[0]), rng=5)
     d = {}
     for i in range(len(fls_legend[0])):
         d[fls_legend[0][i]] = colors[i]
@@ -67,7 +67,7 @@ def plot_results_epochs(
         plt.ylim([0, 1])
 
     handles = [plt.plot([], [], color=colors[i], marker="o", ls="")[0] for i in range(len(colors))]
-    coords = (-2.3, -0.64)
+    coords = (-2.3, -0.8)
     rho_legend = plt.legend(handles=handles, labels=fls_legend[0], loc=coords, ncol=int(len(handles)/2))
     plt.gca().add_artist(rho_legend)
     plt.savefig('./datasets/{}/rounds_plot.png'.format(dataset_name), bbox_inches='tight')

@@ -1,6 +1,6 @@
 N_RUNS=10
 N_ROUNDS=100
-DATASET=adult
+DATASET=compas
 ALPHA=0.5
 
 python3 main.py --dataset $DATASET --fl FedAvg --n_runs $N_RUNS --n_rounds $N_ROUNDS --alpha $ALPHA
