@@ -26,7 +26,7 @@ You can install all required dependencies by running:
 
 To build and test the software and produce all results run this in the top level of the repository:
 
-    python3 main.py
+    sh script.sh
     
 ## Running the code with your own dataset
 
