@@ -64,21 +64,13 @@ class Dataset:
         x_test, x_val, y_test, y_val = train_test_split(x_test, y_test, test_size=0.5, random_state=seed)
         x_train = x_train.astype(np.float32)
         y_train = y_train.astype(np.int32)
-        #print("Train : ", self._calculate_sp(self._create_dataframe_for_eval(self.all_columns, x_train, y_train.reshape(len(y_train), 1)), self))
         x_test = x_test.astype(np.float32)
         y_test = y_test.astype(np.int32).reshape(len(y_test), 1)
-        #print("Test : ", self._calculate_sp(self._create_dataframe_for_eval(self.all_columns, x_test, y_test), self))
         x_val = x_val.astype(np.float32)
         y_val = y_val.astype(np.int32).reshape(len(y_val), 1)
-        #print("Val : ", self._calculate_sp(self._create_dataframe_for_eval(self.all_columns, x_val, y_val), self))
 
         return x_train, y_train, x_test, y_test, x_val, y_val
 
-    def _create_dataframe_for_eval(self, all_columns, x, y):
-        df = pd.DataFrame(data=np.concatenate((x, np.stack(y, axis=0)), axis=1),
-                          columns=all_columns + ["pass_bar"])
-
-        return df
 
     def _calculate_sp(self, df, dataset):
         df_temp_unpriv = df.copy(deep=True)
