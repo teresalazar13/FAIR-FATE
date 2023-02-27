@@ -5,4 +5,4 @@ tensorflow==2.7.0
 tensorflow-estimator==2.7.0
 tensorflow-federated==0.19.0
 distinctipy==1.2.1
-sklearn
+scikit-learn
