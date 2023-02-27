@@ -1,7 +1,7 @@
 N_RUNS=10
 N_ROUNDS=100
 DATASET=compas
-ALPHA=0.5
+ALPHA=1.0
 
 for BETA in 0.85 0.95 #0.8 0.9 0.99
 do
