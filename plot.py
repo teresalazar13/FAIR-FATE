@@ -71,12 +71,11 @@ def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a
 
 
 if __name__ == '__main__':
-    alpha = 0.5
+    alpha = None
     dataset_name = Adult().name
-    metrics = ["SP_ratio"]
+    metrics = ["EQO_ratio"]
     #print_results(dataset_name, 10, 100, metrics, alpha=alpha)
 
-    """
     plot_results_epochs(
         100, Compas().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
@@ -90,10 +89,10 @@ if __name__ == '__main__':
     plot_results_epochs(
         100, Adult().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
-        [[0.9, 0.99, 0.9], [0.99, 0.8, 0.99], [0.99, 0.99, 0.9]],
+        [[0.8, 0.99, 0.9], [0.99, 0.8, 0.99], [0.99, 0.99, 0.9]],
         [[0.05, 0.04, 0.05], [0.04, 0.05, 0.04], [0.04, 0.04, 0.05]],
-        [[0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.5]],
-        [[0.9, 0.9, 0.9], [0.9, 1.0, 0.9], [1.0, 1.0, 1.0]],
+        [[0.1, 0.5, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.5]],
+        [[0.8, 0.8, 0.9], [0.9, 1.0, 0.9], [1.0, 1.0, 1.0]],
         [0.8, 0.99, 0.99],
         [0.8, 0.8, 0.8]
     )
@@ -116,7 +115,7 @@ if __name__ == '__main__':
         [[0.8, 0.8, 0.9], [0.8, 1.0, 1.0], [1.0, 1.0, 1.0]],
         [0.8, 0.8, 0.8],
         [0.99, 0.99, 0.99]
-    )"""
+    )
 
     """
     plot_results_epochs_specific(
@@ -124,7 +123,7 @@ if __name__ == '__main__':
         [["fair_fate_b0-0.9_rho-0.05_l0-0.1_max-0.9_SP_alpha-0.5", "fedavg_alpha-0.5"]],
         ["", ""], ["", ""]
     )"""
-
+    """
     hyperparameters_list = [[0.8, 0.9, 1.0], [0.1, 0.5], [0.8, 0.9, 0.99], [0.04, 0.05]]
     hyperparameter_name_list = [["MAX", "max"], ["\lambda_0", "l0"], ["\\beta_0", "b0"], ["\\rho", "rho"]]
     for i in range(len(hyperparameters_list)):
@@ -146,4 +145,4 @@ if __name__ == '__main__':
         plot_paretos(
             Law().name, 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
             hyperparameters, hyperparameter_name, "pareto_{}-{}".format(hyperparameter_name[1], Law().name)
-        )
+        )"""

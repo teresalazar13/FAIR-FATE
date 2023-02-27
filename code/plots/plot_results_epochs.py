@@ -41,7 +41,7 @@ def plot_results_epochs(
         dfs_alpha.insert(0, dfs_alpha.pop())
         dfs.extend(dfs_alpha)
 
-    plt.figure(figsize=(17, 14))
+    plt.figure(figsize=(18, 10))
     x_plot = [i for i in range(0, len(dfs[0][0]))]
     fls_legend = [
         ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedDemon", "FedVal (F=SP)", "FedVal (F=EO)", "FedVal (F=EQO)", "FAIR-FATE (F=SP)", "FAIR-FATE (F=EO)", "FAIR-FATE (F=EQO)"],
@@ -66,12 +66,11 @@ def plot_results_epochs(
         plt.xlim([0, n_rounds])
         plt.ylim([0, 1])
 
+    plt.subplots_adjust(hspace=0.35)
     handles = [plt.plot([], [], color=colors[i], marker="o", ls="")[0] for i in range(len(colors))]
-    coords = (-2.3, -0.8)
-    rho_legend = plt.legend(handles=handles, labels=fls_legend[0], loc=coords, ncol=int(len(handles)/2))
-    plt.gca().add_artist(rho_legend)
+    plt.legend(handles=handles, labels=fls_legend[0], loc="lower center", bbox_to_anchor=(-0.35, -0.65), ncol=int(len(handles)/2))
     plt.savefig('./datasets/{}/rounds_plot.png'.format(dataset_name), bbox_inches='tight')
-    plt.show()
+    #plt.show()
 
 
 def plot_results_epochs_specific(dataset_name, num_runs, num_rounds, metric, fls_array, titles, fls_legend):
