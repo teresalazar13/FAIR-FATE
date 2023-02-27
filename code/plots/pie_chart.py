@@ -58,4 +58,4 @@ def plot_pie_chart(sp, labels, sizes, plot_filename):
     #plt.rcParams['figure.dpi'] = 300
     #plt.rcParams['savefig.dpi'] = 300
     plt.savefig(plot_filename)
-    plt.show()
+    #plt.show()
