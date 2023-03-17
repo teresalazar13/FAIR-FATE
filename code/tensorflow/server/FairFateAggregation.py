@@ -6,23 +6,23 @@ from code.metrics.retriever import get_fairness
 from code.tensorflow.models import get_model
 
 
-class FederatedFairMomentum:
+class FairFateAggregation:
 
-    def __init__(self, state, dataset, aggregation_metrics, rho=None, MAX=10000, beta=0.9, l0=0.1):
+    def __init__(self, state, dataset, aggregation_metrics, MAX=1000, beta0=0.9, l0=0.1, rho=0.05):
         self.actual_state = deepcopy(state)  # weights
         self.dataset = dataset
+        self.aggregation_metrics = aggregation_metrics
         self.momentum = self._get_model_shape()  # copy shape of state with zeros
         self.iteration = 1  # round_num
-        self.rho = rho
         self.l0 = l0
         self.MAX = MAX
         self.lambda_ = self.get_lambda()
-        self.beta_init = beta
+        self.beta_init = beta0
         self.beta = self.get_beta()
-        self.aggregation_metrics = aggregation_metrics
+        self.rho = rho
         self.epsilon = 0.0001
 
-    def get_beta(self):
+    def get_beta(self):  # TODO - replace 100 with num_rounds
         beta = self.beta_init * (1 - self.iteration/100) / ((1 - self.beta_init) + self.beta_init*(1 - self.iteration/100))
 
         return beta
@@ -70,41 +70,44 @@ class FederatedFairMomentum:
 
         return fairness_clients
 
-    # calculate the new model (new_state), aN = (a1*w1+a2*w2+...+an*wn) / N
-    def calculate_momentum_update_layer(self, layer, state_update_clients, clients_data_size):
-        new_state_layer = np.zeros_like(state_update_clients[0][layer])
+    # calculate lambda * v_{t+1} + (1-lambda) alpha_N, alpha_N = (a1*w1+a2*w2+...+an*wn) / N
+    def calculate_model_update_layer(self, layer, state_update_clients, clients_data_size):
+        alpha_N = np.zeros_like(state_update_clients[0][layer])
         sum_clients_data_size = sum(clients_data_size)
 
         for c in range(self.dataset.num_clients_per_round):
-            new_state_layer = np.add(
-                new_state_layer,
+            alpha_N = np.add(
+                alpha_N,
                 np.multiply(state_update_clients[c][layer], clients_data_size[c] / sum_clients_data_size)
             )
 
         mom_bias_correction = self.momentum[layer] / (1.0 - math.pow(self.beta, self.iteration))
-        update_m = calculate_momentum(mom_bias_correction, self.lambda_, new_state_layer)
+        update_m = np.array(self.lambda_ * mom_bias_correction) + (1 - self.lambda_) * alpha_N
 
         return update_m
 
-    # calculate the new model (new_state for momentum), aF
-    def calculate_momentum_fair_update_layer(self, layer, state_update_clients, fairness_clients, fairness_server):
+    # calculate v_{t+1} of layer
+    def calculate_momentum_update_layer(self, layer, state_update_clients, fairness_clients, fairness_server):
         fairness_sum_fair_clients = 0
-        new_state_layer = np.zeros_like(state_update_clients[0][layer])
+        alpha_F = np.zeros_like(state_update_clients[0][layer])
 
         for c in range(self.dataset.num_clients_per_round):
             if fairness_clients[c] > fairness_server:
-                new_state_layer = np.add(
-                    new_state_layer,
+                alpha_F = np.add(
+                    alpha_F,
                     np.multiply(state_update_clients[c][layer], fairness_clients[c])
                 )
                 fairness_sum_fair_clients += fairness_clients[c]
 
         if fairness_sum_fair_clients == 0:
-            new_state_layer = np.zeros_like(self.momentum[layer])
+            alpha_F = np.zeros_like(self.momentum[layer])
         else:
-            new_state_layer = new_state_layer / fairness_sum_fair_clients
+            alpha_F = alpha_F / fairness_sum_fair_clients
 
-        return calculate_momentum(self.momentum[layer], self.beta, new_state_layer)
+        if self.beta:
+            np.array(self.beta * self.momentum[layer]) + (1 - self.beta) * alpha_F
+        else:  # for ablation study with no momentum
+            return alpha_F
 
     def update_model(self, clients_weights, n_features, x_val, y_val, clients_data_size):
         model = get_model(n_features)
@@ -116,12 +119,12 @@ class FederatedFairMomentum:
 
         new_state_with_momentum = []
         for layer in range(len(clients_weights[0])):
-            update_m_fair = self.calculate_momentum_fair_update_layer(
+            momentum_update_layer = self.calculate_momentum_update_layer(
                 layer, state_update_clients, fairness_clients, fairness_server
             )
-            self.momentum[layer] = deepcopy(update_m_fair)
+            self.momentum[layer] = deepcopy(momentum_update_layer)
 
-            update_m = self.calculate_momentum_update_layer(layer, state_update_clients, clients_data_size)
+            update_m = self.calculate_model_update_layer(layer, state_update_clients, clients_data_size)
             new_state_with_momentum.append(self.actual_state[layer] + update_m)
 
         self.actual_state = deepcopy(new_state_with_momentum)
@@ -159,7 +162,3 @@ def normalize(data, min_, max_):
     if max_ - min_ == 0:
         return 0
     return (data - min_) / (max_ - min_)
-
-
-def calculate_momentum(momentum_l, beta, new_state_layer):
-    return np.array(beta * momentum_l) + (1 - beta) * new_state_layer

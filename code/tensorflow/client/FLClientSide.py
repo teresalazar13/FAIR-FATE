@@ -4,7 +4,7 @@ import tensorflow_federated as tff
 from code.tensorflow.models import model_fn
 
 
-class FederatedLearningClientSide:
+class FLClientSide:
     def __init__(self, type_fairness, federated_train_data, input_layer_shape, learning_rate, seed):
         type_fairness = type_fairness
         federated_train_data = federated_train_data

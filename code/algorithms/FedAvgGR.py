@@ -1,17 +1,17 @@
 from code.algorithms.FLAlgorithm import FederatedLearningAlgorithm
 from code.algorithms.FedAvg import fed_avg_update
-from code.tensorflow.FLClientSide import FederatedLearningClientSide
+from code.tensorflow.client.FLClientSide import FLClientSide
 
 
 class FedAvgGR(FederatedLearningAlgorithm):  # Global Reweighting
+
     def __init__(self, dataset):
-        name = "fedavg_gr"
-        super().__init__(name)
+        super().__init__("fedavg_gr")
 
         self.dataset = dataset
 
     def reset(self, federated_train_data, seed):
-        algorithm = FederatedLearningClientSide(
+        algorithm = FLClientSide(
             "GR", federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
         )
         state = algorithm.initialize()

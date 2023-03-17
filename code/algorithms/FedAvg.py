@@ -1,19 +1,19 @@
 from code.algorithms.FLAlgorithm import FederatedLearningAlgorithm
-from code.tensorflow.FLClientSide import FederatedLearningClientSide
+from code.tensorflow.client.FLClientSide import FLClientSide
 from code.tensorflow.models import get_model
 
 import numpy as np
 
 
 class FedAvg(FederatedLearningAlgorithm):
+
     def __init__(self, dataset):
-        name = "fedavg"
-        super().__init__(name)
+        super().__init__("fedavg")
 
         self.dataset = dataset
 
     def reset(self, federated_train_data, seed):
-        algorithm = FederatedLearningClientSide(
+        algorithm = FLClientSide(
             False, federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
         )
         state = algorithm.initialize()

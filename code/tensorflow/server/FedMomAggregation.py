@@ -5,7 +5,7 @@ import math
 from code.tensorflow.models import get_model
 
 
-class FederatedMomentum:
+class FedMomAggregation:
 
     def __init__(self, state, dataset, beta=0.9):
         self.actual_state = deepcopy(state)  # weights

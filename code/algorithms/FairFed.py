@@ -1,14 +1,13 @@
 from code.algorithms.FLAlgorithm import FederatedLearningAlgorithm
-from code.tensorflow.FLClientSide import FederatedLearningClientSide
-from code.tensorflow.FairFedAggregation import FairFedAggregation
+from code.tensorflow.client.FLClientSide import FLClientSide
+from code.tensorflow.server.FairFedAggregation import FairFedAggregation
 
 
 class FairFed(FederatedLearningAlgorithm):
-    NAME = "fair_fed"
 
     def __init__(self, dataset, aggregation_metrics, beta):
         hyperparameter_specs_str = "-".join([metric.name for metric in aggregation_metrics])
-        super().__init__(self.NAME, hyperparameter_specs_str)
+        super().__init__("fair_fed", hyperparameter_specs_str)
 
         self.beta = beta
         self.dataset = dataset
@@ -16,7 +15,7 @@ class FairFed(FederatedLearningAlgorithm):
         self.ffm = None
 
     def reset(self, federated_train_data, seed):
-        algorithm = FederatedLearningClientSide(
+        algorithm = FLClientSide(
             "LR", federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
         )
         state = algorithm.initialize()

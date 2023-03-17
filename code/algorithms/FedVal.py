@@ -1,14 +1,14 @@
 from code.algorithms.FLAlgorithm import FederatedLearningAlgorithm
-from code.tensorflow.FLClientSide import FederatedLearningClientSide
-from code.tensorflow.FedValAggregation import FedValAggregation
+from code.tensorflow.client.FLClientSide import FLClientSide
+from code.tensorflow.server.FedValAggregation import FedValAggregation
 from code.metrics.Accuracy import Accuracy
 
 
 class FedVal(FederatedLearningAlgorithm):
+
     def __init__(self, dataset, aggregation_metrics):
-        name = "fed_val"
         hyperparameter_specs_str = "-".join([metric.name for metric in aggregation_metrics])
-        super().__init__(name, hyperparameter_specs_str)
+        super().__init__("fed_val", hyperparameter_specs_str)
 
         self.dataset = dataset
         #aggregation_metrics.append(Accuracy("ACC"))
@@ -16,7 +16,7 @@ class FedVal(FederatedLearningAlgorithm):
         self.ffm = None
 
     def reset(self, federated_train_data, seed):
-        algorithm = FederatedLearningClientSide(
+        algorithm = FLClientSide(
             False, federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
         )
         state = algorithm.initialize()

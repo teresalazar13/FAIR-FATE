@@ -31,7 +31,6 @@ def get_tf_train_dataset(x_train, y_train, number_of_clients, weights_local, wei
         )
 
     return tff.simulation.datasets.TestClientData(client_train_dataset_), client_train_dataset_x_y_label
-    # TODO - TestClientData? instead of ClientData
 
 
 def get_tf_train_dataset_distributions(x_train, y_train, number_of_clients, weights_local, weights_global):
