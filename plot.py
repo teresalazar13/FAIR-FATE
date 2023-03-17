@@ -18,11 +18,6 @@ def print_results(dataset_name, num_runs, n_rounds, fairness_metrics, alpha=None
     #fls.append(fl_fairfed)
 
     fls_fair_fate = []
-    #for beta in [0.7, 0.8, 0.9, 0.99]:
-        #for rho in [0.035, 0.04, 0.045, 0.047, 0.05]:
-            #fl = "fair_fate_l_e{}_b_{}_{}".format(str(rho), str(beta), fairness_metrics_string)
-            #fls_fair_fate.append(fl)
-
     for b0 in [0.8, 0.9, 0.99]:
         for rho in [0.04, 0.05]:
             for l0 in [0.1, 0.5]:
@@ -71,11 +66,12 @@ def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a
 
 
 if __name__ == '__main__':
-    alpha = None
-    dataset_name = Adult().name
-    metrics = ["EQO_ratio"]
-    #print_results(dataset_name, 10, 100, metrics, alpha=alpha)
+    alpha = 0.5
+    dataset_name = Compas().name
+    metrics = ["SP_ratio"]
+    print_results(dataset_name, 10, 100, metrics, alpha=alpha)
 
+    """
     plot_results_epochs(
         100, Compas().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
@@ -115,7 +111,7 @@ if __name__ == '__main__':
         [[0.8, 0.8, 0.9], [0.8, 1.0, 1.0], [1.0, 1.0, 1.0]],
         [0.8, 0.8, 0.8],
         [0.99, 0.99, 0.99]
-    )
+    )"""
 
     """
     plot_results_epochs_specific(
