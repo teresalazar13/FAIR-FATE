@@ -1,10 +1,6 @@
 from code.plots.pareto_front import plot_pareto_fronts
 from code.plots.plot_results_epochs import plot_results_epochs, plot_results_epochs_specific
 from code.plots.plot import print_avg_results
-from code.datasets.Adult import Adult
-from code.datasets.Compas import Compas
-from code.datasets.Law import Law
-from code.datasets.Dutch import Dutch
 
 
 def print_results(dataset_name, num_runs, n_rounds, fairness_metrics, alpha=None):
@@ -14,8 +10,6 @@ def print_results(dataset_name, num_runs, n_rounds, fairness_metrics, alpha=None
     fairness_metrics_string = "-".join([f.split("_")[0] for f in fairness_metrics])
     fl_fedval = "fed_val_{}".format(fairness_metrics_string)
     fls.append(fl_fedval)
-    #fl_fairfed = "fair_fed_{}".format(fairness_metrics_string)
-    #fls.append(fl_fairfed)
 
     fls_fair_fate = []
     for b0 in [0.8, 0.9, 0.99]:
@@ -46,7 +40,9 @@ def print_results(dataset_name, num_runs, n_rounds, fairness_metrics, alpha=None
     print_avg_results(dataset_name, num_runs, n_rounds, fls, fls_fair_fate, fls_fedmom, fls_fed_demon, fairness_metrics, metrics_results)
 
 
-def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a, hyperparameters, hyperparameter_name, filename):
+def plot_paretos(
+        dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a, hyperparameters, hyperparameter_name, filename
+):
     fls_fair_fate = []
 
     for alpha in alphas:
@@ -62,12 +58,14 @@ def plot_paretos(dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a
                             fls_fair_fate_alpha_metric.append(fl)
             fls_fair_fate.append([alpha, metric_F, fls_fair_fate_alpha_metric])
 
-    plot_pareto_fronts(dataset_name, num_runs, num_rounds, fls_fair_fate, metric_a, hyperparameters, hyperparameter_name, filename)
+    plot_pareto_fronts(
+        dataset_name, num_runs, num_rounds, fls_fair_fate, metric_a, hyperparameters, hyperparameter_name, filename
+    )
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # TODO
     alpha = 0.5
-    dataset_name = Compas().name
+    dataset_name = "compas"
     metrics = ["SP_ratio"]
     print_results(dataset_name, 10, 100, metrics, alpha=alpha)
 

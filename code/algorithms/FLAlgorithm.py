@@ -3,12 +3,12 @@ from abc import abstractmethod
 
 
 class FederatedLearningAlgorithm:
-    def __init__(self, name, hyperparameter_specs_str=""):
+    def __init__(self, name):
         self.name = name
-        self.hyperparameter_specs_str = hyperparameter_specs_str
         self.algorithm = None
         self.state = None
         self.metrics = None
+        self.hyperparameter_str = ""
 
     def reset_algorithm(self, algorithm, state):
         self.algorithm = algorithm
@@ -17,20 +17,27 @@ class FederatedLearningAlgorithm:
 
     def iterate(self, dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size, clients_idx):
         self.state, weights = self.algorithm.next(self.state, federated_train_data)
-        self.state, model = self.update(weights, x_val, y_val, clients_data_size, clients_idx)
+        self.state, model = self.update(dataset, weights, x_val, y_val, clients_data_size, clients_idx)
         y_pred = model.predict(x_test)
-        print("\n\n{}-{}\n".format(self.name, self.hyperparameter_specs_str))
+        print("\n\n{}-{}\n".format(self.name, self.hyperparameter_str))
         calculate_metrics(dataset, self.metrics, x_test, y_pred, y_test)
 
     @abstractmethod
-    def update(self, weights, x_val, y_val, clients_data_size, clients_idx):
+    def reset(self, federated_train_data, seed, hyperparameters, dataset):
+        raise NotImplementedError("Must override reset")
+
+    @abstractmethod
+    def update(self, weights, x_val, y_val, clients_data_size, clients_idx, dataset):
         raise NotImplementedError("Must override update")
 
-    def save_metrics_to_file(self, dataset_name, run_num, alpha):
+    def get_filename(self, _):
+        return self.name
+
+    def save_metrics_to_file(self, dataset_name, run_num, alpha, hyperparameters):
         filename_part = './datasets/{}/run_{}'.format(dataset_name, run_num)
         filename_part_name = self.name
-        if self.hyperparameter_specs_str != "":
-            filename_part_name += "_" + self.hyperparameter_specs_str
+        if self.get_filename(hyperparameters):
+            filename_part_name += "_" + self.hyperparameter_str
         if alpha:
             filename_part_name += "_alpha-" + str(alpha)
 

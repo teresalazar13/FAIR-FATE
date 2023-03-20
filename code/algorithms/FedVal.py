@@ -6,25 +6,22 @@ from code.metrics.Accuracy import Accuracy
 
 class FedVal(FederatedLearningAlgorithm):
 
-    def __init__(self, dataset, aggregation_metrics):
-        hyperparameter_specs_str = "-".join([metric.name for metric in aggregation_metrics])
-        super().__init__("fed_val", hyperparameter_specs_str)
-
-        self.dataset = dataset
-        #aggregation_metrics.append(Accuracy("ACC"))
-        self.aggregation_metrics = aggregation_metrics
+    def __init__(self):
+        super().__init__("fed_val")
         self.ffm = None
+    def get_filename(self, hyperparameters):
+        return "-".join([metric.name for metric in hyperparameters.aggregation_metrics])
 
-    def reset(self, federated_train_data, seed):
+    def reset(self, federated_train_data, seed, hyperparameters, dataset):
         algorithm = FLClientSide(
-            False, federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
+            False, federated_train_data, dataset.n_features, dataset.learning_rate, seed
         )
         state = algorithm.initialize()
         super().reset_algorithm(algorithm, state)
 
-        for metric in self.aggregation_metrics:
+        for metric in hyperparameters.aggregation_metrics:
             metric.reset()
-        self.ffm = FedValAggregation(state, self.dataset, self.aggregation_metrics)
+        self.ffm = FedValAggregation(state, dataset, hyperparameters.aggregation_metrics)
 
-    def update(self, weights, x_val, y_val, clients_data_size, _):
-        return self.ffm.update_model(weights, self.dataset.n_features, x_val, y_val)
+    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+        return self.ffm.update_model(weights, dataset.n_features, x_val, y_val)

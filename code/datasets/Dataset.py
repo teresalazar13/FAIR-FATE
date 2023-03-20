@@ -99,7 +99,7 @@ class Dataset:
             return 0
         return round((Y_1_S_0 / S_0) / (Y_1_S_1 / S_1), 3)
 
-    # for global reweighting baseline
+    # for baseline FedAvgGR
     def get_weights_global(self, x_ys, idx):
         df = pd.DataFrame(data=[], columns=self.all_columns + [self.target.name])
         dfs = []
@@ -124,7 +124,7 @@ class Dataset:
 
         return reweighting_weights
 
-    # for local reweighting baseline
+    # for baseline FedAvgLR
     def get_weights_local(self, x_ys):
         dfs = []
         for x, y, title in x_ys:

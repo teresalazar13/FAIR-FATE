@@ -5,22 +5,21 @@ from code.tensorflow.client.FLClientSide import FLClientSide
 
 class FedDemon(FederatedLearningAlgorithm):
 
-    def __init__(self, dataset, beta):
-        hyperparameter_specs_str = "b_{}".format(str(beta))
-        super().__init__("fed_demon", hyperparameter_specs_str)
-
-        self.dataset = dataset
-        self.beta = beta
+    def __init__(self):
+        super().__init__("fed_demon")
         self.ffm = None
 
-    def reset(self, federated_train_data, seed):
+    def get_filename(self, hyperparameters):
+        return "b_{}".format(str(hyperparameters.beta0))
+
+    def reset(self, federated_train_data, seed, hyperparameters, dataset):
         algorithm = FLClientSide(
-            False, federated_train_data, self.dataset.n_features, self.dataset.learning_rate, seed
+            False, federated_train_data, dataset.n_features, dataset.learning_rate, seed
         )
         state = algorithm.initialize()
         super().reset_algorithm(algorithm, state)
 
-        self.ffm = FedDemonAggregation(state, self.dataset, beta=self.beta)
+        self.ffm = FedDemonAggregation(state, dataset, beta0=hyperparameters.beta0)
 
-    def update(self, weights, x_val, y_val, clients_data_size, _):
-        return self.ffm.update_model(weights, self.dataset.n_features, clients_data_size)
+    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+        return self.ffm.update_model(weights, dataset.n_features, clients_data_size)

@@ -7,16 +7,16 @@ from code.tensorflow.models import get_model
 
 class FedDemonAggregation:
 
-    def __init__(self, state, dataset, beta=0.9):
+    def __init__(self, state, dataset, beta0=0.9):
         self.actual_state = deepcopy(state)  # weights
         self.dataset = dataset
         self.momentum = self._get_model_shape()  # copy shape of state with zeros
-        self.beta_init = beta
+        self.beta0 = beta0
         self.iteration = 1  # round_num
         self.beta = self.get_beta()
 
     def get_beta(self):
-        beta = self.beta_init * (1 - self.iteration/100) / ((1 - self.beta_init) + self.beta_init*(1 - self.iteration/100))
+        beta = self.beta0 * (1 - self.iteration/100) / ((1 - self.beta0) + self.beta0*(1 - self.iteration/100))
 
         return beta
 

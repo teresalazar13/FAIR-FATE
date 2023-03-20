@@ -2,12 +2,11 @@ import random
 import tensorflow as tf
 import numpy as np
 
-from code.algorithms.FairFed import FairFed
 from code.datasets.distributions import get_x_dirichlet
 from code.tensorflow.datasets_creator import get_tf_train_dataset, make_federated_data, get_tf_train_dataset_distributions
 
 
-def run(dataset, num_rounds, num_runs, fl, alpha=None):
+def run(dataset, hyperparameters, num_rounds, num_runs, fl, alpha=None):
     n_clients = dataset.number_of_clients
 
     for run in range(1, num_runs + 1):
@@ -17,31 +16,34 @@ def run(dataset, num_rounds, num_runs, fl, alpha=None):
         x_train, y_train, x_test, y_test, x_val, y_val = dataset.train_val_test_split(seed)
         x_train_array, y_train_array = get_train_array_alpha(seed, alpha, dataset, x_train, y_train)
 
-        clients_dataset, clients_dataset_x_y_label = get_clients_dataset_temp(alpha, x_train, y_train, x_train_array, y_train_array, n_clients)
-        weights_local = dataset.get_weights_local(clients_dataset_x_y_label)
+        clients_dataset, clients_dataset_x_y_label = get_clients_dataset_temp(
+            alpha, x_train, y_train, x_train_array, y_train_array, n_clients
+        )
+        weights_local = dataset.get_weights_local(clients_dataset_x_y_label)  # for baseline FedAvgLR
         federated_train_data = make_federated_data(
             dataset.sensitive_idx, clients_dataset, clients_dataset.client_ids[0:1], dataset.n_features,
             dataset.num_epochs, seed
         )
-        fl.reset(federated_train_data, seed)
+        fl.reset(federated_train_data, seed, hyperparameters, dataset)
 
         for round_ in range(num_rounds):
             print('round {:2d}'.format(round_))
             clients_idx = generate_sample_clients_idx(dataset.num_clients_per_round, n_clients)
             clients = [clients_dataset.client_ids[i] for i in clients_idx]
-            weights_global = dataset.get_weights_global([clients_dataset_x_y_label[i] for i in clients_idx], clients_idx)
-            clients_dataset = get_clients_dataset(alpha, x_train, y_train, x_train_array, y_train_array, n_clients, weights_local, weights_global)
+            weights_global = dataset.get_weights_global(
+                [clients_dataset_x_y_label[i] for i in clients_idx], clients_idx
+            )  # for baseline FedAvgGR
+            clients_dataset = get_clients_dataset(
+                alpha, x_train, y_train, x_train_array, y_train_array, n_clients, weights_local, weights_global
+            )
             federated_train_data = make_federated_data(
                 dataset.sensitive_idx, clients_dataset, clients, dataset.n_features, dataset.num_epochs, seed
             )
             clients_data_size = [len(client_data) for client_data in [clients_dataset_x_y_label[i][0] for i in clients_idx]]
-            if fl.name == FairFed.NAME:
-                fl.iterate(dataset, federated_train_data, clients_dataset_x_y_label, None, x_test, y_test, clients_data_size, clients_idx)  # there is no validation set in the FairFed setup
-            else:
-                fl.iterate(dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size, None)
+            fl.iterate(dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size, None)
             
-            
-        fl.save_metrics_to_file(dataset.name, run, alpha)
+        fl.save_metrics_to_file(dataset.name, run, alpha, hyperparameters)
+
 
 def set_random_seeds(seed_value):
     #os.environ['PYTHONHASHSEED'] = str(seed_value)
@@ -65,9 +67,13 @@ def generate_sample_clients_idx(num_clients_per_round, number_of_clients):
     return random_numbers
 
 
-def get_clients_dataset(alpha, x_train, y_train, x_train_array, y_train_array, n_clients, weights_local, weights_global):
+def get_clients_dataset(
+        alpha, x_train, y_train, x_train_array, y_train_array, n_clients, weights_local, weights_global
+):
     if alpha:
-        clients_dataset, _ = get_tf_train_dataset_distributions(x_train_array, y_train_array, n_clients, weights_local, weights_global)
+        clients_dataset, _ = get_tf_train_dataset_distributions(
+            x_train_array, y_train_array, n_clients, weights_local, weights_global
+        )
     else:
         clients_dataset, _ = get_tf_train_dataset(x_train, y_train, n_clients, weights_local, weights_global)
 

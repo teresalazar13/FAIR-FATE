@@ -32,6 +32,22 @@ def create_metrics():
     ]
 
 
+def get_aggregation_metrics(metrics_string_array):
+    aggregation_metrics = []
+    for metric_string in metrics_string_array:
+        if metric_string == "SP":
+            aggregation_metrics.append(GroupBasedMetric("SP", PosSens(), Sens()))
+        elif metric_string == "TPR":
+            aggregation_metrics.append(GroupBasedMetric("TPR", TP(), FN()))
+        elif metric_string == "FPR":
+            aggregation_metrics.append(GroupBasedMetric("FPR", FP(), TN()))
+        elif metric_string == "EQO":
+            aggregation_metrics.append(SuperGroupBasedMetric("EQO", [GroupBasedMetric("TPR", TP(), FN()),
+                                                                     GroupBasedMetric("FPR", FP(), TN())]))
+
+    return aggregation_metrics
+
+
 def get_fairness(dataset, x_val, y_pred, y_val, metrics, debug=True):
     df = create_dataframe_for_eval(dataset.all_columns, x_val, y_pred, y_val)
     sensitive_attributes = [s.name for s in dataset.sensitive_attributes]
