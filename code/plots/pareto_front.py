@@ -5,7 +5,7 @@ from random import randint
 from code.plots.plot import get_dfs
 
 
-def plot_pareto_fronts(dataset_name, num_runs, num_rounds, fls_fair_fate_alpha_metric, metric_a, hyperparameters, hyperparameter_name, filename):
+def plot_pareto_fronts(dataset_name, num_runs, num_rounds, fls_fair_fate_alpha_metric, metric_a, hyperparameters, hyperparameter_name):
     metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio", "TPR_ratio", "EQO_ratio"]
     plot_index = 1
     plt.figure(figsize=(8, 8))
@@ -27,6 +27,7 @@ def plot_pareto_fronts(dataset_name, num_runs, num_rounds, fls_fair_fate_alpha_m
     legend = plt.legend(handles=handles, labels=labels, loc=(-1.5, -0.45), prop={'size': 11}, ncol=len(handles))
     plt.gca().add_artist(legend)
 
+    filename = "pareto_{}-{}".format(hyperparameter_name[1], dataset_name)
     plt.savefig('./datasets/{}/{}.png'.format(dataset_name, filename), bbox_inches='tight')
     #plt.show()
 
