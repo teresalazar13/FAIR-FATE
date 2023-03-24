@@ -16,10 +16,10 @@ class FairFateAggregation:
         self.iteration = 1  # round_num
         self.l0 = l0
         self.MAX = MAX
-        self.lambda_ = self.get_lambda()
-        self.beta_init = beta0
-        self.beta = self.get_beta()
         self.rho = rho
+        self.beta_init = beta0
+        self.lambda_ = self.get_lambda()
+        self.beta = self.get_beta()
         self.epsilon = 0.0001
 
     def get_beta(self):  # TODO - replace 100 with num_rounds
@@ -105,7 +105,7 @@ class FairFateAggregation:
             alpha_F = alpha_F / fairness_sum_fair_clients
 
         if self.beta:
-            np.array(self.beta * self.momentum[layer]) + (1 - self.beta) * alpha_F
+            return np.array(self.beta * self.momentum[layer]) + (1 - self.beta) * alpha_F
         else:  # for ablation study with no momentum
             return alpha_F
 

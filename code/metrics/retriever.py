@@ -33,6 +33,9 @@ def create_metrics():
 
 
 def get_aggregation_metrics(metrics_string_array):
+    if not metrics_string_array:
+        return None
+
     aggregation_metrics = []
     for metric_string in metrics_string_array:
         if metric_string == "SP":

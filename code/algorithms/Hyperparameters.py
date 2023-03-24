@@ -10,7 +10,7 @@ class Hyperparameters:
         self.eta = self.convert_to_float_if_exists(args.eta)
         self.l0 = self.convert_to_float_if_exists(args.l0)
         self.l = self.convert_to_float_if_exists(args.l)
-        self.max = self.convert_to_float_if_exists(args.MAX)
+        self.MAX = self.convert_to_float_if_exists(args.MAX)
         self.aggregation_metrics = get_aggregation_metrics(args.metrics)
 
     @staticmethod

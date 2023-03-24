@@ -26,8 +26,11 @@ def get_arguments():
     parser.add_argument('--n_rounds', required=True, help='n_rounds')
     parser.add_argument('--alpha', required=False, help='alpha')
     parser.add_argument('--beta', required=False, help='beta')
+    parser.add_argument('--beta0', required=False, help='beta0')
     parser.add_argument('--rho', required=False, help='rho')
+    parser.add_argument('--eta', required=False, help='eta')
     parser.add_argument('--l0', required=False, help='l0')
+    parser.add_argument('--l', required=False, help='l')
     parser.add_argument('--MAX', required=False, help='MAX')
     parser.add_argument('--metrics', required=False, help='metrics', nargs='+')
 
