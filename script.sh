@@ -1,7 +1,30 @@
 N_RUNS=10
 N_ROUNDS=100
 DATASET=compas
+
 ALPHA=0.5
+for BETA0 in 0.8 0.9 0.99
+do
+  for L in 0.25 0.5 0.75
+  do
+    for METRICS in SP TPR EQO
+    do
+      python3 main.py --dataset $DATASET --fl ablation_fair_demon_fixed --beta0 $BETA0 --l $L --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS --alpha $ALPHA
+    done
+  done
+done
+
+ALPHA=1.0
+for BETA0 in 0.8 0.9 0.99
+do
+  for L in 0.25 0.5 0.75
+  do
+    for METRICS in SP TPR EQO
+    do
+      python3 main.py --dataset $DATASET --fl ablation_fair_demon_fixed --beta0 $BETA0 --l $L --metrics $METRICS --n_runs $N_RUNS --n_rounds $N_ROUNDS --alpha $ALPHA
+    done
+  done
+done
 
 for BETA0 in 0.8 0.9 0.99
 do
