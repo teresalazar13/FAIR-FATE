@@ -21,5 +21,5 @@ class FedMom(FederatedLearningAlgorithm):
 
         self.ffm = FedMomAggregation(state, dataset, beta=hyperparameters.beta)
 
-    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+    def update(self, weights, x_val, y_val, clients_data_size, dataset):
         return self.ffm.update_model(weights, dataset.n_features, clients_data_size)

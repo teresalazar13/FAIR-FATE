@@ -28,5 +28,5 @@ class AblationFairFixed(FederatedLearningAlgorithm):
             state, dataset, hyperparameters.aggregation_metrics, l=hyperparameters.l
         )
 
-    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+    def update(self, weights, x_val, y_val, clients_data_size, dataset):
         return self.ffm.update_model(weights, dataset.n_features, x_val, y_val, clients_data_size)

@@ -8,10 +8,10 @@ from code.tensorflow.server.ablation.AblationFairDemonFixedAggregation import Ab
 class AblationFairDemonFixed(FederatedLearningAlgorithm):
 
     def __init__(self):
-        super().__init__("ablation_fair_demon_fixed")
         self.ffm = None
+        super().__init__("ablation_fair_demon_fixed")
 
-    def get_filename(self, hyperparameters):
+    def get_hyperparameter_str(self, hyperparameters):
         aggregation_metrics_string = "-".join([metric.name for metric in hyperparameters.aggregation_metrics])
 
         return "b0-{}_l-{}_{}".format(str(hyperparameters.beta0), str(hyperparameters.l), aggregation_metrics_string)
@@ -27,7 +27,7 @@ class AblationFairDemonFixed(FederatedLearningAlgorithm):
             state, dataset, hyperparameters.aggregation_metrics, beta0=hyperparameters.beta0, l=hyperparameters.l
         )
 
-    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+    def update(self, weights, x_val, y_val, clients_data_size, dataset):
         print("\nBeta: {}".format(round(self.ffm.beta, 2)))
 
         return self.ffm.update_model(weights, dataset.n_features, x_val, y_val, clients_data_size)

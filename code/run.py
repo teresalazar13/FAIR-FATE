@@ -40,7 +40,7 @@ def run(dataset, hyperparameters, num_rounds, num_runs, fl, alpha=None):
                 dataset.sensitive_idx, clients_dataset, clients, dataset.n_features, dataset.num_epochs, seed
             )
             clients_data_size = [len(client_data) for client_data in [clients_dataset_x_y_label[i][0] for i in clients_idx]]
-            fl.iterate(dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size, None)
+            fl.iterate(dataset, federated_train_data, x_val, y_val, x_test, y_test, clients_data_size, hyperparameters)
             
         fl.save_metrics_to_file(dataset.name, run, alpha, hyperparameters)
 

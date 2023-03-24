@@ -30,7 +30,7 @@ class AblationFairExponential(FederatedLearningAlgorithm):
             rho=hyperparameters.rho
         )
 
-    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+    def update(self, weights, x_val, y_val, clients_data_size, dataset):
         print("\nLambda: {}".format(round(self.ffm.lambda_, 2)))
 
         return self.ffm.update_model(weights, dataset.n_features, x_val, y_val, clients_data_size)

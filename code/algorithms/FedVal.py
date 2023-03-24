@@ -23,5 +23,5 @@ class FedVal(FederatedLearningAlgorithm):
             metric.reset()
         self.ffm = FedValAggregation(state, dataset, hyperparameters.aggregation_metrics)
 
-    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+    def update(self, weights, x_val, y_val, clients_data_size, dataset):
         return self.ffm.update_model(weights, dataset.n_features, x_val, y_val)

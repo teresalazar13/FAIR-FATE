@@ -21,5 +21,5 @@ class FedDemon(FederatedLearningAlgorithm):
 
         self.ffm = FedDemonAggregation(state, dataset, beta0=hyperparameters.beta0)
 
-    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+    def update(self, weights, x_val, y_val, clients_data_size, dataset):
         return self.ffm.update_model(weights, dataset.n_features, clients_data_size)

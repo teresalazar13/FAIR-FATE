@@ -31,7 +31,7 @@ class AblationFairDemonLinear(FederatedLearningAlgorithm):
             MAX=hyperparameters.MAX, l0=hyperparameters.l0
         )
 
-    def update(self, weights, x_val, y_val, clients_data_size, _, dataset):
+    def update(self, weights, x_val, y_val, clients_data_size, dataset):
         print("\nLambda: {}".format(round(self.ffm.lambda_, 2)))
         print("Beta: {}".format(round(self.ffm.beta, 2)))
 
