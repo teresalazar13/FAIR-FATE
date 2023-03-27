@@ -9,10 +9,10 @@ from code.tensorflow.server.ablation.AblationFairMomLinearAggregation import Abl
 class AblationFairMomLinear(FederatedLearningAlgorithm):
 
     def __init__(self):
-        super().__init__("ablation_fair_mom_linear")
         self.ffm = None
+        super().__init__("ablation_fair_mom_linear")
 
-    def get_filename(self, hyperparameters):
+    def get_hyperparameter_str(self, hyperparameters):
         aggregation_metrics_string = "-".join([metric.name for metric in hyperparameters.aggregation_metrics])
 
         return "b-{}_eta-{}_l0-{}_max-{}_{}".format(

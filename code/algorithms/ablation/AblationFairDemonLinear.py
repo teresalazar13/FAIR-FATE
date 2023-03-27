@@ -8,10 +8,10 @@ from code.tensorflow.server.ablation.AblationFairDemonLinearAggregation import A
 class AblationFairDemonLinear(FederatedLearningAlgorithm):
 
     def __init__(self):
-        super().__init__("ablation_fair_demon_linear")
         self.ffm = None
+        super().__init__("ablation_fair_demon_linear")
 
-    def get_filename(self, hyperparameters):
+    def get_hyperparameter_str(self, hyperparameters):
         aggregation_metrics_string = "-".join([metric.name for metric in hyperparameters.aggregation_metrics])
 
         return "b0-{}_eta-{}_l0-{}_max-{}_{}".format(

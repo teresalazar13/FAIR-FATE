@@ -9,10 +9,10 @@ from code.tensorflow.server.ablation.AblationFairMomFixedAggregation import Abla
 class AblationFairMomFixed(FederatedLearningAlgorithm):
 
     def __init__(self):
-        super().__init__("ablation_fair_mom_fixed")
         self.ffm = None
+        super().__init__("ablation_fair_mom_fixed")
 
-    def get_filename(self, hyperparameters):
+    def get_hyperparameter_str(self, hyperparameters):
         aggregation_metrics_string = "-".join([metric.name for metric in hyperparameters.aggregation_metrics])
 
         return "b-{}_l-{}_{}".format(str(hyperparameters.beta0), str(hyperparameters.l), aggregation_metrics_string)

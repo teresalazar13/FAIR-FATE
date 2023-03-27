@@ -4,11 +4,11 @@ from code.tensorflow.server.FairFateAggregation import FairFateAggregation
 class AblationFairMomLinearAggregation(FairFateAggregation):
 
     def __init__(self, state, dataset, aggregation_metrics, beta=0.9, MAX=1000, l0=0.1, eta=0.05):
-        super().__init__(state, dataset, aggregation_metrics)
         self.beta = beta
         self.eta = eta
         self.MAX = MAX
         self.l0 = l0
+        super().__init__(state, dataset, aggregation_metrics)
 
     # Overrides FAIR-FATE method
     def get_beta(self):
