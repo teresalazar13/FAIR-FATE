@@ -41,17 +41,17 @@ def print_results(dataset_name, num_runs, n_rounds, fairness_metrics, alpha=None
 
 
 def plot_paretos(
-        dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a, hyperparameters, hyperparameter_name, filename
+        dataset_name, num_runs, num_rounds, alphas, metrics_F, metric_a, hyperparameters, hyperparameter_name, hyperparameters_list
 ):
     fls_fair_fate = []
 
     for alpha in alphas:
         for metric_F in metrics_F:
             fls_fair_fate_alpha_metric = []
-            for l0 in [0.1, 0.5]:
-                for rho in [0.04, 0.05]:
-                    for max in [0.8, 0.9, 1.0]:
-                        for b0 in [0.8, 0.9, 0.99]:
+            for l0 in hyperparameters_list[1]:
+                for rho in hyperparameters_list[3]:
+                    for max in hyperparameters_list[0]:
+                        for b0 in hyperparameters_list[2]:
                             fl = "fair_fate_b0-{}_rho-{}_l0-{}_max-{}_{}".format(str(b0), str(rho), str(l0), str(max), metric_F[0].replace("_ratio", ""))
                             if alpha:
                                 fl = "{}_alpha-{}".format(fl, alpha)
@@ -59,15 +59,47 @@ def plot_paretos(
             fls_fair_fate.append([alpha, metric_F, fls_fair_fate_alpha_metric])
 
     plot_pareto_fronts(
-        dataset_name, num_runs, num_rounds, fls_fair_fate, metric_a, hyperparameters, hyperparameter_name, filename
+        dataset_name, num_runs, num_rounds, fls_fair_fate, metric_a, hyperparameters, hyperparameter_name
     )
 
 
 if __name__ == '__main__':  # TODO
-    alpha = 0.5
-    dataset_name = "compas"
-    metrics = ["SP_ratio"]
-    print_results(dataset_name, 10, 100, metrics, alpha=alpha)
+    #alpha = 0.5
+    #dataset_name = "compas"
+    #metrics = ["SP_ratio"]
+    #print_results(dataset_name, 10, 100, metrics, alpha=alpha)
+
+    hyperparameter_name_list = [["MAX", "max"], ["\lambda_0", "l0"], ["\\beta_0", "b0"], ["\\rho", "rho"]]
+    """
+    hyperparameters_list = [[0.8, 0.9, 1.0], [0.1, 0.5], [0.8, 0.9, 0.99], [0.04, 0.05]]
+    for hyperparameters, hyperparameter_name in zip(hyperparameters_list, hyperparameter_name_list):
+        plot_paretos(
+            "adult", 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
+            hyperparameters, hyperparameter_name, hyperparameters_list
+        )
+        plot_paretos(
+            "compas", 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
+            hyperparameters, hyperparameter_name, hyperparameters_list
+        )
+        plot_paretos(
+            "dutch", 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
+            hyperparameters, hyperparameter_name, hyperparameters_list
+        )
+        plot_paretos(
+            "law", 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
+            hyperparameters, hyperparameter_name, hyperparameters_list
+        )"""
+    hyperparameters_list = [
+        [0.8, 0.85, 0.9, 0.95, 1.0],
+        [0.1, 0.2, 0.3, 0.4, 0.5],
+        [0.8, 0.85, 0.9, 0.95, 0.99],
+        [0.02, 0.03, 0.04, 0.05, 0.06]
+    ]
+    for hyperparameters, hyperparameter_name in zip(hyperparameters_list, hyperparameter_name_list):
+        plot_paretos(
+            "compas-hyperparameters", 10, 100, [0.5, 1.0, None], [["SP_ratio"]], "ACC",
+            hyperparameters, hyperparameter_name, hyperparameters_list
+        )
 
     """
     plot_results_epochs(
@@ -117,26 +149,3 @@ if __name__ == '__main__':  # TODO
         [["fair_fate_b0-0.9_rho-0.05_l0-0.1_max-0.9_SP_alpha-0.5", "fedavg_alpha-0.5"]],
         ["", ""], ["", ""]
     )"""
-    """
-    hyperparameters_list = [[0.8, 0.9, 1.0], [0.1, 0.5], [0.8, 0.9, 0.99], [0.04, 0.05]]
-    hyperparameter_name_list = [["MAX", "max"], ["\lambda_0", "l0"], ["\\beta_0", "b0"], ["\\rho", "rho"]]
-    for i in range(len(hyperparameters_list)):
-        hyperparameters = hyperparameters_list[i]
-        hyperparameter_name = hyperparameter_name_list[i]
-
-        plot_paretos(
-            Adult().name, 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
-            hyperparameters, hyperparameter_name, "pareto_{}-{}".format(hyperparameter_name[1], Adult().name)
-        )
-        plot_paretos(
-            Compas().name, 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
-            hyperparameters, hyperparameter_name, "pareto_{}-{}".format(hyperparameter_name[1], Compas().name)
-        )
-        plot_paretos(
-            Dutch().name, 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
-            hyperparameters, hyperparameter_name, "pareto_{}-{}".format(hyperparameter_name[1], Dutch().name)
-        )
-        plot_paretos(
-            Law().name, 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
-            hyperparameters, hyperparameter_name, "pareto_{}-{}".format(hyperparameter_name[1], Law().name)
-        )"""
