@@ -63,14 +63,8 @@ def plot_paretos(
     )
 
 
-if __name__ == '__main__':  # TODO
-    #alpha = 0.5
-    #dataset_name = "compas"
-    #metrics = ["SP_ratio"]
-    #print_results(dataset_name, 10, 100, metrics, alpha=alpha)
-
+if __name__ == '__main__':
     hyperparameter_name_list = [["MAX", "max"], ["\lambda_0", "l0"], ["\\beta_0", "b0"], ["\\rho", "rho"]]
-    """
     hyperparameters_list = [[0.8, 0.9, 1.0], [0.1, 0.5], [0.8, 0.9, 0.99], [0.04, 0.05]]
     for hyperparameters, hyperparameter_name in zip(hyperparameters_list, hyperparameter_name_list):
         plot_paretos(
@@ -88,22 +82,10 @@ if __name__ == '__main__':  # TODO
         plot_paretos(
             "law", 10, 100, [0.5, 1.0, None], [["SP_ratio"], ["TPR_ratio"], ["EQO_ratio"]], "ACC",
             hyperparameters, hyperparameter_name, hyperparameters_list
-        )"""
-    hyperparameters_list = [
-        [0.8, 0.85, 0.9, 0.95, 1.0],
-        [0.1, 0.2, 0.3, 0.4, 0.5],
-        [0.8, 0.85, 0.9, 0.95, 0.99],
-        [0.02, 0.03, 0.04, 0.05, 0.06]
-    ]
-    for hyperparameters, hyperparameter_name in zip(hyperparameters_list, hyperparameter_name_list):
-        plot_paretos(
-            "compas-hyperparameters", 10, 100, [0.5, 1.0, None], [["SP_ratio"]], "ACC",
-            hyperparameters, hyperparameter_name, hyperparameters_list
         )
-
     """
     plot_results_epochs(
-        100, Compas().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        100, "compas", 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
         [[0.8, 0.99, 0.99], [0.8, 0.8, 0.99], [0.9, 0.9, 0.9]],
         [[0.04, 0.05, 0.04], [0.04, 0.05, 0.05], [0.05, 0.05, 0.04]],
@@ -113,7 +95,7 @@ if __name__ == '__main__':  # TODO
         [0.8, 0.8, 0.8]
     )
     plot_results_epochs(
-        100, Adult().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        100, "adult", 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
         [[0.8, 0.99, 0.9], [0.99, 0.8, 0.99], [0.99, 0.99, 0.9]],
         [[0.05, 0.04, 0.05], [0.04, 0.05, 0.04], [0.04, 0.04, 0.05]],
@@ -123,7 +105,7 @@ if __name__ == '__main__':  # TODO
         [0.8, 0.8, 0.8]
     )
     plot_results_epochs(
-        100, Law().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        100, "law", 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
         [[0.99, 0.9, 0.99], [0.8, 0.9, 0.9], [0.99, 0.99, 0.99]],
         [[0.05, 0.04, 0.04], [0.05, 0.05, 0.04], [0.05, 0.05, 0.05]],
@@ -133,7 +115,7 @@ if __name__ == '__main__':  # TODO
         [0.99, 0.99, 0.99]
     )
     plot_results_epochs(
-        100, Dutch().name, 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
+        100, "dutch", 10, ["SP_ratio", "TPR_ratio", "EQO_ratio"],
         [0.5, 1.0, None],
         [[0.99, 0.8, 0.9], [0.8, 0.8, 0.8], [0.99, 0.99, 0.99]],
         [[0.04, 0.04, 0.04], [0.04, 0.05, 0.04], [0.05, 0.05, 0.04]],
@@ -149,3 +131,9 @@ if __name__ == '__main__':  # TODO
         [["fair_fate_b0-0.9_rho-0.05_l0-0.1_max-0.9_SP_alpha-0.5", "fedavg_alpha-0.5"]],
         ["", ""], ["", ""]
     )"""
+
+    #alpha = 0.5
+    #dataset_name = "compas"
+    #metrics = ["SP_ratio"]
+    #print_results(dataset_name, 10, 100, metrics, alpha=alpha)
+

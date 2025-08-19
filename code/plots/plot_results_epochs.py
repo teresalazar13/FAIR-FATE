@@ -2,7 +2,6 @@ from code.plots.plot import get_dfs
 
 import pandas as pd
 import distinctipy
-import matplotlib
 import matplotlib.pyplot as plt
 
 
@@ -50,26 +49,30 @@ def plot_results_epochs(
         ["FedAvg", "FedAvg+GR", "FedAvg+LR", "FedMom", "FedDemon", "FedVal (F=EQO)", "FAIR-FATE (F=EQO)"]
     ]
     colors = distinctipy.get_colors(len(fls_legend[0]), rng=5)
+    colors[-1] = "#708090"
     d = {}
     for i in range(len(fls_legend[0])):
         d[fls_legend[0][i]] = colors[i]
     for i in range(len(dfs)):
         i_ = i % len(metrics)
-        alpha_title = r'$\alpha={}$'.format(alphas[i // len(metrics)])
+        alpha_title = r'$\sigma={}$'.format(alphas[i // len(metrics)])
         if not alphas[i // len(metrics)]:
             alpha_title = "RND"
-        plt.subplot(3, 4, i + 1).set_title(alpha_title)
+        plt.subplot(3, 4, i + 1).set_title(alpha_title, size=16)
         for j in range(len(dfs[i])):
             plt.plot(x_plot, dfs[i][j][metrics[i_]].tolist(), color=d[fls_legend[i_][j]])
-        plt.xlabel("Round Number")
-        plt.ylabel(metrics[i_].replace("_ratio", "").replace("TPR", "EO"))
+        plt.xlabel("Round Number", size=16)
+        plt.ylabel(metrics[i_].replace("_ratio", "").replace("TPR", "EO"), size=16)
         plt.xlim([0, n_rounds])
         plt.ylim([0, 1])
 
-    plt.subplots_adjust(hspace=0.35)
+    plt.subplots_adjust(hspace=0.45, wspace=0.25)
     handles = [plt.plot([], [], color=colors[i], marker="o", ls="")[0] for i in range(len(colors))]
-    plt.legend(handles=handles, labels=fls_legend[0], loc="lower center", bbox_to_anchor=(-0.35, -0.65), ncol=int(len(handles)/2))
-    plt.savefig('./datasets/{}/rounds_plot.png'.format(dataset_name), bbox_inches='tight')
+    plt.legend(
+        handles=handles, labels=fls_legend[0], loc="lower center", bbox_to_anchor=(-1.25, -1),
+        ncol=int(len(handles)/2), prop={'size': 16}
+    )
+    plt.savefig('./datasets/{}/rounds_plot_{}.png'.format(dataset_name, dataset_name), bbox_inches='tight', dpi=300)
     #plt.show()
 
 

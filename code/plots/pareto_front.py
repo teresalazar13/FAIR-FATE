@@ -8,7 +8,7 @@ from code.plots.plot import get_dfs
 def plot_pareto_fronts(dataset_name, num_runs, num_rounds, fls_fair_fate_alpha_metric, metric_a, hyperparameters, hyperparameter_name):
     metrics_results = ["ACC", "F1Score", "MCC", "SP_ratio", "TPR_ratio", "EQO_ratio"]
     plot_index = 1
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(7, 7))
 
     labels = [r'${}={}$'.format(hyperparameter_name[0], l) for l in hyperparameters]
     colors = get_random_colors(len(hyperparameters), len(hyperparameter_name[0]))
@@ -21,14 +21,15 @@ def plot_pareto_fronts(dataset_name, num_runs, num_rounds, fls_fair_fate_alpha_m
         )
         plot_index += 1
 
-    plt.tight_layout(h_pad=1.0, w_pad=0.75)
-    plt.subplots_adjust(bottom=0.102)
+    plt.subplots_adjust(hspace=0.6, wspace=0.45)
     handles = [plt.plot([], [], color=colors[i], marker="o", ls="")[0] for i in range(len(colors))]
-    legend = plt.legend(handles=handles, labels=labels, loc=(-1.5, -0.45), prop={'size': 11}, ncol=len(handles))
-    plt.gca().add_artist(legend)
-
+    plt.legend(
+        handles=handles, labels=labels, loc=(-2.45, -0.65), prop={'size': 12}, ncol=len(handles)
+    )
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
     filename = "pareto_{}-{}".format(hyperparameter_name[1], dataset_name)
-    plt.savefig('./datasets/{}/{}.png'.format(dataset_name, filename), bbox_inches='tight')
+    plt.savefig('./datasets/{}/{}.png'.format(dataset_name, filename), bbox_inches='tight', dpi=300)
     #plt.show()
 
 
@@ -62,13 +63,13 @@ def plot_pareto_front(dfs, fls, metric_F, metric_a, alpha, plot_index, hyperpara
 
     metric_fairness = metric_F[0].replace("_ratio", "").replace("TPR", "EO")
     if alpha:
-        title = r'$\alpha$={}, $F$={}'.format(alpha, metric_fairness)
+        title = r'$\sigma={}$, $F$={}'.format(alpha, metric_fairness)
     else:
         title = r'RND, $F$={}'.format(metric_fairness)
     plt.subplot(3, 3, plot_index)
-    plt.title(title)
-    plt.xlabel(metric_a.replace("_ratio", ""))
-    plt.ylabel(metric_fairness)
+    plt.title(title, fontsize=12)
+    plt.xlabel(metric_a.replace("_ratio", ""), fontsize=12)
+    plt.ylabel(metric_fairness, fontsize=12)
     plt.xticks(fontsize=8)
     plt.yticks(fontsize=8)
 

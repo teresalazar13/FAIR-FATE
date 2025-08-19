@@ -59,7 +59,8 @@ def plot_distributions(num_clients, combs, s):
     plt.yticks([i for i in range(num_clients)], ["Client {}".format(i + 1) for i in range(num_clients)])
     plt.xlabel("Sensitive attribute distribution")
     plt.legend()
-    #plt.show()
+    plt.show()
+    exit(0)
 
 
 def join_x_and_y(dataset, x_train, y_train):
